@@ -18,11 +18,11 @@ Read this in another language | [English](/README.md) | [Русский](/docs/r
 
 ## Overview
 
-Universal library for static + dynamic using.
+Universal library for static + dynamic using.\
 Commands to players, functions to mod developers.
 
-There are:
-Support of Factocord 3.0 (Factorio + Discord)
+Added:\
+Support of Factocord 3.0 (Factorio + Discord)\
 Getting real nickname of a player
 
 ## <a name="issue"></a> Found an Issue?
