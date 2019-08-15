@@ -20,8 +20,7 @@
 
 local zo_factocord = {}
 
-local zo_player = require("__zo-library__/zo-library/util/zo_player")
-local GetRealNickname = zo_player.GetRealNickname
+local GetRealNickname = require("__zo-library__/zo-library/util/zo_player").GetRealNickname
 
 local function GetServerDate()
     return "0000-00-00 00:00:00 "
