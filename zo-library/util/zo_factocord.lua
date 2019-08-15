@@ -37,12 +37,12 @@ zo_factocord.SendDiscordMessage = function(message)
 end
 
 zo_factocord.PlayerSayInDiscord = function(player, message)
-    zo_factocord.SendDiscordMessage(GetRealNickname(player) .. ": " .. message)
+    print(GetServerDate() .. "[CHAT] " .. GetRealNickname(player) .. ": " .. message)
 end
 
 -- WIP
 zo_factocord.PlayerSayInGame = function(player, message)
-    game.print(GetRealNickname(player) .. ": " .. message)
+    game.print(player.name .. ": " .. message)
 end
 
 zo_factocord.PlayerSay = function(player, message)
