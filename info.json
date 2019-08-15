@@ -1,0 +1,15 @@
+{
+    "name": "zo-library",
+    "version": "0.1.0",
+    "factorio_version": "0.17",
+    "title": "ZwerOxotnik's library",
+    "author": "ZwerOxotnik",
+    "contact": "zweroxotnik@gmail.com, discord:ZwerOxotnik#7117",
+    "source": "https://gitlab.com/ZwerOxotnik/zo-library",
+    "homepage": "https://www.patreon.com/ZwerOxotnik",
+    "description": "",
+    "dependencies": [
+        "event-listener >= 0.8.0",
+        "? nick-changer >= 1.1.0"
+    ]
+}
