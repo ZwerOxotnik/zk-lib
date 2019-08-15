@@ -25,9 +25,7 @@ remote.remove_interface('zo-library')
 remote.add_interface('zo-library', {})
 
 
--- TODO: handle events
--- PvPended(event) -- sends discord embed message
--- PvPstarted(event) -- sends discord embed message
+-- TODO: handle events + setting
 -- on_player_died(event) -- sends discord [embed] message
 
 return zo_library
