@@ -23,7 +23,8 @@ Commands to players, functions to mod developers.
 
 Added:\
 Support of Factocord 3.0 (Factorio + Discord)\
-Getting real nickname of a player
+Getting real nickname of a player\
+Messages about PvP events in Discord
 
 ## <a name="issue"></a> Found an Issue?
 
@@ -46,7 +47,7 @@ For more information, see [Installing Mods on the Factorio wiki](https://wiki.fa
 If you have downloaded the source archive (GitLab):
 
 * copy the mod directory into your factorio mods directory
-* rename the mod directory to secondary-chat_*versionnumber*, where *versionnumber* is the version of the mod that you've downloaded (e.g., 1.22.4)
+* rename the mod directory to secondary-chat_*versionnumber*, where *versionnumber* is the version of the mod that you've downloaded (e.g., 0.2.0)
 
 ## License
 
