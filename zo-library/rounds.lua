@@ -1,13 +1,11 @@
 --[[
-Copyright (C) 2019 ZwerOxotnik <zweroxotnik@gmail.com>
+Copyright (C) 2019-2020 ZwerOxotnik <zweroxotnik@gmail.com>
 Licensed under the EUPL, Version 1.2 only (the "LICENCE");
 ]]--
 
 local zo_factocord = require("zo-library/util/zo_factocord")
 local module = {}
 module.events = {}
-
-local GetRealNickname = require("zo-library/util/zo_player").GetRealNickname
 
 local function on_round_end()
 	local message = settings.global.on_round_end_message.value
@@ -49,7 +47,7 @@ local function on_player_joined_team(event)
 	if message == "" then return end
 
 	local player = game.players[event.player_index]
-	message = GetRealNickname(player) .. " " .. message .. " " .. event.team.name
+	message = player.name .. " " .. message .. " " .. event.team.name
 
 	zo_factocord.SendDiscordMessage(message)
 end

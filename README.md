@@ -1,12 +1,12 @@
 # ZwerOxotnik's library
 
-Read this in another language | [English](/README.md) | [Русский](/docs/ru/README.md)
-|---|---|---|
+Read this in another language | [English](/README.md)
+|---|---|
 
 ## Quick Links
 
-[Changelog](CHANGELOG.md) | [Contributing](CONTRIBUTING.md)
-|---|---|
+[Changelog](CHANGELOG.md)
+|---|
 
 ## Contents
 
@@ -23,7 +23,7 @@ Commands to players, functions to mod developers.
 
 Added:\
 Support of Factocord 3.0 (Factorio + Discord)\
-Getting real nickname of a player\
+Getting real nickname of a player (0.17)\
 Messages about PvP events in Discord
 
 ## <a name="issue"></a> Found an Issue?
@@ -51,7 +51,7 @@ If you have downloaded the source archive (GitLab):
 
 ## License
 
-This project is copyright © 2019 ZwerOxotnik \<zweroxotnik@gmail.com\>.
+This project is copyright © 2019-2020 ZwerOxotnik \<zweroxotnik@gmail.com\>.
 
 Use of the source code included here is governed by the European Union Public License v. 1.2 only. See the [LICENCE](/LICENCE) file for details.
 

@@ -1,8 +1,7 @@
 --[[
-Copyright (C) 2019 ZwerOxotnik <zweroxotnik@gmail.com>
+Copyright (C) 2019-2020 ZwerOxotnik <zweroxotnik@gmail.com>
 Licensed under the EUPL, Version 1.2 only (the "LICENCE");
 Author: ZwerOxotnik
-Version: 0.2.0 (2019-08-15)
 
 You can attach this library via \/
 local zo_library = require("__zo_library__/zo_library/util/list")
@@ -16,9 +15,8 @@ Mod portal: https://mods.factorio.com/mod/zo-library
 
 ]]--
 
-local zo_util = require("zo-library/util/list")
+-- local zo_util = require("zo-library/util/list")
 local zo_library = {}
-zo_library.version = "0.2.0"
 zo_library.events = {}
 
 remote.remove_interface('zo-library')

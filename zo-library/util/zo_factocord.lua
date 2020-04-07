@@ -1,4 +1,4 @@
--- Copyright (C) 2019 ZwerOxotnik <zweroxotnik@gmail.com>
+-- Copyright (C) 2019-2020 ZwerOxotnik <zweroxotnik@gmail.com>
 -- Licensed under the EUPL, Version 1.2 only (the "LICENCE");
 
 -- You can attach this file via \/
@@ -20,8 +20,6 @@
 
 local zo_factocord = {}
 
-local GetRealNickname = require("__zo-library__/zo-library/util/zo_player").GetRealNickname
-
 local function GetServerDate()
     return "0000-00-00 00:00:00 "
 end
@@ -36,7 +34,7 @@ zo_factocord.SendDiscordMessage = function(message)
 end
 
 zo_factocord.PlayerSayInDiscord = function(player, message)
-    print(GetServerDate() .. "[CHAT] " .. GetRealNickname(player) .. ": " .. message)
+    print(GetServerDate() .. "[CHAT] " .. player.name .. ": " .. message)
 end
 
 -- WIP

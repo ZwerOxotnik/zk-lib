@@ -1,4 +1,4 @@
--- Copyright (C) 2019 ZwerOxotnik <zweroxotnik@gmail.com>
+-- Copyright (C) 2019-2020 ZwerOxotnik <zweroxotnik@gmail.com>
 -- Licensed under the EUPL, Version 1.2 only (the "LICENCE");
 
 local zo_commands = {}
