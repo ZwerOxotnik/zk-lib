@@ -93,7 +93,6 @@ local function handle_events()
 			end
 		end
 	end
-	event_listener.update_events()
 end
 module.on_load = handle_events
 module.on_init = handle_events

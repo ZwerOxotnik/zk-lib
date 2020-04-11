@@ -48,8 +48,10 @@ zo_commands.delete_commands = function()
 end
 
 zo_commands.add_commands = function()
-	for _, command in pairs(commands_list) do
-		commands.add_command(command.name, command.help, command.func)
+	if settings.global["zo_commands"].value then
+		for _, command in pairs(commands_list) do
+			commands.add_command(command.name, command.help, command.func)
+		end
 	end
 end
 
@@ -61,11 +63,10 @@ local function check_commands()
 	end
 end
 
-zo_commands.events.on_runtime_mod_setting_changed = function(event)
+zo_commands.events[defines.events.on_runtime_mod_setting_changed] = function(event)
 	-- if event.setting_type ~= "runtime-global" then return end
 
 	if event.setting == "zo_commands" then check_commands() end
 end
-check_commands()
 
 return zo_commands
