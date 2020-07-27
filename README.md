@@ -1,6 +1,6 @@
 #ZwerOxotnik's extendable library
 
-Read this in another language | [English](/README.md) | Русский(/docs/ru/README.md)
+Read this in another language | [English](/README.md) | [Русский](/docs/ru/README.md)
 |---|---|---|
 
 ## Quick Links
