@@ -1,6 +1,5 @@
 local modules = {}
-modules.zo_library = require("zo-library/control")
-modules.zo_commands = require("zo-library/zo_commands")
-modules.rounds = require("zo-library/rounds")
+modules.zk_lib = require("zk-lib/control")
+modules.zk_commands = require("zk-lib/zk_commands")
 
 return modules

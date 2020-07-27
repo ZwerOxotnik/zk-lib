@@ -1,0 +1,3 @@
+[submodule "static-libs"]
+	path = static-libs
+	url = https://github.com/ZwerOxotnik/zk-factorio-static-lib

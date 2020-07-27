@@ -1,4 +1,4 @@
-# Библиотека ZwerOxotnik'а
+# Расширяемая библиотека ZwerOxotnik'а
 
 Хотите прочитать на другом языке? | [English](/README.md)
 |---|---|
@@ -11,8 +11,6 @@
 ## Содержание
 
 * [Введение](#overview)
-* [Сообщить об ошибки](#issue)
-* [Запросить функцию](#feature)
 * [Установка](#installing)
 * [Лицензия](#license)
 
@@ -20,21 +18,6 @@
 
 Универсальная библиотека для статичного + динамического использования.\
 Комманды игрокам, функиям разработчика модов.\
-Сообщения о событиях PvP в Discord'е
-
-Добавлено:\
-Поддержка Factocord 3.0 (Factorio + Discord)\
-Получение реального ника игрока (0.17)\
-Сообщения о PvP событиях в Discord
-
-## <a name="issue"></a> Нашли ошибку?
-
-Пожалуйста, сообщайте о любых проблемах или ошибках в документации, вы можете помочь нам
-[submitting an issue](https://gitlab.com/ZwerOxotnik/zo-library/issues) на нашем GitLab репозитории или сообщите на [mods.factorio.com](https://mods.factorio.com/mod/zo-library/discussion).
-
-## <a name="feature"></a> Хотите новую функцию?
-
-Вы можете *запросить* новую функцию [submitting an issue](https://gitlab.com/ZwerOxotnik/zo-library/issues) на нашем GitLab репозитории или сообщите на [mods.factorio.com](https://mods.factorio.com/mod/zo-library/discussion).
 
 ## <a name="installing"></a> Установка
 
@@ -47,7 +30,7 @@
 Если вы скачали исходный архив (GitLab):
 
 * скопируйте данный мод в директорию модов Factorio
-* переименуйте данный мод в secondary-chat_*версия*, где *версия* это версия мода, которую вы скачали (например, 0.2.0)
+* переименуйте данный мод в zk-lib_*версия*, где *версия* это версия мода, которую вы скачали (например, 0.1.0)
 
 ## <a name="license"></a> Лицензия
 
@@ -55,5 +38,5 @@
 
 Использование исходного кода, включенного здесь, регламентируется European Union Public License v. 1.2 только. Смотрите [LICENCE](/LICENCE) файл для разбора.
 
-[homepage]: http://mods.factorio.com/mod/zo-library
+[homepage]: http://mods.factorio.com/mod/zk-lib
 [Factorio]: https://factorio.com/

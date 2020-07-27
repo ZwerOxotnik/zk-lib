@@ -1,11 +1,11 @@
 {
-    "name": "zo-library",
-    "version": "0.2.2",
+    "name": "zk-lib",
+    "version": "0.1.0",
     "factorio_version": "0.18",
-    "title": "ZwerOxotnik's library",
+    "title": "ZwerOxotnik's extendable library",
     "author": "ZwerOxotnik",
     "contact": "zweroxotnik@gmail.com, discord:ZwerOxotnik#7117",
-    "source": "https://gitlab.com/ZwerOxotnik/zo-library",
+    "source": "https://github.com/ZwerOxotnik/zk-lib",
     "homepage": "https://reddit.com/r/ZwerOxotnik",
     "description": "",
     "dependencies": [
