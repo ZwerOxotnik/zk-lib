@@ -1,0 +1,1 @@
+require("data-api/puan_api")
