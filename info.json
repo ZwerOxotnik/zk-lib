@@ -8,7 +8,5 @@
     "source": "https://github.com/ZwerOxotnik/zk-lib",
     "homepage": "https://reddit.com/r/ZwerOxotnik",
     "description": "",
-    "dependencies": [
-        "event-listener >= 0.9.0"
-    ]
+    "dependencies": []
 }
