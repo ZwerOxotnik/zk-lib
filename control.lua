@@ -1,6 +1,5 @@
 event_listener = require("__event-listener__/branch-3/stable-version")
 random_items = require("static-libs/lualibs/random_items")
-local modules = require("modules")
 
 local modules = {}
 modules.random_items = random_items
