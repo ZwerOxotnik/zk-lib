@@ -56,15 +56,14 @@ puan_api.make_notes = function(sounds, path)
     return notes
 end
 
+local programmable_speaker = data.raw["programmable-speaker"]["programmable-speaker"].instruments
 puan_api.add_sounds = function(sounds_list)
     for _, sound in pairs(sounds_list.sounds) do
         puan_api.add_dummy_entity("", sounds_list.path, sound)
     end
-end
 
-local programmable_speaker = data.raw["programmable-speaker"]["programmable-speaker"].instruments
-puan_api.add_sounds_in_programmable_speaker = function(sounds_list, name)
-    local notes = puan_api.make_notes(sounds_list.sounds, sounds_list.path)
-
-    return table.insert(programmable_speaker, {name = sounds_list.name, notes = notes})
+    if sounds_list.name then
+        local notes = puan_api.make_notes(sounds_list.sounds, sounds_list.path)
+        return table.insert(programmable_speaker, {name = sounds_list.name, notes = notes})
+    end
 end
