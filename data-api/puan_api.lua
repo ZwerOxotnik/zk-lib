@@ -36,7 +36,7 @@ puan_api.add_dummy_entity = function(name, path, sound)
         mined_sound = puan_api.check_and_get_sound(sound, path),
         pictures = {
         {
-            filename = "__play-use-any-sound__/graphics/IconDummy.png",
+            filename = "__zk-lib__/graphics/IconDummy.png",
             height = 1,
             width = 1
         }}
