@@ -1,11 +1,11 @@
 --[[
-Copyright (C) 2018-2019 ZwerOxotnik <zweroxotnik@gmail.com>
+Copyright (C) 2018-2020 ZwerOxotnik <zweroxotnik@gmail.com>
 Licensed under the EUPL, Version 1.2 only (the "LICENCE");
+Source: github.com/ZwerOxotnik/zk-lib
 ]]--
 
 ---- Generates sounds etc in programmable speakers
----- More info in https://www.reddit.com/r/ZwerOxotnik/comments/dv7tpx/you_want_your_own_mod_stay_tuned/
----- An example of this in https://mods.factorio.com/mod/party-stuff
+---- Use https://github.com/ZwerOxotnik/Mod-generator
 
 puan_api = {}
 

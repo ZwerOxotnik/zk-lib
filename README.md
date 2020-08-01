@@ -1,7 +1,9 @@
+[![thumbnail](/thumbnail.png)][homepage]
 # ZwerOxotnik's extendable library
 
-Read this in another language | [English](/README.md) | [Русский](/docs/ru/README.md)
-|---|---|---|
+[![Discord](https://i.imgur.com/GYTxQdx.png)](https://discordapp.com/invite/YyJVUCa)
+[![Patreon](https://i.imgur.com/6n2ifle.png)](https://www.patreon.com/ZwerOxotnik)
+[![reddit](https://i.imgur.com/J1k7aGJ.png)](https://reddit.com/r/ZwerOxotnik)
 
 ## Quick Links
 
@@ -12,31 +14,54 @@ Read this in another language | [English](/README.md) | [Русский](/docs/r
 
 * [Overview](#overview)
 * [Installing](#installing)
+* [Notice](#notice)
 * [License](#license)
 
 ## Overview
 
-Universal library for static + dynamic using.\
-Commands to players, functions to mod developers.
+This mod provides, combines, packages libraries, utilities for (new) mods and to the game as tools/features (UI isn't ready yet).
+
+Also, supports auto-generated mods and has modified event listener and I consider about to provide other extra light files/things for mods.  
+
+| Data | Control stage | UI |
+| ----------- | ---------- | --------- |
+| [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua) | [universal command widget](zk-lib/universal-command-widget) (WIP) |
+| | ["Static libs"](#static-libs) for embedding | |
+| | [customizable] commands of libs (disabled) | |
+| | [Event listener][event-listener] | |
+
+### <a name="static-libs"></a> [Static libs](/static-libs) [![source](https://img.shields.io/badge/%E2%81%A4-source-blue.svg?logo=github&colorB=7289DA)](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
+
+* Random items
 
 ## Installing
 
-If you have downloaded a zip archive:
+Please, use download this mod via Factorio or on [mods.factorio.com][homepage].\
+Recommended to read ["Installing Mods"](https://wiki.factorio.com/index.php?title=Installing_Mods) on the Factorio wiki.
 
-* simply place it in your mods directory.
+If you have downloaded the source archive (GitHub):
 
-For more information, see [Installing Mods on the Factorio wiki](https://wiki.factorio.com/index.php?title=Installing_Mods).
+* Copy the mod directory into your factorio mods directory
+* Rename the mod directory to zk-lib_*versionnumber*, where *versionnumber* is the version of the mod that you've downloaded (e.g., 0.1.0)
 
-If you have downloaded the source archive (GitLab):
+## Notice
 
-* copy the mod directory into your factorio mods directory
-* rename the mod directory to zk-lib_*versionnumber*, where *versionnumber* is the version of the mod that you've downloaded (e.g., 0.1.0)
+This project contains work from multiple sources.
+
+* [Event listener][event-listener]
+* [zk-factorio-static-lib](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
+* [Sounds from other authors](/sound/README.txt)
+
+Also, this project used [Mod-generator](https://github.com/ZwerOxotnik/Mod-generator)
 
 ## License
 
-This project is copyright © 2019-2020 ZwerOxotnik \<zweroxotnik@gmail.com\>.
+[Logo](/thumbnail.png) is a trademark of [ZwerOxotnik][ZwerOxotnik].
 
-Use of the source code included here is governed by the European Union Public License v. 1.2 only. See the [LICENCE](/LICENCE) file for details.
+This project is copyright © 2018-2020 ZwerOxotnik \<zweroxotnik@gmail.com\>.
+
+This project is licensed under the [European Union Public License v. 1.2 only](/LICENCE).
 
 [homepage]: http://mods.factorio.com/mod/zk-lib
-[Factorio]: https://factorio.com/
+[ZwerOxotnik]: github.com/ZwerOxotnik/
+[event-listener]: https://gitlab.com/ZwerOxotnik/factorio-event-listener
