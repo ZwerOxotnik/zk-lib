@@ -16,5 +16,11 @@ data:extend({
 		name = "EL_logs-mode",
 		setting_type = "runtime-global",
 		default_value = false
+	},
+	{
+		type = "bool-setting",
+		name = "zk-lib_special-message",
+		setting_type = "runtime-per-user",
+		default_value = true
 	}
 })

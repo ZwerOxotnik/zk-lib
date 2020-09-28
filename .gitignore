@@ -116,3 +116,5 @@ typings/
 .vuepress/dist
 # Serverless directories
 .serverless
+# VS Code stuff
+.vscode/launch.json
