@@ -27,7 +27,6 @@ data:extend({
 
 local addons_list = require("addons/addons-list")
 
--- TODO: add meta-state
 addons_settings = {}
 for _, name in pairs(addons_list) do
 	table.insert(addons_settings, {
