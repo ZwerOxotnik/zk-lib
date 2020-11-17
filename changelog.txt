@@ -1,7 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.1
+Date: 2020-11-27
+  Major features:
+    - Added mutable mode for addons (you can disable addons during the game now)
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2020-11-27
-  features:
+  Major features:
     - Added a safe version of addons (https://mods.factorio.com/mod/random-gifts-by-timer + https://mods.factorio.com/mod/kill-nest-get-gift)
   Changes:
     - Optimized files

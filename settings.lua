@@ -34,7 +34,7 @@ for _, name in pairs(addons_list) do
 		name = "zk-lib_" .. name,
 		setting_type = "startup",
 		default_value = "disabled",
-		allowed_values = {"disabled", "enabled"}
+		allowed_values = {"disabled", "enabled", "mutable"}
 	})
 end
 data:extend(addons_settings)
