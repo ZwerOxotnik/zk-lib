@@ -1,12 +1,12 @@
 {
     "name": "zk-lib",
-    "version": "0.1.4",
+    "version": "0.2.0",
     "factorio_version": "1.0",
     "title": "ZwerOxotnik's extendable library [WIP]",
     "author": "ZwerOxotnik",
     "contact": "zweroxotnik@gmail.com, discord:ZwerOxotnik#7117",
     "source": "https://github.com/ZwerOxotnik/zk-lib",
     "homepage": "https://reddit.com/r/ZwerOxotnik",
-    "description": "I'll add a universal command widget in the next major update\n\nProvides, combines, packages libraries, utilities for (new) mods and to the game as tools/features (UI isn't ready yet).\n\nAlso, supports auto-generated mods and has modified event listener and I consider about to provide other extra light files/things for mods.",
+    "description": "I'll add a universal command widget in the next major update\n\nProvides, combines, packages libraries, utilities for (new) mods and to the game as tools/features (UI isn't ready yet).\n\nAlso, supports auto-generated mods and has modified event listener and I consider about to provide other extra light files/things for mods.\n\nAdded a safe version of addons.",
     "dependencies": []
 }

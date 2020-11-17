@@ -24,3 +24,18 @@ data:extend({
 		default_value = true
 	}
 })
+
+local addons_list = require("addons/addons-list")
+
+-- TODO: add meta-state
+addons_settings = {}
+for _, name in pairs(addons_list) do
+	table.insert(addons_settings, {
+		type = "string-setting",
+		name = "zk-lib_" .. name,
+		setting_type = "startup",
+		default_value = "disabled",
+		allowed_values = {"disabled", "enabled"}
+	})
+end
+data:extend(addons_settings)
