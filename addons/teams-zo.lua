@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-		http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,61 +15,38 @@ limitations under the License.
 ]]--
 
 -- You can write and receive any information on the links below.
--- Source: https://gitlab.com/ZwerOxotnik/random-gifts-for-nests-- Mod portal: https://mods.factorio.com/mod/random-gifts-for-nests
-
+-- Source: https://github.com/ZwerOxotnik/teams
+-- Mod portal: https://mods.factorio.com/mod/teams-zo
+-- Homepage: https://forums.factorio.com/viewtopic.php?f=190&t=73013
 
 local module = {}
-local addon_name = "kill-nest-get-gifts"
-local random_items
+local prohibited_forces = {neutral = true, player = true, enemy = true}
+local addon_name = "teams-zo"
 
-local function check_global_data()
-	global.KNGG = global.KNGG or {}
-	global.KNGG.random_items = global.KNGG.random_items or {}
+local function create_new_team(cmd)
+	if cmd.player_index == nil then return end
+    local player = game.players[cmd.player_index]
+    if #game.forces >= 60 then player.print({"teams.too_many"}) return end -- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/0.17.54/LuaGameScript.html#LuaGameScript.create_force)
+	if cmd.parameter == nil then player.print({"teams.create_team"}) return end
+
+    if game.forces[cmd.parameter] then
+        player.print({"teams.double_team", cmd.parameter})
+    else
+        local new_team = game.create_force(cmd.parameter)
+        if #player.force.players == 1 and not prohibited_forces[player.force.name] then
+            game.merge_forces(player.force, new_team)
+        else
+            player.force = new_team
+        end
+    end
 end
 
--- Find all items and remove cheat items to save the item names
-local function check_items()
-	local KNGG = global.KNGG
-	KNGG.random_items = {}
-	for name, item in pairs(game.item_prototypes) do
-		if not (name:find("creative") or name:find("hidden") or name:find("infinity")
-			or name:find("infinity") or name:find("cheat"))and item.type ~= "mining-tool"
-			and not item.has_flag("hidden") then
-			table.insert(KNGG.random_items, name)
-		end
-	end
-	random_items = KNGG.random_items
+module.add_commands = function()
+	commands.add_command("create_team", {"teams.create_team"}, create_new_team)
 end
 
-module.on_init = function()
-	check_global_data()
-	check_items()
-end
-
-module.on_load = function()
-	random_items = global.KNGG.random_items
-end
-
-module.on_configuration_changed = function()
-	check_items()
-end
-
-local function on_entity_died(event)
-	local entity = event.entity
-	if not (entity and entity.valid and entity.type == "unit-spawner") then return end --  and entity.type == "unit-spawner"
-	local cause = event.cause
-	if not (cause and cause.valid and cause.type == "character") then return end
-	local player = cause.player
-	if player.cheat_mode then return end
-	if entity.force == cause.force then return end
-
-	player.insert{name = random_items[math.random(#random_items)]}
-	player.insert{name = random_items[math.random(#random_items)]}
-end
-
-module.set_events_filters = function()
-	local filters = {{filter = "type", type = "unit-spawner"}}
-	script.set_event_filter(defines.events.on_entity_died, filters)
+module.remove_commands = function()
+	commands.remove_command("create_team")
 end
 
 --[[ This part of a code to use it use it as an addon ]] --
@@ -129,19 +106,17 @@ local function on_runtime_mod_setting_changed(event)
 end
 
 module.get_default_events = function() -- your events
-	local events = {
-		[defines.events.on_entity_died] = on_entity_died
-	}
+	local events = {}
 
 	if settings.startup["zk-lib_" .. addon_name].value == "mutable" then
-		events[defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed
+		table.insert(events, defines.events.on_runtime_mod_setting_changed, on_runtime_mod_setting_changed)
 	end
 
 	local on_nth_tick = {} -- your events on_nth_tick
 
 	return events, on_nth_tick
 end
-module.events = module.get_default_events()
+module.events, module.on_nth_tick = module.get_default_events()
 
 check_events()
 -----------------------------------------------------------
