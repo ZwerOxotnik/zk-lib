@@ -20,39 +20,6 @@ limitations under the License.
 
 local module = {}
 local addon_name = "kill-nest-get-gifts"
-local random_items
-
-local function check_global_data()
-	global.KNGG = global.KNGG or {}
-	global.KNGG.random_items = global.KNGG.random_items or {}
-end
-
--- Find all items and remove cheat items to save the item names
-local function check_items()
-	local KNGG = global.KNGG
-	KNGG.random_items = {}
-	for name, item in pairs(game.item_prototypes) do
-		if not (name:find("creative") or name:find("hidden") or name:find("infinity")
-			or name:find("infinity") or name:find("cheat"))and item.type ~= "mining-tool"
-			and not item.has_flag("hidden") then
-			table.insert(KNGG.random_items, name)
-		end
-	end
-	random_items = KNGG.random_items
-end
-
-module.on_init = function()
-	check_global_data()
-	check_items()
-end
-
-module.on_load = function()
-	random_items = global.KNGG.random_items
-end
-
-module.on_configuration_changed = function()
-	check_items()
-end
 
 local function on_entity_died(event)
 	local entity = event.entity
@@ -63,14 +30,14 @@ local function on_entity_died(event)
 	if player.cheat_mode then return end
 	if entity.force == cause.force then return end
 
-	player.insert{name = random_items[math.random(#random_items)]}
-	player.insert{name = random_items[math.random(#random_items)]}
+	random_items.insert_random_item(player, 2)
 end
 
-module.set_events_filters = function()
-	local filters = {{filter = "type", type = "unit-spawner"}}
-	script.set_event_filter(defines.events.on_entity_died, filters)
-end
+-- it doesn't work as it should at the moment...
+-- module.set_events_filters = function()
+-- 	local filters = {{filter = "type", type = "unit-spawner"}}
+-- 	script.set_event_filter(defines.events.on_entity_died, filters)
+-- end
 
 --[[ This part of a code to use it use it as an addon ]] --
 -----------------------------------------------------------

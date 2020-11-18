@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.4
+Date: 2020-11-18
+  Changes:
+    - Current addons realated with random items works a little bit faster and more properly now
+---------------------------------------------------------------------------------------------------
 Version: 0.2.3
 Date: 2020-11-18
   Major features:
