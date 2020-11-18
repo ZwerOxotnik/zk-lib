@@ -15,22 +15,22 @@ local module = {}
 local addon_name = "scan-rocket-with-radars"
 
 local function on_rocket_launched(event)
-    local rocket = event.rocket
-    local force = rocket.force
-    local count = rocket.get_item_count("radar")
-    if count > 20 then
-        local radius = settings.global["radius-scan-rocket-with-radars"].value * count
-        force.chart(rocket.surface, {
-            {rocket.position.x - radius, rocket.position.y - radius},
-            {rocket.position.x + radius, rocket.position.y + radius}
-        })
-    elseif count > 0 then
-        local radius = settings.global["radius-scan-rocket-with-radars"].value * 19
-        force.chart(rocket.surface, {
-            {rocket.position.x - radius, rocket.position.y - radius},
-            {rocket.position.x + radius, rocket.position.y + radius}
-        })
-    end
+	local rocket = event.rocket
+	local force = rocket.force
+	local count = rocket.get_item_count("radar")
+	if count > 20 then
+		local radius = settings.global["radius-scan-rocket-with-radars"].value * count
+		force.chart(rocket.surface, {
+			{rocket.position.x - radius, rocket.position.y - radius},
+			{rocket.position.x + radius, rocket.position.y + radius}
+		})
+	elseif count > 0 then
+		local radius = settings.global["radius-scan-rocket-with-radars"].value * 19
+		force.chart(rocket.surface, {
+			{rocket.position.x - radius, rocket.position.y - radius},
+			{rocket.position.x + radius, rocket.position.y + radius}
+		})
+	end
 end
 
 --[[ This part of a code to use it use it as an addon ]] --
@@ -93,8 +93,8 @@ end
 
 module.get_default_events = function() -- your events
 	local events = {
-        [defines.events.on_rocket_launched] = on_rocket_launched
-    }
+				[defines.events.on_rocket_launched] = on_rocket_launched
+		}
 
 	if settings.startup["zk-lib_" .. addon_name].value == "mutable" then
 		table.insert(events, defines.events.on_runtime_mod_setting_changed, on_runtime_mod_setting_changed)

@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+		http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,20 +25,20 @@ local addon_name = "teams-zo"
 
 local function create_new_team(cmd)
 	if cmd.player_index == nil then return end
-    local player = game.players[cmd.player_index]
-    if #game.forces >= 60 then player.print({"teams.too_many"}) return end -- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/0.17.54/LuaGameScript.html#LuaGameScript.create_force)
+		local player = game.players[cmd.player_index]
+		if #game.forces >= 60 then player.print({"teams.too_many"}) return end -- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/0.17.54/LuaGameScript.html#LuaGameScript.create_force)
 	if cmd.parameter == nil then player.print({"teams.create_team"}) return end
 
-    if game.forces[cmd.parameter] then
-        player.print({"teams.double_team", cmd.parameter})
-    else
-        local new_team = game.create_force(cmd.parameter)
-        if #player.force.players == 1 and not prohibited_forces[player.force.name] then
-            game.merge_forces(player.force, new_team)
-        else
-            player.force = new_team
-        end
-    end
+	if game.forces[cmd.parameter] then
+		player.print({"teams.double_team", cmd.parameter})
+	else
+		local new_team = game.create_force(cmd.parameter)
+		if #player.force.players == 1 and not prohibited_forces[player.force.name] then
+			game.merge_forces(player.force, new_team)
+		else
+			player.force = new_team
+		end
+	end
 end
 
 module.add_commands = function()
