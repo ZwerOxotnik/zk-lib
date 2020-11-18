@@ -8,6 +8,7 @@
 ## Contents
 
 * [Overview](#overview)
+* [Addons](#addons)
 * [Installing](#installing)
 * [Notice](#notice)
 * [License](#license)
@@ -25,7 +26,12 @@ Also, supports auto-generated mods and has modified event listener and I conside
 | | [customizable] commands of libs (disabled) | |
 | | [Event listener][event-listener] | |
 
-Addons (WIP): https://mods.factorio.com/mod/random-gifts-by-timer, https://mods.factorio.com/mod/kill-nest-get-gift
+## Addons
+
+* https://mods.factorio.com/mod/random-gifts-by-timer
+* https://mods.factorio.com/mod/kill-nest-get-gift
+* https://mods.factorio.com/mod/teams-zo
+* https://mods.factorio.com/mod/scan-rocket-with-radars
 
 ### <a name="static-libs"></a> [Static libs](/static-libs) [![source](https://img.shields.io/badge/%E2%81%A4-source-blue.svg?logo=github&colorB=7289DA)](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
 
@@ -43,7 +49,7 @@ If you have downloaded the source archive (GitHub):
 
 ## Notice
 
-This project contains work from multiple sources.
+This project contains work from multiple sources + [addons](#overview).
 
 * [Event listener][event-listener]
 * [zk-factorio-static-lib](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
