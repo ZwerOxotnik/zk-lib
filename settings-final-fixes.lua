@@ -1,4 +1,4 @@
-local addons_list = require("addons/addons-list") --TODO: add blaclist of mods
+local addons_list = require("addons/addons-list")
 
 for name, addon in pairs(addons_list) do
   if data.raw["string-setting"]["zk-lib_" .. name] then

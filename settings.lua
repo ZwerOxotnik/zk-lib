@@ -27,6 +27,23 @@ data:extend({
 
 local addons_list = require("addons/addons-list")
 
+local function check_blacklist(blacklist, name)
+	for _, x_mod_name in pairs(blacklist) do
+		for mod_name, _ in pairs(mods) do
+			if x_mod_name == mod_name then
+				addons_list[name] = nil
+				return
+			end
+		end
+	end
+end
+
+for name, addon in pairs(addons_list) do
+	if addon.blacklist then
+		check_blacklist(addon.blacklist, name)
+	end
+end
+
 addons_settings = {}
 for name, _ in pairs(addons_list) do
 	table.insert(addons_settings, {
