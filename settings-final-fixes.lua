@@ -1,4 +1,4 @@
-local addons_list = require("addons/addons-list")
+local addons_list = require("addons/addons-list") --TODO: add blaclist of mods and add setting path within
 
 addons_settings = {}
 for _, name in pairs(addons_list) do
