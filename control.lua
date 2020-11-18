@@ -5,7 +5,7 @@ ItemsLua = require("static-libs/lualibs/ItemsLua")
 local modules = {}
 modules.random_items = random_items
 modules.zk_lib = require("core/control")
-modules.special_message = require("addons/special-message")
+modules.special_message = require("core/special-message")
 -- modules.zk_commands = require("core/zk_commands")
 
 local addons_list = require("addons/addons-list")

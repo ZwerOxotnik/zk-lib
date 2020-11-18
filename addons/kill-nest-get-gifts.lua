@@ -72,8 +72,8 @@ module.set_events_filters = function()
 	script.set_event_filter(defines.events.on_entity_died, filters)
 end
 
---[[ This is part of a code to use it use it as a addon ]] --
--------------------------------------------------------------
+--[[ This part of a code to use it use it as an addon ]] --
+-----------------------------------------------------------
 local blacklist_events = {[defines.events.on_runtime_mod_setting_changed] = true, ["lib_id"] = true}
 
 local function check_events()
@@ -86,7 +86,7 @@ local function check_events()
 				end
 			end
 		end
-		if #module.on_nth_tick > 0 then
+		if module.on_nth_tick and #module.on_nth_tick > 0 then
 			for tick, _ in pairs(module.events) do
 				module.on_nth_tick[tick] = function() end
 			end
@@ -102,7 +102,7 @@ local function update_events()
 			end
 		end
 	end
-	if #module.on_nth_tick > 0 then
+	if module.on_nth_tick and #module.on_nth_tick > 0 then
 		for tick, _ in pairs(module.events) do
 			event_listener.update_nth_tick(module, tick)
 		end
@@ -117,10 +117,10 @@ local function on_runtime_mod_setting_changed(event)
 	if event.setting == "zk-lib-during-game_" .. addon_name then
 		if settings.global[event.setting].value == "enabled" then
 			module.events = module.get_default_events()
-			game.print("Enabled: " .. addon_name)
+			game.print({"", {"gui-mod-info.status-enabled"}, ": ", {"mod-name." .. addon_name}})
 		else
 			check_events()
-			game.print("Disabled: " .. addon_name)
+			game.print({"", {"gui-mod-info.status-disabled"}, ": ", {"mod-name." .. addon_name}})
 		end
 		update_events()
 	end
@@ -142,6 +142,6 @@ end
 module.events = module.get_default_events()
 
 check_events()
--------------------------------------------------------------
+-----------------------------------------------------------
 
 return module

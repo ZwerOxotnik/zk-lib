@@ -1,6 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.2
+Date: 2020-11-18
+  Major features:
+    - Added addon https://mods.factorio.com/mod/scan-rocket-with-radars
+  Changes:
+    - Added proper localisation to addons
+  Bugfixes:
+    - Mutable mode works with events properly on init stage now
+---------------------------------------------------------------------------------------------------
 Version: 0.2.1
-Date: 2020-11-27
+Date: 2020-11-17
   Major features:
     - Added mutable mode for addons (you can disable addons during the game now)
 ---------------------------------------------------------------------------------------------------

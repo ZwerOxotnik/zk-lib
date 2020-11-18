@@ -1,70 +1,36 @@
 --[[
-Copyright 2019-2020 ZwerOxotnik <zweroxotnik@gmail.com>
+Copyright (c) 2017, 2019-2020 ZwerOxotnik <zweroxotnik@gmail.com>
+Licensed under the MIT licence;
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Description: scans surface after launching a missile with radars
 
-		http://www.apache.org/licenses/LICENSE-2.0
+You can write and receive any information on the links below.
+Source: https://gitlab.com/ZwerOxotnik/scan-rocket-with-radars
+Mod portal: https://mods.factorio.com/mod/scan-rocket-with-radars
+Homepage: https://forums.factorio.com/viewtopic.php?f=190&t=64614
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
 ]]--
 
--- You can write and receive any information on the links below.
--- Source: https://gitlab.com/ZwerOxotnik/random-gifts-by-timer
--- Mod portal: https://mods.factorio.com/mod/random-gifts-by-timer
-
 local module = {}
-local random_items
-local addon_name = "random-gifts-by-timer"
+local addon_name = "scan-rocket-with-radars"
 
-local function check_global_data()
-	global.RGbT = global.RGbT or {}
-	global.RGbT.random_items = global.RGbT.random_items or {}
-end
-
--- Find all items and remove cheat items to save the item names
-local function check_items()
-	local RGbT = global.RGbT
-	RGbT.random_items = {}
-	for name, item in pairs(game.item_prototypes) do
-		if not (name:find("creative") or name:find("hidden") or name:find("infinity")
-			or name:find("infinity") or name:find("cheat"))and item.type ~= "mining-tool" 
-			and not item.has_flag("hidden") then
-			table.insert(RGbT.random_items, name)
-		end
-	end
-	random_items = RGbT.random_items
-end
-
-module.on_init = function()
-	check_global_data()
-	check_items()
-end
-
-module.on_load = function()
-	random_items = global.RGbT.random_items
-end
-
-module.on_configuration_changed = function()
-	check_items()
-end
-
--- giveaways for online players
-local function give_random_items()
-	-- if game == nil then return end
-
-	for _, player in pairs(game.connected_players) do
-		if player.valid and player.character and not player.cheat_mode then
-			if player.insert{name = random_items[math.random(#random_items)]} then
-				player.print("You got a gift")
-			end
-		end
-	end
+local function on_rocket_launched(event)
+    local rocket = event.rocket
+    local force = rocket.force
+    local count = rocket.get_item_count("radar")
+    if count > 20 then
+        local radius = settings.global["radius-scan-rocket-with-radars"].value * count
+        force.chart(rocket.surface, {
+            {rocket.position.x - radius, rocket.position.y - radius},
+            {rocket.position.x + radius, rocket.position.y + radius}
+        })
+    elseif count > 0 then
+        local radius = settings.global["radius-scan-rocket-with-radars"].value * 19
+        force.chart(rocket.surface, {
+            {rocket.position.x - radius, rocket.position.y - radius},
+            {rocket.position.x + radius, rocket.position.y + radius}
+        })
+    end
 end
 
 --[[ This part of a code to use it use it as an addon ]] --
@@ -122,15 +88,15 @@ local function on_runtime_mod_setting_changed(event)
 end
 
 module.get_default_events = function() -- your events
-	local events = {}
+	local events = {
+        [defines.events.on_rocket_launched] = on_rocket_launched
+    }
 
 	if settings.startup["zk-lib_" .. addon_name].value == "mutable" then
 		table.insert(events, defines.events.on_runtime_mod_setting_changed, on_runtime_mod_setting_changed)
 	end
 
-	local on_nth_tick = {
-		[60 * 60 * 10] = give_random_items
-	} -- your events on_nth_tick
+	local on_nth_tick = {} -- your events on_nth_tick
 
 	return events, on_nth_tick
 end

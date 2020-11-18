@@ -8,8 +8,8 @@ for _, name in pairs(addons_list) do
     setting_type = "runtime-global",
     default_value = "enabled",
     allowed_values = {"disabled", "enabled"},
-    localised_name = {"mod-setting-name.zk-lib_" .. name},
-    localised_description = {"mod-setting-description.zk-lib_" .. name}
+    localised_name = {"mod-name." .. name},
+    localised_description = {"mod-description." .. name}
   })
 end
 data:extend(addons_settings)

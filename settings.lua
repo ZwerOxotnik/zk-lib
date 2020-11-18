@@ -34,7 +34,11 @@ for _, name in pairs(addons_list) do
 		name = "zk-lib_" .. name,
 		setting_type = "startup",
 		default_value = "disabled",
-		allowed_values = {"disabled", "enabled", "mutable"}
+		allowed_values = {"disabled", "enabled", "mutable"},
+    localised_name = {"mod-name." .. name},
+    localised_description = {"mod-description." .. name}
 	})
 end
 data:extend(addons_settings)
+
+require("addons/settings/scan-rocket-with-radars")
