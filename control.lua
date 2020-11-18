@@ -10,8 +10,8 @@ modules.special_message = require("core/special-message")
 
 -- TODO: create and raise new events to addons
 local addons_list = require("addons/addons-list")
-for k, name in pairs(addons_list) do
-  if name and settings.startup["zk-lib_" .. name] and settings.startup["zk-lib_" .. name].value ~= "disabled" then
+for name, _ in pairs(addons_list) do
+  if settings.startup["zk-lib_" .. name] and settings.startup["zk-lib_" .. name].value ~= "disabled" then
     modules[name] = require("addons/" .. name)
   end
 end

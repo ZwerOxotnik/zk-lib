@@ -28,7 +28,7 @@ data:extend({
 local addons_list = require("addons/addons-list")
 
 addons_settings = {}
-for _, name in pairs(addons_list) do
+for name, _ in pairs(addons_list) do
 	table.insert(addons_settings, {
 		type = "string-setting",
 		name = "zk-lib_" .. name,
