@@ -1,4 +1,4 @@
-module = {}
+local module = {}
 
 local function on_player_joined_or_created(event)
     local player = game.players[event.player_index]
