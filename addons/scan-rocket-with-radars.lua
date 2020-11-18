@@ -77,11 +77,11 @@ local function on_runtime_mod_setting_changed(event)
 	-- if settings.startup["zk-lib_" .. addon_name].value ~= "mutable" then return end
 	if event.setting == "zk-lib-during-game_" .. addon_name then
 		if settings.global[event.setting].value == "enabled" then
-			if module.add_commands  and module.remove_commands then module.add_commands() end
+			if module.add_commands and module.remove_commands then module.add_commands() end
 			module.events = module.get_default_events()
 			game.print({"", {"gui-mod-info.status-enabled"}, ": ", {"mod-name." .. addon_name}})
 		else
-			if module.add_commands  and module.remove_commands then module.remove_commands() end
+			if module.add_commands and module.remove_commands then module.remove_commands() end
 			check_events()
 			game.print({"", {"gui-mod-info.status-disabled"}, ": ", {"mod-name." .. addon_name}})
 		end
