@@ -38,8 +38,8 @@ end
 local blacklist_events = {[defines.events.on_runtime_mod_setting_changed] = true, ["lib_id"] = true}
 
 local function check_events()
-	if (settings.startup["zk-lib_" .. addon_name].value == "disabled")
-		or (settings.startup["zk-lib_" .. addon_name].value == "mutable" and settings.global["zk-lib-during-game_" .. addon_name].value == "disabled") then
+	if (settings.startup["zk-lib_" .. addon_name].value == false)
+		or (settings.startup["zk-lib_" .. addon_name].value == "mutable" and settings.global["zk-lib-during-game_" .. addon_name].value == false) then
 		if module.events then
 			for id, _ in pairs(module.events) do
 				if blacklist_events[id] ~= true then
@@ -76,7 +76,7 @@ local function on_runtime_mod_setting_changed(event)
 	-- comment next line if you need on_runtime_mod_setting_changed only to use it for "mutable" mode
 	-- if settings.startup["zk-lib_" .. addon_name].value ~= "mutable" then return end
 	if event.setting == "zk-lib-during-game_" .. addon_name then
-		if settings.global[event.setting].value == "enabled" then
+		if settings.global[event.setting].value == true then
 			if module.add_commands and module.remove_commands then module.add_commands() end
 			if module.add_remote_interface and module.remove_remote_interface then module.add_remote_interface() end
 			module.events = module.get_default_events()
