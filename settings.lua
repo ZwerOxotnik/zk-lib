@@ -19,6 +19,12 @@ data:extend({
 	},
 	{
 		type = "bool-setting",
+		name = "zk-lib_safe-mode",
+		setting_type = "runtime-global",
+		default_value = true
+	},
+	{
+		type = "bool-setting",
 		name = "zk-lib_special-message",
 		setting_type = "runtime-per-user",
 		default_value = true
