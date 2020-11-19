@@ -1,6 +1,6 @@
 event_listener = require("__zk-lib__/event-listener/branch-1/stable-version")
 random_items = require("static-libs/lualibs/random_items")
-ItemsLua = require("static-libs/lualibs/ItemsLua")
+LuaEntity = require("static-libs/lualibs/LuaEntity")
 
 local modules = {}
 modules.random_items = random_items

@@ -2,7 +2,7 @@ local zk_lib = {}
 remote.remove_interface('zk-lib')
 remote.add_interface('zk-lib', {
     insert_random_item = random_items.insert_random_item,
-    transfer_items = ItemsLua.transfer_items
+    transfer_items = LuaEntity.transfer_items
 })
 
 local function set_global_data()
