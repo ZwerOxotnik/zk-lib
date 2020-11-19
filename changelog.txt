@@ -1,4 +1,22 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 2020-11-19
+  Major features:
+    - Added addon https://mods.factorio.com/mod/auto-mining
+    - Added addon "Delete decoratives"
+  Features:
+    - Added safe mode for mutable addons (save game when you change their state)
+    - Updated and added new static-lib (LuaPlayer)
+    - Extended game interctations between data-game stage for events
+  Notes:
+    - Refactoring
+---------------------------------------------------------------------------------------------------
+Version: 0.2.7
+Date: 2020-11-18
+  Changes:
+    - Changed view of addon map settings
+    - Changed localization for addon "Scanning rocket with radars"
+---------------------------------------------------------------------------------------------------
 Version: 0.2.6
 Date: 2020-11-18
   Changes:

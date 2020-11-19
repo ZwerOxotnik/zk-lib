@@ -3,5 +3,6 @@ return {
 	["random-gifts-by-timer"] = {blacklist = {"random-gifts-by-timer"}},
 	["scan-rocket-with-radars"] = {have_settings = true, blacklist = {"scan-rocket-with-radars"}},
 	["teams-zo"] = {blacklist = {"teams-zo"}},
-	["delete_decorations"] = {}
+	["delete_decorations"] = {},
+	["auto-mining"] = {blacklist = {"auto-mining"}}
 }
