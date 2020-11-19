@@ -5,7 +5,7 @@ Date: 2020-11-19
     - Added addon https://mods.factorio.com/mod/auto-mining
     - Added addon "Delete decoratives"
   Features:
-    - Added safe mode for mutable addons (save game when you change their state)
+    - Added safe mode for mutable addons (it saves game when you change their state)
     - Updated and added new static-lib (LuaPlayer)
     - Extended game interctations between data-game stage for events
   Notes:
@@ -31,7 +31,7 @@ Date: 2020-11-18
 Version: 0.2.4
 Date: 2020-11-18
   Changes:
-    - Current addons realated with random items works a little bit faster and more properly now
+    - Current addons related with random items works a little bit faster and more properly now
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.3
 Date: 2020-11-18
