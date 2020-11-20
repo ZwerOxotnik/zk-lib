@@ -1,4 +1,10 @@
 data:extend({
+	{
+		type = "bool-setting",
+		name = "zk-lib-warn-about-addons",
+		setting_type = "startup",
+		default_value = true
+	},
 	-- {
 	-- 	type = "bool-setting",
 	-- 	name = "zk_commands",

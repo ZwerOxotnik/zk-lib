@@ -49,6 +49,11 @@ for name, addon_data in pairs(addons_list) do
               if module.add_remote_interface and module.remove_remote_interface then module.add_remote_interface() end
               module.events = module.get_default_events()
               if module.enabled then module.enabled() end
+              if module.update_glolbal_data then
+                module.update_glolbal_data()
+              elseif module.on_init then
+                module.on_init()
+              end
               game.print({"", {"gui-mod-info.status-enabled"}, ": ", {"mod-name." .. name}})
             else
               if module.add_commands and module.remove_commands then module.remove_commands() end
@@ -70,7 +75,8 @@ for name, addon_data in pairs(addons_list) do
               end
             end
           end
-        end}})
+        end}}
+      )
     end
   end
 end

@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.4
+Date: 2020-11-20
+  Changes:
+    - Added a warning about addons
+  Bugfixes:
+    - Applied a workaround for correct loading of some addons when you turn them and they wasn't initialised due to "temporal logic"
+---------------------------------------------------------------------------------------------------
 Version: 0.3.3
 Date: 2020-11-20
   Major features:
