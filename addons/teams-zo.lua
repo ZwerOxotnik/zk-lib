@@ -53,10 +53,6 @@ end
 module.get_default_events = function() -- your events
 	local events = {}
 
-	if settings.startup["zk-lib_" .. module.addon_name].value == "mutable" then
-		table.insert(events, defines.events.on_runtime_mod_setting_changed, on_runtime_mod_setting_changed)
-	end
-
 	local on_nth_tick = {} -- your events on_nth_tick
 
 	return events, on_nth_tick
