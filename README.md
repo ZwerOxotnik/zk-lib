@@ -33,6 +33,7 @@ Also, supports auto-generated mods and has modified event listener and I conside
 * https://mods.factorio.com/mod/teams-zo
 * https://mods.factorio.com/mod/scan-rocket-with-radars
 * https://mods.factorio.com/mod/auto-mining
+* https://mods.factorio.com/mod/timesaver-for-crafting
 * Delete decorations
 
 ### <a name="static-libs"></a> [Static libs](/static-libs) [![source](https://img.shields.io/badge/%E2%81%A4-source-blue.svg?logo=github&colorB=7289DA)](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
