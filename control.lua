@@ -11,9 +11,9 @@ modules.special_message = require("core/special-message")
 -- TODO: create and raise new events to addons
 -- TODO: refactor this biggest mess :)
 local addons_list = require("addons/addons-list")
-for name, _ in pairs(addons_list) do
+for name, addon_data in pairs(addons_list) do
   if settings.startup["zk-lib_" .. name] and settings.startup["zk-lib_" .. name].value ~= "disabled" then
-    modules[name] = require("addons/" .. name)
+    modules[name] = require(addon_data.path or "addons/" .. name)
     local module = modules[name]
     module.addon_name = name
     module.blacklist_events = module.blacklist_events or {}
@@ -48,11 +48,13 @@ for name, _ in pairs(addons_list) do
               if module.add_commands and module.remove_commands then module.add_commands() end
               if module.add_remote_interface and module.remove_remote_interface then module.add_remote_interface() end
               module.events = module.get_default_events()
+              if module.enabled then module.enabled() end
               game.print({"", {"gui-mod-info.status-enabled"}, ": ", {"mod-name." .. name}})
             else
               if module.add_commands and module.remove_commands then module.remove_commands() end
               if module.add_remote_interface and module.remove_remote_interface then module.remove_remote_interface() end
               module.check_events()
+              if module.disabled then module.disabled() end
               game.print({"", {"gui-mod-info.status-disabled"}, ": ", {"mod-name." .. name}})
             end
             if module.events then
