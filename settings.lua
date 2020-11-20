@@ -58,7 +58,7 @@ for name, _ in pairs(addons_list) do
 		setting_type = "startup",
 		default_value = "disabled",
 		allowed_values = {"disabled", "enabled", "mutable"},
-    localised_name = {"mod-name." .. name},
+    localised_name = {"", {"zk-lib.addons"}, " ", {"mod-name." .. name}},
     localised_description = {"mod-description." .. name}
 	})
 end

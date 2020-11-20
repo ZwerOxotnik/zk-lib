@@ -7,7 +7,7 @@ for name, addon in pairs(addons_list) do
       name = "zk-lib-during-game_" .. name,
       setting_type = "runtime-global",
       default_value = true,
-      localised_name = {"mod-name." .. name},
+      localised_name = {"", {"zk-lib.addons"}, " ", {"mod-name." .. name}},
       localised_description = {"mod-description." .. name}
     }})
     if addon.have_settings then
