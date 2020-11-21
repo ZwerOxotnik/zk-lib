@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.0
+Date: 2020-11-21
+  Bugfixes:
+    - New loading of addons to improve stability when addons didn't raise their init function
+    - SOME addons with global data works BETTER in multiplayer THAN in singleplayer! BUT it didn't work so well with addons which have event "on_tick" and interact with global data in the event.
+  Notes:
+    - Refactored loading of addons with core of the mod
+---------------------------------------------------------------------------------------------------
 Version: 0.3.5
 Date: 2020-11-20
   Changes:
