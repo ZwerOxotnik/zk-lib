@@ -5,20 +5,16 @@ remote.add_interface('zk-lib', {
 	transfer_items = LuaEntity.transfer_items
 })
 
-local not_mutable_addons_list = require("addons/addons-list")
-for addon_name, _ in pairs(not_mutable_addons_list) do
-	if settings.global["zk-lib-during-game_" .. addon_name]
-	and settings.startup["zk-lib_" .. addon_name]
-	and settings.startup["zk-lib_" .. addon_name].value == "mutable" then
-		not_mutable_addons_list[addon_name] = nil
-	end
-end
-
 local function on_init()
 	global.zk_lib = global.zk_lib or {}
 	global.zk_lib.save_tick = global.zk_lib.save_tick or 0
 
-	for addon_name, _ in pairs(not_mutable_addons_list) do
+	for _, addon_name in pairs(disabled_addons_list) do
+		if settings.global["zk-lib-during-game_" .. addon_name].value == true then
+			settings.global["zk-lib-during-game_" .. addon_name] = {value = false}
+		end
+	end
+	for _, addon_name in pairs(addons_as_mods_list) do
 		if settings.global["zk-lib-during-game_" .. addon_name].value == true then
 			settings.global["zk-lib-during-game_" .. addon_name] = {value = false}
 		end
@@ -31,8 +27,6 @@ zk_lib.on_configuration_changed = set_global_data
 local function on_runtime_mod_setting_changed(event)
 	if event.setting_type ~= "runtime-global" then return end
 	if string.find(event.setting, "^zk.lib.during.game_") ~= 1 then return end
-
-
 	local addon_name = string.gsub(event.setting, "^zk.lib.during.game_", "")
 	if not addon_name then return end
 
