@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.1
+Date: 2020-11-21
+  Major features:
+    - Added and modified https://mods.factorio.com/mod/searching-flashlightR as an addon
+  Changes:
+    - Improved localization
+---------------------------------------------------------------------------------------------------
 Version: 0.4.0
 Date: 2020-11-21
   Bugfixes:
