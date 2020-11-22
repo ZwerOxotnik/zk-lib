@@ -77,7 +77,7 @@ if #mutable_addons_list > 1 then
           if addon.add_commands and addon.remove_commands then addon.add_commands() end
           if addon.add_remote_interface and addon.remove_remote_interface then addon.add_remote_interface() end
           addon.events = addon.get_default_events()
-          if addon.enabled then addon.enabled() end
+          if addon.enable_addon then addon.enable_addon() end
           if addon.init then -- it's a workaround to init global data because those addons don't init sometimes
             addon.init()
           elseif addon.on_init then
@@ -88,7 +88,7 @@ if #mutable_addons_list > 1 then
           if addon.add_commands and addon.remove_commands then addon.remove_commands() end
           if addon.add_remote_interface and addon.remove_remote_interface then addon.remove_remote_interface() end
           addon.check_events()
-          if addon.disabled then addon.disabled() end
+          if addon.disable_addon then addon.disable_addon() end
           game.print({"", {"gui-mod-info.status-disabled"}, ": ", {"mod-name." .. addon_name}})
         end
         if addon.events then
@@ -104,27 +104,30 @@ if #mutable_addons_list > 1 then
           end
         end
       end
-    }}
-  )
+    }
+  })
 end
 
 -- Inits addons for special cases when they didn't use init function
--- (dirty but I didn't find more stable and simpler resolution at the moment)
+-- (It's dirty but I didn't find more stable and simpler resolution at the moment for addons with such state)
 if #addons_as_mods_list > 1 then
+  local function spare_init(event)
+    if #game.connected_players ~= 1 then return end
+    for _, addon_name in pairs(addons_as_mods_list) do
+      if addons[addon_name].init then
+        addons[addon_name].init()
+      elseif addons[addon_name].on_init then
+        addons[addon_name].on_init()
+      end
+    end
+  end
+
   table.insert(addons_check_modules, {
     events = {
-      [defines.events.on_player_joined_game] = function(event)
-        if #game.connected_players ~= 1 then return end
-        for _, addon_name in pairs(addons_as_mods_list) do
-          if addons[addon_name].init then
-            addons[addon_name].init()
-          elseif addons[addon_name].on_init then
-            addons[addon_name].on_init()
-          end
-        end
-      end
-    }}
-  )
+      [defines.events.on_player_joined_game] = spare_init,
+      [defines.events.on_player_created] = spare_init
+    }
+  })
 end
 
 for _, module in pairs(core_modules) do
