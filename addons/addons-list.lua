@@ -19,5 +19,7 @@ return {
 	["timesaver-for-crafting"] = {author = "ZwerOxotnik", mod_portal_page = "mods.factorio.com/mod/timesaver-for-crafting", path = "addons/timesaver-for-crafting/control", blacklist = {"timesaver-for-crafting"}},
 	["searching-flashlight"] = {author = "rk84", mod_portal_page = "https://mods.factorio.com/mod/searching-flashlightR", homepage = "https://forums.factorio.com/viewtopic.php?f=144&t=20712", path = "addons/searching-flashlight/control", blacklist = {"searching-flashlightR"}},
 	["PrivateElectricity"] = {author = "ZwerOxotnik"},
-	["restrict_building"] = {author = "ZwerOxotnik", have_settings = true}
+	["restrict_building"] = {author = "ZwerOxotnik", have_settings = true},
+	["CopyAssemblerPipeDirection"] = {author = "IronCartographer", blacklist = {"CopyAssemblerPipeDirection"}, mod_portal_page = "https://mods.factorio.com/mod/CopyAssemblerPipeDirection"},
+	["adrenaline"] = {author = "ZwerOxotnik", have_settings = true, blacklist = {"adrenaline"}, mod_portal_page = "https://mods.factorio.com/mod/adrenaline"},
 }

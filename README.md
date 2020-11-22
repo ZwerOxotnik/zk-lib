@@ -35,6 +35,8 @@ Also, supports auto-generated mods and has modified event listener and I conside
 * https://mods.factorio.com/mod/auto-mining
 * https://mods.factorio.com/mod/timesaver-for-crafting
 * https://mods.factorio.com/mod/searching-flashlightR
+* https://mods.factorio.com/mod/adrenaline
+* https://mods.factorio.com/mod/CopyAssemblerPipeDirection
 * "Private electricity" from mods.factorio.com/mod/diplomacy
 * "Restrict building" from mods.factorio.com/mod/diplomacy
 * Delete decorations
@@ -49,7 +51,7 @@ Recommended to read ["Installing Mods"](https://wiki.factorio.com/index.php?titl
 If you have downloaded the source archive (GitHub):
 
 * Copy the mod directory into your factorio mods directory
-* Rename the mod directory to zk-lib_*versionnumber*, where *versionnumber* is the version of the mod that you've downloaded (e.g., 0.1.0)
+* Rename the mod directory to zk-lib_*versionnumber*, where *versionnumber* is the version of the mod that you've downloaded (e.g., 0.4.3)
 
 ## Notice
 

@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.3
+Date: 2020-11-22
+  Major features:
+    - Added and adapted https://mods.factorio.com/mod/CopyAssemblerPipeDirection as an addon
+    - Added and improved https://mods.factorio.com/mod/adrenaline as an addon
+  Bugfixes:
+    - Fixed tick events of mutual addons when they were disabled
+---------------------------------------------------------------------------------------------------
 Version: 0.4.2
 Date: 2020-11-22
   Major features:

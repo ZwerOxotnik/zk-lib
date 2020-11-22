@@ -2,9 +2,9 @@ event_listener = require("__zk-lib__/event-listener/branch-1/stable-version")
 random_items = require("static-libs/lualibs/random_items")
 LuaEntity = require("static-libs/lualibs/LuaEntity")
 
-local addons_list = require("addons/addons-list")
-local addons = {}
-local addons_check_modules = {}
+addons_list = require("addons/addons-list")
+addons = {}
+addons_check_modules = {}
 addons_as_mods_list = {}
 mutable_addons_list = {}
 disabled_addons_list = {}
@@ -48,9 +48,11 @@ for name, addon_data in pairs(addons_list) do
           end
         end
       end
-      if addon.on_nth_tick and #addon.on_nth_tick > 0 then
-        for tick, _ in pairs(addon.events) do
-          addon.on_nth_tick[tick] = function() end
+      if addon.on_nth_tick and table.maxn(addon.on_nth_tick) > 0 then
+        for tick, _ in pairs(addon.on_nth_tick) do
+          if type(tick) ~= "string" then
+            addon.on_nth_tick[tick] = function() end
+          end
         end
       end
     end
@@ -98,9 +100,11 @@ if #mutable_addons_list > 1 then
             end
           end
         end
-        if addon.on_nth_tick and #addon.on_nth_tick > 0 then
-          for tick, _ in pairs(addon.events) do
-            event_listener.update_nth_tick(addon, tick)
+        if addon.on_nth_tick and table.maxn(addon.on_nth_tick) > 0 then
+          for tick, _ in pairs(addon.on_nth_tick) do
+            if type(tick) ~= "string" then
+              event_listener.update_nth_tick(addon, tick)
+            end
           end
         end
       end
