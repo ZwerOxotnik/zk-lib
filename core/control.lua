@@ -5,10 +5,13 @@ remote.add_interface('zk-lib', {
 	transfer_items = LuaEntity.transfer_items
 })
 
-local function on_init()
+local function update_global_data()
 	global.zk_lib = global.zk_lib or {}
+	global.zk_lib.addons = global.zk_lib.addons or {}
 	global.zk_lib.save_tick = global.zk_lib.save_tick or 0
+end
 
+local function on_init()
 	for _, addon_name in pairs(disabled_addons_list) do
 		if settings.global["zk-lib-during-game_" .. addon_name].value == true then
 			settings.global["zk-lib-during-game_" .. addon_name] = {value = false}
@@ -21,8 +24,37 @@ local function on_init()
 	end
 end
 
+local function on_configuration_changed(mod_data)
+	if global.zk_lib == nil or global.zk_lib.addons == nil then
+		update_global_data()
+		for name, addon in pairs(addons) do
+			global.zk_lib.addons[name] = true
+			if addon.init then -- it's a workaround to init global data because those addons don't init in some cases
+				addon.init()
+			elseif addon.on_init then
+				addon.on_init()
+			end
+		end
+	else
+		for name, addon in pairs(addons) do
+			if global.zk_lib.addons[name] == nil then
+				global.zk_lib.addons[name] = true
+				if addon.init then -- it's a workaround to init global data because those addons don't init in some cases
+					addon.init()
+				elseif addon.on_init then
+					addon.on_init()
+				end
+			end
+		end
+	end
+
+	for _, addon_name in pairs(disabled_addons_list) do
+		global.zk_lib.addons[addon_name] = nil
+	end
+end
+
 zk_lib.on_init = on_init
-zk_lib.on_configuration_changed = set_global_data
+zk_lib.on_configuration_changed = on_configuration_changed
 
 local function on_runtime_mod_setting_changed(event)
 	if event.setting_type ~= "runtime-global" then return end
@@ -47,4 +79,5 @@ end
 zk_lib.events = {
 	[defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed
 }
+
 return zk_lib

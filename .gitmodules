@@ -4,3 +4,6 @@
 [submodule "event-listener/branch-1/v0-9-3"]
 	path = event-listener/branch-1/v0-9-3
 	url = https://gitlab.com/ZwerOxotnik/factorio-event-listener
+[submodule "event-listener/branch-1/v0-9-4"]
+	path = event-listener/branch-1/v0-9-4
+	url = https://gitlab.com/ZwerOxotnik/factorio-event-listener

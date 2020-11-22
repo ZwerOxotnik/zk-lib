@@ -80,7 +80,7 @@ if #mutable_addons_list > 1 then
 					if addon.add_remote_interface and addon.remove_remote_interface then addon.add_remote_interface() end
 					addon.events = addon.get_default_events()
 					if addon.enable_addon then addon.enable_addon() end
-					if addon.init then -- it's a workaround to init global data because those addons don't init sometimes
+					if addon.init then -- it's a workaround to init global data because those addons don't init in some cases
 						addon.init()
 					elseif addon.on_init then
 						addon.on_init()

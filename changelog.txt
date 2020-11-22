@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.4
+Date: 2020-11-22
+  Bugfixes:
+    - Fixed initialization of addons (not all cases are tested)
+    - Event listener works with "on_configuration_changed" now
+---------------------------------------------------------------------------------------------------
 Version: 0.4.3
 Date: 2020-11-22
   Major features:
