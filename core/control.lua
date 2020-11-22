@@ -12,14 +12,17 @@ local function update_global_data()
 end
 
 local function on_init()
+	update_global_data()
+
 	for _, addon_name in pairs(disabled_addons_list) do
 		if settings.global["zk-lib-during-game_" .. addon_name].value == true then
 			settings.global["zk-lib-during-game_" .. addon_name] = {value = false}
 		end
 	end
-	for _, addon_name in pairs(addons_as_mods_list) do
-		if settings.global["zk-lib-during-game_" .. addon_name].value == true then
-			settings.global["zk-lib-during-game_" .. addon_name] = {value = false}
+
+	for name, _ in pairs(addons) do
+		if global.zk_lib.addons[name] == nil then
+			global.zk_lib.addons[name] = true
 		end
 	end
 end
@@ -62,14 +65,18 @@ local function on_runtime_mod_setting_changed(event)
 	local addon_name = string.gsub(event.setting, "^zk.lib.during.game_", "")
 	if not addon_name then return end
 
-	if settings.startup["zk-lib_" .. addon_name].value == "mutable" then
-		-- if safe mode is enabled then save game as an admin change state of a mutable addon
+	if settings.startup["zk-lib_" .. addon_name].value == true then
+		-- if safe mode is enabled then save game as an admin change state of an addon
 		if settings.global["zk-lib_safe-mode"].value == false then return end
 		if game.tick < global.zk_lib.save_tick then return end
 
 		global.zk_lib.save_tick = game.tick + 4800
 		game.auto_save()
 	else
+		if event.player_index then
+			game.print({"zk-lib.turn-on-addon-on-start", {"mod-name." .. addon_name}})
+		end
+
 		if settings.global["zk-lib-during-game_" .. addon_name].value == true then
 			settings.global["zk-lib-during-game_" .. addon_name] = {value = false}
 		end

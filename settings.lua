@@ -59,11 +59,10 @@ end
 addons_settings = {}
 for name, addon in pairs(addons_list) do
 	table.insert(addons_settings, {
-		type = "string-setting",
+		type = "bool-setting",
 		name = "zk-lib_" .. name,
 		setting_type = "startup",
-		default_value = "disabled",
-		allowed_values = {"disabled", "enabled", "mutable"},
+		default_value = false,
     localised_name = {"", "[color=orange]", {"zk-lib.addons"}, {"colon"}, "[/color] ", {"mod-name." .. name}},
 		localised_description = {"", {"gui-mod-info.description"} , {"colon"}, " ", {"mod-description." .. name}, "\n\n",
 			{"gui-mod-info.author"} , {"colon"}, " ", addon.author or "", "\n",

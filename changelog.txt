@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.5.0
+Date: 2020-11-22
+  Bugfixes:
+    - Fixed core init for fresh maps
+  Changes:
+    - Changed modes for addons
+    - Added a notification about not enabled addon
+    - Hid a secret message
+  Note:
+    - I quess, it's stable version for current addons
+---------------------------------------------------------------------------------------------------
 Version: 0.4.4
 Date: 2020-11-22
   Bugfixes:

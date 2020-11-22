@@ -5,19 +5,16 @@ LuaEntity = require("static-libs/lualibs/LuaEntity")
 addons_list = require("addons/addons-list")
 addons = {}
 addons_check_modules = {}
-addons_as_mods_list = {}
 mutable_addons_list = {}
 disabled_addons_list = {}
 
 -- Sorts modules
 for name, addon_data in pairs(addons_list) do
 	if settings.startup["zk-lib_" .. name] then
-		if settings.startup["zk-lib_" .. name].value == "disabled" then
+		if settings.startup["zk-lib_" .. name].value == false then
 			addons_list[name] = nil
 			table.insert(disabled_addons_list, name)
-		elseif settings.startup["zk-lib_" .. name].value == "enabled" then
-			table.insert(addons_as_mods_list, name)
-		else --if settings.startup["zk-lib_" .. name].value == "mutable" then
+		else
 			table.insert(mutable_addons_list, name)
 		end
 	else
@@ -28,7 +25,7 @@ end
 local core_modules = {}
 core_modules.random_items = random_items
 core_modules.zk_lib = require("core/control")
-core_modules.special_message = require("core/special-message")
+-- core_modules.special_message = require("core/special-message")
 -- core_modules.zk_commands = require("core/zk_commands")
 
 -- Adds events of addons
@@ -40,7 +37,7 @@ for name, addon_data in pairs(addons_list) do
 	addon.events, addon.on_nth_tick = addon.get_default_events()
 	addon.check_events = function()
 		if (settings.startup["zk-lib_" .. name].value == false)
-			or (settings.startup["zk-lib_" .. name].value == "mutable" and settings.global["zk-lib-during-game_" .. name].value == false) then
+			or (settings.startup["zk-lib_" .. name].value == true and settings.global["zk-lib-during-game_" .. name].value == false) then
 			if addon.events then
 				for id, _ in pairs(addon.events) do
 					if addon.blacklist_events[id] ~= true and id ~= "lib_id"  then
@@ -108,28 +105,6 @@ if #mutable_addons_list > 1 then
 					end
 				end
 			end
-		}
-	})
-end
-
--- Inits addons for special cases when they didn't use init function
--- (It's dirty but I didn't find more stable and simpler resolution at the moment for addons with such state)
-if #addons_as_mods_list > 1 then
-	local function spare_init(event)
-		if #game.connected_players ~= 1 then return end
-		for _, addon_name in pairs(addons_as_mods_list) do
-			if addons[addon_name].init then
-				addons[addon_name].init()
-			elseif addons[addon_name].on_init then
-				addons[addon_name].on_init()
-			end
-		end
-	end
-
-	table.insert(addons_check_modules, {
-		events = {
-			[defines.events.on_player_joined_game] = spare_init,
-			[defines.events.on_player_created] = spare_init
 		}
 	})
 end
