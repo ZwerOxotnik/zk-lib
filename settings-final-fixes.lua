@@ -7,7 +7,7 @@ for name, addon in pairs(addons_list) do
       name = "zk-lib-during-game_" .. name,
       setting_type = "runtime-global",
       default_value = true,
-      localised_name = {"", {"zk-lib.addons"}, {"colon"}, " ", {"mod-name." .. name}},
+      localised_name = {"", "[color=orange]", {"zk-lib.addons"}, {"colon"}, "[/color] ", {"mod-name." .. name}},
       localised_description = {"", {"gui-mod-info.description"} , {"colon"}, " ", {"mod-description." .. name}, "\n\n",
         {"gui-mod-info.author"} , {"colon"}, " ", addon.author or "", "\n",
         {"gui-mod-info.mod-portal-page"} , {"colon"}, " ", addon.mod_portal_page or "", "\n",
