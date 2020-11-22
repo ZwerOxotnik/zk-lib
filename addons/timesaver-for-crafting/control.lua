@@ -156,7 +156,7 @@ local function on_runtime_mod_setting_changed(event)
 	end
 end
 
-module.disabled = function()
+module.disable_addon = function()
 	if global.timesaver_for_crafting == nil then return end
 
 	-- In order to adjust settings to init state of the game

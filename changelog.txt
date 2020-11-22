@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.2
+Date: 2020-11-22
+  Major features:
+    - Added "Private electricity" from https://mods.factorio.com/mod/diplomacy as an addon
+    - Added "Restrict building" from https://mods.factorio.com/mod/diplomacy as an addon
+  Bugfixes:
+    - Improved stability
+  Changes:
+    - Updated the warning about addons
+---------------------------------------------------------------------------------------------------
 Version: 0.4.1
 Date: 2020-11-21
   Major features:
