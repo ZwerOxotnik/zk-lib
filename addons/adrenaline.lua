@@ -157,19 +157,16 @@ module.on_init = function()
 	global.adrenaline = global.adrenaline or {}
 	local data = global.adrenaline
 	data.players_modifiers = data.players_modifiers or {}
-	-- data.forces_modifiers = data.forces_modifiers or {}
+	-- data.forces_modifiers = data.forces_modifiers or {} -- it's not safe for MP
 end
 
 module.disable_addon = function()
-	local data = global.adrenaline.players_modifiers
-
 	for _, player in pairs(game.players) do
 		if player.valid then
 			reset_player_data(player)
 		end
 	end
 end
-
 
 module.get_default_events = function()
 	local events = {
