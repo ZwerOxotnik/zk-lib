@@ -4,18 +4,18 @@
 local module = {}
 
 local function paste_direction(event)
-  local s = event.source
-  local d = event.destination
+	local s = event.source
+	local d = event.destination
 
-  if s.supports_direction and d.supports_direction and ((s.prototype.fast_replaceable_group == "assembling-machine" and d.prototype.fast_replaceable_group == "assembling-machine") or (s.prototype.fast_replaceable_group == "furnace" and d.prototype.fast_replaceable_group == "furnace")) then
-    d.direction = s.direction
-  end
+	if s.supports_direction and d.supports_direction and ((s.prototype.fast_replaceable_group == "assembling-machine" and d.prototype.fast_replaceable_group == "assembling-machine") or (s.prototype.fast_replaceable_group == "furnace" and d.prototype.fast_replaceable_group == "furnace")) then
+		d.direction = s.direction
+	end
 end
 
 module.get_default_events = function()
 	local events = {
 		[defines.events.on_entity_settings_pasted] = paste_direction
-  }
+	}
 
 	local on_nth_tick = {}
 

@@ -174,9 +174,7 @@ module.blacklist_events = {
 	defines.events.on_runtime_mod_setting_changed
 }
 
---[[ This part of a code to use it use it as an addon and, probably, it'll will be changed ]] --
------------------------------------------------------------
-module.get_default_events = function() -- your events
+module.get_default_events = function()
 	local events = {
 		[defines.events.on_player_joined_game] = on_player_joined_game,
 		[defines.events.on_player_removed] = on_player_removed,
@@ -187,10 +185,9 @@ module.get_default_events = function() -- your events
 		[defines.events.on_player_respawned] = on_player_respawned
 	}
 
-	local on_nth_tick = {} -- your events on_nth_tick
+	local on_nth_tick = {}
 
 	return events, on_nth_tick
 end
----------------------------------------------------------
 
 return module
