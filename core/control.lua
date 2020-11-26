@@ -1,9 +1,15 @@
 local zk_lib = {}
-remote.remove_interface('zk-lib')
-remote.add_interface('zk-lib', {
-	insert_random_item = random_items.insert_random_item,
-	transfer_items = LuaEntity.transfer_items
-})
+
+zk_lib.add_remote_interface = function()
+	remote.add_interface('zk-lib', {
+		insert_random_item = random_items.insert_random_item,
+		transfer_items = LuaEntity.transfer_items
+	})
+end
+
+zk_lib.remove_remote_interface = function()
+	remote.remove_interface('zk-lib')
+end
 
 local function update_global_data()
 	global.zk_lib = global.zk_lib or {}
@@ -56,9 +62,6 @@ local function on_configuration_changed(mod_data)
 	end
 end
 
-zk_lib.on_init = on_init
-zk_lib.on_configuration_changed = on_configuration_changed
-
 local function on_runtime_mod_setting_changed(event)
 	if event.setting_type ~= "runtime-global" then return end
 	if string.find(event.setting, "^zk.lib.during.game_") ~= 1 then return end
@@ -86,5 +89,8 @@ end
 zk_lib.events = {
 	[defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed
 }
+
+zk_lib.on_init = on_init
+zk_lib.on_configuration_changed = on_configuration_changed
 
 return zk_lib

@@ -1,4 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.0
+Date: 2020-11-26
+  Bugfixes:
+    - Fixed default events of addons on Nth tick
+  Major features:
+    - Separated addons to "safe" addons and insecure addons in order to avoid restarts
+  Changes:
+    - Refactored
+  Note:
+    - Removed some hidden data for Factorio 1.1
+---------------------------------------------------------------------------------------------------
 Version: 0.5.0
 Date: 2020-11-22
   Bugfixes:

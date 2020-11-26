@@ -1,3 +1,5 @@
+local addons_api = require("addons/core/addons_api")
+
 data:extend({
 	{
 		type = "bool-setting",
@@ -37,27 +39,11 @@ data:extend({
 	}
 })
 
-local addons_list = require("addons/addons-list")
-
-local function check_blacklist(blacklist, name)
-	for _, x_mod_name in pairs(blacklist) do
-		for mod_name, _ in pairs(mods) do
-			if x_mod_name == mod_name then
-				addons_list[name] = nil
-				return
-			end
-		end
-	end
-end
-
-for name, addon in pairs(addons_list) do
-	if addon.blacklist then
-		check_blacklist(addon.blacklist, name)
-	end
-end
+local insecure_addons_list = require("addons/core/insecure-addons-list")
+addons_api.remove_duplicate_addons(insecure_addons_list)
 
 addons_settings = {}
-for name, addon in pairs(addons_list) do
+for name, addon in pairs(insecure_addons_list) do
 	table.insert(addons_settings, {
 		type = "bool-setting",
 		name = "zk-lib_" .. name,
@@ -72,5 +58,3 @@ for name, addon in pairs(addons_list) do
 	})
 end
 data:extend(addons_settings)
-
-require("addons/settings/scan-rocket-with-radars")
