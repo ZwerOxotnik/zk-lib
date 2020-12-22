@@ -41,6 +41,7 @@ local function create_new_team(cmd)
 end
 
 module.add_commands = function()
+	if settings.global["zk-lib-during-game_" .. module.addon_name].value == false then return end
 	commands.add_command("create_team", {"teams.create_team"}, create_new_team)
 end
 
