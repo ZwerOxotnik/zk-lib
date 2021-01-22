@@ -4,6 +4,7 @@
 [![Discord](https://i.imgur.com/GYTxQdx.png)](https://discordapp.com/invite/YyJVUCa)
 [![Patreon](https://i.imgur.com/6n2ifle.png)](https://www.patreon.com/ZwerOxotnik)
 [![reddit](https://i.imgur.com/J1k7aGJ.png)](https://reddit.com/r/ZwerOxotnik)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FZwerOxotnik%2Fzk-lib.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FZwerOxotnik%2Fzk-lib?ref=badge_shield)
 
 ## Contents
 
@@ -74,3 +75,5 @@ This project is licensed under the [European Union Public License v. 1.2 only](/
 [homepage]: http://mods.factorio.com/mod/zk-lib
 [ZwerOxotnik]: github.com/ZwerOxotnik/
 [event-listener]: https://gitlab.com/ZwerOxotnik/factorio-event-listener
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FZwerOxotnik%2Fzk-lib.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FZwerOxotnik%2Fzk-lib?ref=badge_large)
