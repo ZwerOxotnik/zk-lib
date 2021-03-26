@@ -38,7 +38,7 @@ end
 -- 	script.set_event_filter(defines.events.on_entity_died, filters)
 -- end
 
-module.get_default_events = function() -- your events
+module.get_default_events = function()
 	local events = {
 		[defines.events.on_entity_died] = on_entity_died
 	}

@@ -49,7 +49,7 @@ module.remove_commands = function()
 	commands.remove_command("create_team")
 end
 
-module.get_default_events = function() -- your events
+module.get_default_events = function()
 	local events = {}
 
 	local on_nth_tick = {}

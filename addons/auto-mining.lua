@@ -125,7 +125,7 @@ local function update_events()
 	end
 end
 
-module.get_default_events = function() -- your events
+module.get_default_events = function()
 	local events = {
 		[defines.events.on_tick] = on_tick,
 		[defines.events.on_pre_player_mined_item] = on_pre_player_mined_item,
