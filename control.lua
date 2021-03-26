@@ -97,6 +97,18 @@ for name, addon_data in pairs(insecure_addons_list) do
 	addon.check_events()
 end
 
+local function handle_commands(addon)	
+	if settings.global["zk-lib-during-game_" .. addon.addon_name].value == true then
+		for key, command in pairs(addon.commands) do
+			commands.add_command(command.name or key, command.description, command.func)
+		end
+	else
+		for key, command in pairs(addon.commands) do
+			commands.remove_command(command.name or key)
+		end
+	end
+end
+
 -- TODO: create and raise new events to addons
 -- TODO: pack or refactor/change checks
 
@@ -108,6 +120,7 @@ local function mutable_addon_on_runtime_mod_setting_changed(event)
 	if not addon then log("error") return end
 
 	if settings.global[event.setting].value == true then
+		if addon.commands then handle_commands(addon) end
 		if addon.add_commands and addon.remove_commands then addon.add_commands() end
 		if addon.add_remote_interface and addon.remove_remote_interface then addon.add_remote_interface() end
 		addon.events, addon.on_nth_tick = addon.get_default_events()

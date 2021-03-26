@@ -23,10 +23,10 @@ local module = {}
 local prohibited_forces = {neutral = true, player = true, enemy = true}
 
 local function create_new_team(cmd)
-	if cmd.player_index == nil then return end
-		local player = game.players[cmd.player_index]
-		if #game.forces >= 60 then player.print({"teams.too_many"}) return end -- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/0.17.54/LuaGameScript.html#LuaGameScript.create_force)
-	if cmd.parameter == nil then player.print({"teams.create_team"}) return end
+	if cmd.player_index == nil then return end -- ignore server call
+	local player = game.players[cmd.player_index]
+	if #game.forces >= 60 then player.print({"teams.too_many"}) return end -- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/0.17.54/LuaGameScript.html#LuaGameScript.create_force)
+	if cmd.parameter == nil then player.print({"", "/create_team ", module.commands.create_team.description}) return end
 
 	if game.forces[cmd.parameter] then
 		player.print({"teams.double_team", cmd.parameter})
@@ -40,21 +40,15 @@ local function create_new_team(cmd)
 	end
 end
 
-module.add_commands = function()
-	if settings.global["zk-lib-during-game_" .. module.addon_name].value == false then return end
-	commands.add_command("create_team", {"teams.create_team"}, create_new_team)
-end
-
-module.remove_commands = function()
-	commands.remove_command("create_team")
-end
-
 module.get_default_events = function()
 	local events = {}
-
 	local on_nth_tick = {}
 
 	return events, on_nth_tick
 end
+
+module.commands = {
+	create_team = {description = {"teams.create_team"}, func = create_new_team}
+}
 
 return module
