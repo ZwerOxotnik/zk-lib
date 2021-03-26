@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.6
+Date: 2020-03-26
+  Changes:
+    - Changed handling of commands inside zk-lib for addons (it's steadier and simpler now)
+    - Added example about addons
+    - Optimized sounds of zk-lib
+---------------------------------------------------------------------------------------------------
 Version: 0.6.4
 Date: 2020-12-22
   Bugfixes:
