@@ -4,7 +4,7 @@ local module = {}
 local function say_hi(cmd)
 	if cmd.player_index == nil then return end -- ignores server call
 	local player = game.players[cmd.player_index]
-	-- if cmd.parameter == nil then player.print({"", "/hi ", module.commands.create_team.description}) return end
+	-- if cmd.parameter == nil then player.print({"", "/hi ", module.commands.hi.description}) return end
 
 	game.print({"your_localization.hi"})
 end
