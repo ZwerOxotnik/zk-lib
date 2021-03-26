@@ -26,10 +26,10 @@ end
 
 -- Check safe addons list
 for name, addon_data in pairs(safe_addons_list) do
-	if settings.startup["zk-lib-during-game" .. name] then
+	if settings.global["zk-lib-during-game_" .. name] then
 		table.insert(mutable_addons_list, name)
 	else
-		insecure_addons_list[name] = nil
+		safe_addons_list[name] = nil
 	end
 end
 

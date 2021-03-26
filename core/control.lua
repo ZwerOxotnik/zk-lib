@@ -68,14 +68,14 @@ local function on_runtime_mod_setting_changed(event)
 	local addon_name = string.gsub(event.setting, "^zk.lib.during.game_", "")
 	if not addon_name then return end
 
-	if settings.startup["zk-lib_" .. addon_name].value == true then
+	if settings.startup["zk-lib_" .. addon_name] == nil or settings.startup["zk-lib_" .. addon_name].value == true then
 		-- if safe mode is enabled then save game as an admin change state of an addon
 		if settings.global["zk-lib_safe-mode"].value == false then return end
 		if game.tick < global.zk_lib.save_tick then return end
 
 		global.zk_lib.save_tick = game.tick + 4800
 		game.auto_save()
-	else
+	elseif settings.startup["zk-lib_" .. addon_name] and settings.startup["zk-lib_" .. addon_name].value == false then
 		if event.player_index then
 			game.print({"zk-lib.turn-on-addon-on-start", {"mod-name." .. addon_name}})
 		end

@@ -9,7 +9,7 @@ for name, addon in pairs(insecure_addons_list) do
       type = "bool-setting",
       name = "zk-lib-during-game_" .. name,
       setting_type = "runtime-global",
-      default_value = true,
+      default_value = false,
       localised_name = {"", "[color=orange]! ", {"zk-lib.addons"}, {"colon"}, "[/color] ", {"mod-name." .. name}},
       localised_description = {"", "[color=orange]", {"zk-lib.insecure-addon"}, "[/color]\n\n",
         {"gui-mod-info.description"} , {"colon"}, {"mod-description." .. name}, "\n\n",
