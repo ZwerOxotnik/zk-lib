@@ -48,10 +48,11 @@ Also, supports auto-generated mods and has modified event listener and I conside
 Please, use download this mod via Factorio or on [mods.factorio.com][homepage].\
 Recommended to read ["Installing Mods"](https://wiki.factorio.com/index.php?title=Installing_Mods) on the Factorio wiki.
 
-If you have downloaded the source archive (GitHub):
-
-* Copy the mod directory into your factorio mods directory
-* Rename the mod directory to zk-lib_*versionnumber*, where *versionnumber* is the version of the mod that you've downloaded (e.g., 0.4.3)
+If you wanna download from this source, then use commands below (requires git).
+```bash
+git clone --recurse-submodules -j8 https://github.com/ZwerOxotnik/zk-lib
+cd zk-lib
+```
 
 ## Notice
 
@@ -67,7 +68,7 @@ Also, this project used [Mod-generator](https://github.com/ZwerOxotnik/Mod-gener
 
 [Logo](/thumbnail.png) is a trademark of [ZwerOxotnik][ZwerOxotnik].
 
-This project is copyright © 2018-2020 ZwerOxotnik \<zweroxotnik@gmail.com\>.
+This project is copyright © 2018-2021 ZwerOxotnik \<zweroxotnik@gmail.com\>.
 
 This project is licensed under the [European Union Public License v. 1.2 only](/LICENCE).
 
