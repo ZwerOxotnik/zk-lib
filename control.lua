@@ -117,13 +117,13 @@ local function mutable_addon_on_runtime_mod_setting_changed(event)
 		elseif addon.on_init then
 			addon.on_init()
 		end
-		game.print({"", {"gui-mod-info.status-enabled"}, ": ", {"mod-name." .. addon_name}})
+		game.print({"", {"gui-mod-info.status-enabled"}, {"colon"}, " ", {"mod-name." .. addon_name}})
 	else
 		if addon.add_commands and addon.remove_commands then addon.remove_commands() end
 		if addon.add_remote_interface and addon.remove_remote_interface then addon.remove_remote_interface() end
 		addon.check_events()
 		if addon.disable_addon then addon.disable_addon() end
-		game.print({"", {"gui-mod-info.status-disabled"}, ": ", {"mod-name." .. addon_name}})
+		game.print({"", {"gui-mod-info.status-disabled"}, {"colon"}, " ", {"mod-name." .. addon_name}})
 	end
 	if addon.events then
 		for id, _ in pairs(addon.events) do
