@@ -127,13 +127,13 @@ local function on_runtime_mod_setting_changed(event)
 
 	if settings.global[event.setting].value then
 		module.events[defines.events.on_player_cancelled_crafting] = on_player_cancelled_crafting
-		event_listener.update_event(moduele, defines.events.on_player_cancelled_crafting)
+		event_listener.update_event(module, defines.events.on_player_cancelled_crafting)
 		module.events[defines.events.on_pre_player_crafted_item] = on_pre_player_crafted_item
-		event_listener.update_event(moduele, defines.events.on_pre_player_crafted_item)
+		event_listener.update_event(module, defines.events.on_pre_player_crafted_item)
 		module.events[defines.events.on_player_crafted_item] = on_player_crafted_item
-		event_listener.update_event(moduele, defines.events.on_player_crafted_item)
+		event_listener.update_event(module, defines.events.on_player_crafted_item)
 		module.events[defines.events.on_player_respawned] = on_player_respawned
-		event_listener.update_event(moduele, defines.events.on_player_respawned)
+		event_listener.update_event(module, defines.events.on_player_respawned)
 
 		game.print({"", {"loading-mods"}, " ", {"mod-name.timesaver-for-crafting"}, " - ✓"})
 	else
