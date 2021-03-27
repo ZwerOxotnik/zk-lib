@@ -4,7 +4,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Publish Mod
       uses: shanemadden/factorio-mod-portal-publish@stable
       env:
