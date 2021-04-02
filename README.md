@@ -1,8 +1,8 @@
 [![thumbnail](/thumbnail.png)][homepage]
 # ZwerOxotnik's extendable library
 
+[![BuyMeACoffee](https://cdn.buymeacoffee.com/buttons/lato-orange.png)](https://www.buymeacoffee.com/zwerox)
 [![Discord](https://i.imgur.com/GYTxQdx.png)](https://discordapp.com/invite/YyJVUCa)
-[![Patreon](https://i.imgur.com/6n2ifle.png)](https://www.patreon.com/ZwerOxotnik)
 [![reddit](https://i.imgur.com/J1k7aGJ.png)](https://reddit.com/r/ZwerOxotnik)
 
 ## Contents
