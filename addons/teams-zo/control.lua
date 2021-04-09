@@ -46,7 +46,7 @@ local function team_list_command(cmd)
 		local list = ""
 		for _, force in pairs(forces) do
 			if #force.players > 0 then
-				list = list .. force.name .. '(' .. #force.connected_players .. '/' .. #force.players ')' .. ' '
+				list = list .. force.name .. '(' .. #force.connected_players .. '/' .. #force.players .. ')' .. ' '
 			else
 				list = list .. force.name .. ' '
 			end
