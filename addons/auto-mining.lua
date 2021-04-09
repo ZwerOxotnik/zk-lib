@@ -85,7 +85,7 @@ local function clicked_stop_auto_mining_hotkey(event)
 end
 
 local function toggle_auto_mining(event)
-	if event.player_index == nil then return end
+	if event.player_index == 0 then return end
 	local player = game.players[event.player_index]
 
 	if global.auto_mining.players_mining[event.player_index] then
@@ -107,23 +107,7 @@ local function on_init()
 	local data = global.auto_mining
 	data.players_mining = data.players_mining or {}
 end
-
 module.on_init = on_init
-
-local function update_events()
-	if module.events then
-		for id, _ in pairs(module.events) do
-			if blacklist_events[id] ~= true then
-				event_listener.update_event(module, id)
-			end
-		end
-	end
-	if module.on_nth_tick and #module.on_nth_tick > 0 then
-		for tick, _ in pairs(module.events) do
-			event_listener.update_nth_tick(module, tick)
-		end
-	end
-end
 
 module.get_default_events = function()
 	local events = {

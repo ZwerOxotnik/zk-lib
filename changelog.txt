@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.0
+Date: 2020-04-09
+  Features:
+    - "Teams" addon: added new commands:
+    - /remove-team <team name>
+    - /show-team [team name]
+    - /team-list
+    - /kick-teammate <player name>
+    - And improved /create-team <team name> (also, it was /create_team, btw)
+    - And added interface "zo-teams-core" + mod events
+  Changes:
+    - Simplified data and actions for addons which don't have events 
+  bugfixes:
+    - Fixed loading of commands (it caused desync, bug since v0.6.6)
+---------------------------------------------------------------------------------------------------
 Version: 0.6.8
 Date: 2020-03-27
   Bugfixes:

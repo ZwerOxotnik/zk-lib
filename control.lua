@@ -44,57 +44,62 @@ for name, addon_data in pairs(safe_addons_list) do
 	addons[name] = require(addon_data.path or "addons/" .. name)
 	local addon = addons[name]
 	addon.addon_name = name
-	addon.blacklist_events = addon.blacklist_events or {}
-	addon.events, addon.on_nth_tick = addon.get_default_events()
-	addon.check_events = function()
-		if settings.global["zk-lib-during-game_" .. name].value == false then
-			if addon.events then
-				for id, _ in pairs(addon.events) do
-					if addon.blacklist_events[id] ~= true and id ~= "lib_id"  then
-						addon.events[id] = function() end
+	if addon.get_default_events then
+		addon.blacklist_events = addon.blacklist_events or {}
+		addon.events, addon.on_nth_tick = addon.get_default_events()
+
+		addon.check_events = function()
+			if settings.global["zk-lib-during-game_" .. name].value == false then
+				if addon.events then
+					for id, _ in pairs(addon.events) do
+						if addon.blacklist_events[id] ~= true and id ~= "lib_id"  then
+							addon.events[id] = function() end
+						end
 					end
 				end
-			end
-			if addon.on_nth_tick and table.maxn(addon.on_nth_tick) > 0 then
-				for tick, _ in pairs(addon.on_nth_tick) do
-					if type(tick) ~= "string" then
-						addon.on_nth_tick[tick] = function() end
+				if addon.on_nth_tick and table.maxn(addon.on_nth_tick) > 0 then
+					for tick, _ in pairs(addon.on_nth_tick) do
+						if type(tick) ~= "string" then
+							addon.on_nth_tick[tick] = function() end
+						end
 					end
 				end
 			end
 		end
-	end
 
-	addon.check_events()
+		addon.check_events()
+	end
 end
 
 for name, addon_data in pairs(insecure_addons_list) do
 	addons[name] = require(addon_data.path or "addons/" .. name)
 	local addon = addons[name]
 	addon.addon_name = name
-	addon.blacklist_events = addon.blacklist_events or {}
-	addon.events, addon.on_nth_tick = addon.get_default_events()
-	addon.check_events = function()
-		if (settings.startup["zk-lib_" .. name].value == false)
-			or (settings.startup["zk-lib_" .. name].value == true and settings.global["zk-lib-during-game_" .. name].value == false) then
-			if addon.events then
-				for id, _ in pairs(addon.events) do
-					if addon.blacklist_events[id] ~= true and id ~= "lib_id"  then
-						addon.events[id] = function() end
+	if addon.get_default_events then
+		addon.blacklist_events = addon.blacklist_events or {}
+		addon.events, addon.on_nth_tick = addon.get_default_events()
+		addon.check_events = function()
+			if (settings.startup["zk-lib_" .. name].value == false)
+				or (settings.startup["zk-lib_" .. name].value == true and settings.global["zk-lib-during-game_" .. name].value == false) then
+				if addon.events then
+					for id, _ in pairs(addon.events) do
+						if addon.blacklist_events[id] ~= true and id ~= "lib_id"  then
+							addon.events[id] = function() end
+						end
 					end
 				end
-			end
-			if addon.on_nth_tick and table.maxn(addon.on_nth_tick) > 0 then
-				for tick, _ in pairs(addon.on_nth_tick) do
-					if type(tick) ~= "string" then
-						addon.on_nth_tick[tick] = function() end
+				if addon.on_nth_tick and table.maxn(addon.on_nth_tick) > 0 then
+					for tick, _ in pairs(addon.on_nth_tick) do
+						if type(tick) ~= "string" then
+							addon.on_nth_tick[tick] = function() end
+						end
 					end
 				end
 			end
 		end
-	end
 
-	addon.check_events()
+		addon.check_events()
+	end
 end
 
 local function handle_commands(addon)	
@@ -107,6 +112,17 @@ local function handle_commands(addon)
 			commands.remove_command(command.name or key)
 		end
 	end
+end
+
+local function is_events_table(T)
+  local count = 0
+  for _ in pairs(T)	do
+		count = count + 1
+		if count > 1 then
+			return true
+		end
+	end
+	return false
 end
 
 -- TODO: create and raise new events to addons
@@ -123,7 +139,9 @@ local function mutable_addon_on_runtime_mod_setting_changed(event)
 		if addon.commands then handle_commands(addon) end
 		if addon.add_commands and addon.remove_commands then addon.add_commands() end
 		if addon.add_remote_interface and addon.remove_remote_interface then addon.add_remote_interface() end
-		addon.events, addon.on_nth_tick = addon.get_default_events()
+		if addon.get_default_events then
+			addon.events, addon.on_nth_tick = addon.get_default_events()
+		end
 		if addon.enable_addon then addon.enable_addon() end
 		if addon.init then -- it's a workaround to init global data because those addons don't init in some cases
 			addon.init()
@@ -134,11 +152,11 @@ local function mutable_addon_on_runtime_mod_setting_changed(event)
 	else
 		if addon.add_commands and addon.remove_commands then addon.remove_commands() end
 		if addon.add_remote_interface and addon.remove_remote_interface then addon.remove_remote_interface() end
-		addon.check_events()
+		if addon.check_events then addon.check_events() end
 		if addon.disable_addon then addon.disable_addon() end
 		game.print({"", {"gui-mod-info.status-disabled"}, {"colon"}, " ", {"mod-name." .. addon_name}})
 	end
-	if addon.events then
+	if is_events_table(addon.events) then
 		for id, _ in pairs(addon.events) do
 			if addon.blacklist_events[id] ~= true and id ~= "lib_id" then
 				event_listener.update_event(addon, id)
@@ -153,6 +171,19 @@ local function mutable_addon_on_runtime_mod_setting_changed(event)
 		end
 	end
 end
+
+local function add_addons_commands()
+	for _, addon in pairs(addons_check_modules) do
+		if addon.commands then handle_commands(addon) end
+	end
+
+	for _, addon in pairs(addons) do
+		if addon.commands then handle_commands(addon) end
+	end
+end
+
+module.on_init = add_addons_commands
+module.on_load = add_addons_commands
 
 -- Adds additional checks etc for addons for stability
 if #mutable_addons_list > 1 then

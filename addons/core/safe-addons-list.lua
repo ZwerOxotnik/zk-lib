@@ -13,7 +13,7 @@ return {
 	["CopyAssemblerPipeDirection"] = {author = "IronCartographer", blacklist = {"CopyAssemblerPipeDirection"}, mod_portal_page = "https://mods.factorio.com/mod/CopyAssemblerPipeDirection"},
 	["scan-rocket-with-radars"] = {author = "ZwerOxotnik", mod_portal_page = "mods.factorio.com/mod/scan-rocket-with-radars", have_settings = true, blacklist = {"scan-rocket-with-radars"}},
 	["delete_decorations"] = {author = "ZwerOxotnik"},
-	["teams-zo"] = {author = "ZwerOxotnik", blacklist = {"teams-zo"}},
+	["teams-zo"] = {author = "ZwerOxotnik", blacklist = {"teams-zo"}, path = "addons/teams-zo/control"},
 	["PrivateElectricity"] = {author = "ZwerOxotnik"},
 	["restrict_building"] = {author = "ZwerOxotnik", have_settings = true}
 }
