@@ -90,7 +90,7 @@ local function show_team_command(cmd)
 	if cmd.parameter == nil then
 		cmd.parameter = caller.force.name
 	elseif #cmd.parameter > 50 then
-		caller.print("Can't show becaus the team name is too long")
+		caller.print("Can't show because the team name is too long")
 		return
 	else
 		cmd.parameter = trim(cmd.parameter)
