@@ -42,15 +42,45 @@ local function team_list_command(cmd)
 	local caller = game.players[cmd.player_index]
 	if not (caller and caller.valid) then return end
 
-	local function get_forces()
+	local function get_forces(forces)
 		local list = ""
-		for name, _ in pairs(game.forces) do
-			list = list .. name .. ' '
+		for _, force in pairs(forces) do
+			if #force.players > 0 then
+				list = list .. force.name .. '(' .. #force.connected_players .. '/' .. #force.players ')' .. ' '
+			else
+				list = list .. force.name .. ' '
+			end
 		end
 		return list
 	end
 
-	caller.print({"", {"gui-map-editor-title.force-editor"}, {"colon"}, ' ', get_forces()})
+	local ally_forces = {}
+	local neutral_forces = {}
+	local enemy_forces = {}
+
+	local caller_force = caller.force
+	for _, force in pairs(game.forces) do
+		if force ~= caller_force then
+			if caller_force.get_friend(force) then
+				ally_forces[#ally_forces + 1] = force
+			elseif caller_force.get_cease_fire(force) then
+				neutral_forces[#ally_forces + 1] = force
+			else
+				enemy_forces[#ally_forces + 1] = force
+			end
+		end
+	end
+
+	caller.print({"", "[font=default-large-bold][color=#FFFFFF]", {"gui-map-editor-title.force-editor"}, {"colon"}, " for \"" .. caller.force.name .. "\"[/color][/font]"})
+	if #enemy_forces > 0 then
+		caller.print({"", "  [font=default-large-bold][color=#880000]Enemies[/color][/font]", {"colon"}, ' ', get_forces(enemy_forces)})
+	end
+	if #neutral_forces > 0 then
+		caller.print({"", "  [font=default-large-bold]Neutrals[/font]", {"colon"}, ' ', get_forces(neutral_forces)})
+	end
+	if #ally_forces > 0 then
+		caller.print({"", "  [font=default-large-bold][color=green]Allies[/color][/font]", {"colon"}, ' ', get_forces(ally_forces)})
+	end
 end
 
 local function show_team_command(cmd)
@@ -59,6 +89,9 @@ local function show_team_command(cmd)
 	if not (caller and caller.valid) then return end
 	if cmd.parameter == nil then
 		cmd.parameter = caller.force.name
+	elseif #cmd.parameter > 50 then
+		caller.print("Can't show becaus the team name is too long")
+		return
 	else
 		cmd.parameter = trim(cmd.parameter)
 	end
@@ -72,11 +105,20 @@ local function show_team_command(cmd)
 	local function get_players(force)
 		local list = ""
 		local count = 0
-		for _, player in pairs(force.players) do
+		for _, player in pairs(force.connected_players) do
 			list = list .. player.name .. ' '
 			count = count + 1
 			if count > 40 then
 				return list .. " +" .. tostring(#force.players - 40)
+			end
+		end
+		for _, player in pairs(force.players) do
+			if player.connected == false then
+				list = list .. player.name .. ' '
+				count = count + 1
+				if count > 40 then
+					return list .. " +" .. tostring(#force.players - 40)
+				end
 			end
 		end
 		return list
@@ -90,6 +132,11 @@ local function kick_teammate_command(cmd)
 	local caller = game.players[cmd.player_index]
 	if not (caller and caller.valid) then return end
 	if cmd.parameter == nil then caller.print({"", "/kick-teammate ", module.commands.kick_teammate.description}) return end
+	if #cmd.parameter > 30 then
+		caller.print("Such long name can't exist in Factorio")
+		return
+	end
+
 	cmd.parameter = trim(cmd.parameter)
 	local target_player = game.get_player(cmd.parameter)
 	if not (target_player and target_player.valid) then caller.print("Can't do that") return end
@@ -123,7 +170,13 @@ local function create_new_team_command(cmd)
 	if not (caller and caller.valid) then return end
 	-- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/0.17.54/LuaGameScript.html#LuaGameScript.create_force)
 	if #game.forces >= 60 then caller.print({"teams.too_many"}) return end
-	if cmd.parameter == nil then caller.print({"", "/create-team ", module.commands.create_team.description}) return end
+	if cmd.parameter == nil then
+		caller.print({"", "/create-team ", module.commands.create_team.description})
+		return
+	elseif #cmd.parameter > 35 then
+		caller.print("Can't create new team because the team name is too long")
+		return
+	end
 	cmd.parameter = trim(cmd.parameter)
 
 	if game.forces[cmd.parameter] then
@@ -143,7 +196,13 @@ local function remove_team_command(cmd)
 	local caller = game.players[cmd.player_index]
 	if not (caller and caller.valid) then return end
 	if caller.admin == false then caller.print({"command-output.parameters-require-admin"}) return end
-	if cmd.parameter == nil then caller.print({"", "/remove-team ", module.commands.remove_team.description}) return end
+	if cmd.parameter == nil then
+		caller.print({"", "/remove-team ", module.commands.remove_team.description})
+		return
+	elseif #cmd.parameter > 50 then
+		caller.print("Can't remove the team because the team name is too long")
+		return
+	end
 	cmd.parameter = trim(cmd.parameter)
 
 	local target_force = game.forces[cmd.parameter]

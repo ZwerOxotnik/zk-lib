@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.2
+Date: 2020-04-09
+  Features:
+    - "Teams" addon:
+    - Improved output of commands
+    - output of /show-team looks cleaner and abvious
+  Changes:
+    - "Teams" addon:
+    - input is safer now
+  Bugfixes:
+    - Changed desciption of "Teams"
+---------------------------------------------------------------------------------------------------
 Version: 0.7.0
 Date: 2020-04-09
   Features:
