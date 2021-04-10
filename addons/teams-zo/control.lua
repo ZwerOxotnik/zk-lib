@@ -46,7 +46,7 @@ local function team_list_command(cmd)
 		local list = ""
 		for _, force in pairs(forces) do
 			if #force.players > 0 then
-				list = list .. force.name .. '(' .. #force.connected_players .. '/' .. #force.players .. ')' .. ' '
+				list = list .. force.name .. '(' .. #force.connected_players .. '/' .. #force.players .. ') '
 			else
 				list = list .. force.name .. ' '
 			end
@@ -157,7 +157,7 @@ local function kick_teammate_command(cmd)
 			target_player.force = player_force
 			script.raise_event(module.self_events.on_kick, {player_index = target_player.index, kicker = caller.index})
 		else
-			caller.print("You don't have such permissions")
+			caller.print("You don't have permissions to kick players")
 		end
 	else
 		caller.print("You can't kick a player from another force")
@@ -168,7 +168,7 @@ local function create_new_team_command(cmd)
 	if cmd.player_index == 0 then print("This command isn't suitable from server yet") return end
 	local caller = game.players[cmd.player_index]
 	if not (caller and caller.valid) then return end
-	-- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/0.17.54/LuaGameScript.html#LuaGameScript.create_force)
+	-- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/1.1.30/LuaGameScript.html#LuaGameScript.create_force)
 	if #game.forces >= 60 then caller.print({"teams.too_many"}) return end
 	if cmd.parameter == nil then
 		caller.print({"", "/create-team ", module.commands.create_team.description})
