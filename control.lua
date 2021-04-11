@@ -36,6 +36,7 @@ end
 local core_modules = {}
 core_modules.random_items = random_items
 core_modules.zk_lib = require("core/control")
+core_modules.serving_addons = {}
 -- core_modules.special_message = require("core/special-message")
 -- core_modules.zk_commands = require("core/zk_commands")
 
@@ -182,8 +183,8 @@ local function add_addons_commands()
 	end
 end
 
-module.on_init = add_addons_commands
-module.on_load = add_addons_commands
+core_modules.serving_addons.on_init = add_addons_commands
+core_modules.serving_addons.on_load = add_addons_commands
 
 -- Adds additional checks etc for addons for stability
 if #mutable_addons_list > 1 then
