@@ -10,7 +10,7 @@
 -- Script modified by ZwerOxotnik <zweroxotnik@gmail.com>
 ]]--
 
-module = {}
+local module = {}
 
 local function worth_processing(player)
 	return player.valid
