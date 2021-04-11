@@ -40,7 +40,7 @@ local function on_tick(event)
 end
 
 local function on_pre_player_mined_item(event)
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid and player.character and not player.cheat_mode) then return end
 
 	local entity = event.entity
@@ -67,7 +67,7 @@ end
 
 local function on_player_mined_item(event)
 	if not global.auto_mining.players_mining[event.player_index] then return end
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	if not player.can_insert(event.item_stack) then
@@ -76,7 +76,7 @@ local function on_player_mined_item(event)
 end
 
 local function clicked_stop_auto_mining_hotkey(event)
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	if player.render_mode == defines.render_mode.game then
@@ -86,7 +86,7 @@ end
 
 local function toggle_auto_mining(event)
 	if event.player_index == 0 then return end
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 
 	if global.auto_mining.players_mining[event.player_index] then
 		clear_player_data(event)

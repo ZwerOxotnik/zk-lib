@@ -31,6 +31,17 @@ local function trim(s)
 	return s:match'^%s*(.*%S)' or ''
 end
 
+-- Sends message to a player or server
+local function print_to_caller(message, caller)
+	if caller then
+		if caller.valid then
+			caller.print(message)
+		end
+	else
+		print(message) -- this message for server
+	end
+end
+
 local function team_list_command(cmd)
 	if cmd.player_index == 0 then
 		for name, _ in pairs(game.forces) do
@@ -39,7 +50,7 @@ local function team_list_command(cmd)
 		return
 	end
 
-	local caller = game.players[cmd.player_index]
+	local caller = game.get_player(cmd.player_index)
 	if not (caller and caller.valid) then return end
 
 	local function get_forces(forces)
@@ -84,13 +95,13 @@ local function team_list_command(cmd)
 end
 
 local function show_team_command(cmd)
-	if cmd.player_index == 0 then print("This command isn't suitable from server yet") return end
-	local caller = game.players[cmd.player_index]
-	if not (caller and caller.valid) then return end
+	local caller = game.get_player(cmd.player_index)
+	if cmd.player_index ~= 0 and not (caller and caller.valid) then return end
 	if cmd.parameter == nil then
+		if cmd.player_index == 0 then return end
 		cmd.parameter = caller.force.name
 	elseif #cmd.parameter > 50 then
-		caller.print("Can't show because the team name is too long")
+		print_to_caller({"too-long-team-name"}, caller)
 		return
 	else
 		cmd.parameter = trim(cmd.parameter)
@@ -98,7 +109,7 @@ local function show_team_command(cmd)
 
 	local target_force = game.forces[cmd.parameter]
 	if target_force == nil then
-		caller.print("Can't find target force")
+		print_to_caller("Can't find target force", caller)
 		return
 	end
 
@@ -106,38 +117,38 @@ local function show_team_command(cmd)
 		local list = ""
 		local count = 0
 		for _, player in pairs(force.connected_players) do
-			list = list .. player.name .. ' '
+			list = ' ' .. list .. player.name
 			count = count + 1
 			if count > 40 then
-				return list .. " +" .. tostring(#force.players - 40)
+				return list .. "+" .. tostring(#force.players - 40)
 			end
 		end
 		for _, player in pairs(force.players) do
 			if player.connected == false then
-				list = list .. player.name .. ' '
+				list = ' ' .. list .. player.name
 				count = count + 1
 				if count > 40 then
-					return list .. " +" .. tostring(#force.players - 40)
+					return list .. "+" .. tostring(#force.players - 40)
 				end
 			end
 		end
 		return list
 	end
 
-	caller.print({"", {"gui-browse-games.games-headers-players"}, {"colon"}, ' ', get_players(target_force)})
+	print_to_caller({"", {"gui-browse-games.games-headers-players"}, {"colon"}, get_players(target_force)}, caller)
 end
 
 local function kick_teammate_command(cmd)
-	if cmd.player_index == 0 then print("This command isn't suitable from server yet") return end
-	local caller = game.players[cmd.player_index]
+	if cmd.player_index == 0 then print({"prohibited-server-command"}) return end
+	local caller = game.get_player(cmd.player_index)
 	if not (caller and caller.valid) then return end
 	if cmd.parameter == nil then caller.print({"", "/kick-teammate ", module.commands.kick_teammate.description}) return end
 	if #cmd.parameter > 30 then
-		caller.print("Such long name can't exist in Factorio")
+		caller.print({"too-long-nickname"})
 		return
 	end
-
 	cmd.parameter = trim(cmd.parameter)
+
 	local target_player = game.get_player(cmd.parameter)
 	if not (target_player and target_player.valid) then caller.print("Can't do that") return end
 
@@ -165,8 +176,8 @@ local function kick_teammate_command(cmd)
 end
 
 local function create_new_team_command(cmd)
-	if cmd.player_index == 0 then print("This command isn't suitable from server yet") return end
-	local caller = game.players[cmd.player_index]
+	if cmd.player_index == 0 then print({"prohibited-server-command"}) return end
+	local caller = game.get_player(cmd.player_index)
 	if not (caller and caller.valid) then return end
 	-- for compability with other mods/scenarios and forces count max = 64 (https://lua-api.factorio.com/1.1.30/LuaGameScript.html#LuaGameScript.create_force)
 	if #game.forces >= 60 then caller.print({"teams.too_many"}) return end
@@ -184,16 +195,25 @@ local function create_new_team_command(cmd)
 	else
 		local new_team = game.create_force(cmd.parameter)
 		if #caller.force.players == 1 and not prohibited_forces[caller.force.name] then
+			local technologies = new_team.technologies
+			for name, tech in pairs(caller.force.technologies) do
+				technologies[name].researched = tech.researched
+			end
 			game.merge_forces(caller.force, new_team)
 		else
+			local prev_force = caller.force
 			caller.force = new_team
+			local technologies = new_team.technologies
+			for name, tech in pairs(prev_force.technologies) do
+				technologies[name].researched = tech.researched
+			end
 		end
 	end
 end
 
 local function remove_team_command(cmd)
-	if cmd.player_index == 0 then print("This command isn't suitable from server yet") return end
-	local caller = game.players[cmd.player_index]
+	if cmd.player_index == 0 then print({"prohibited-server-command"}) return end
+	local caller = game.get_player(cmd.player_index)
 	if not (caller and caller.valid) then return end
 	if caller.admin == false then caller.print({"command-output.parameters-require-admin"}) return end
 	if cmd.parameter == nil then
@@ -208,17 +228,20 @@ local function remove_team_command(cmd)
 	local target_force = game.forces[cmd.parameter]
 	if target_force == nil then
 		caller.print({"", "Can't find ", {"colon"}, ' ', cmd.parameter})
+		return
 	elseif #target_force.players ~= 0 then
-		caller.print("This forces isn't empty. There are still players in it")
+		caller.print("The team isn't empty. There are still players in it")
+		return
 	elseif prohibited_forces[target_force.name] then
 		caller.print("You can't delete '" .. target_force.name .. "'")
+		return
+	end
+
+	local player_force = game.forces["player"]
+	if player_force and player_force.valid then
+		game.merge_forces(target_force, player_force)
 	else
-		local player_force = game.forces["player"]
-		if player_force and player_force.valid then
-			game.merge_forces(target_force, player_force)
-		else
-			caller.print("Can't delete '" .. cmd.parameter .."' because \"player\" force doesn't exist")
-		end
+		caller.print("Can't delete '" .. cmd.parameter .."' because \"player\" force doesn't exist")
 	end
 end
 

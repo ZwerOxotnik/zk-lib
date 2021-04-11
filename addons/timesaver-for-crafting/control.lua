@@ -31,7 +31,7 @@ end
 
 local function on_player_crafted_item(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) or player.cheat_mode then return end
 
 	local player_data = global.timesaver_for_crafting.players[event.player_index]
@@ -60,7 +60,7 @@ end
 
 local function on_player_cancelled_crafting(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	-- "on_player_cancelled_crafting" event does not have count of crafting items
@@ -72,7 +72,7 @@ end
 
 local function on_pre_player_crafted_item(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	local player_data = global.timesaver_for_crafting.players[event.player_index]
@@ -92,7 +92,7 @@ end
 
 local function on_player_joined_game(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	if script.mod_name == 'level' and global.timesaver_for_crafting.build ~= BUILD then
@@ -107,7 +107,7 @@ end
 
 local function on_player_respawned(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	local player_data = global.timesaver_for_crafting.players[player.index]
@@ -117,7 +117,7 @@ local function on_player_respawned(event)
 	player.character_crafting_speed_modifier = calc_new_crafting_speed(player_data.accumulated)
 end
 
-module.on_init = function(event)
+module.on_init = function()
 	config.init()
 	global.timesaver_for_crafting.build = BUILD
 end
@@ -139,8 +139,7 @@ local function on_runtime_mod_setting_changed(event)
 	else
 		local events = {"on_player_cancelled_crafting", "on_pre_player_crafted_item", "on_player_crafted_item", "on_player_respawned"}
 		for _, event_name in pairs( events ) do
-			event_listener.update_event(event_name)
-			put_event(event_name, function() end)
+			event_listener.update_event(defines.events[event_name])
 		end
 
 		for _, player in pairs( game.players ) do

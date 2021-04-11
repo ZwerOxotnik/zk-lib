@@ -3,7 +3,7 @@ local module = {}
 -- Responses on "/hi" command
 local function say_hi_command(cmd)
 	if cmd.player_index == 0 then return end -- ignores server call
-	local caller = game.players[cmd.player_index]
+	local caller = game.get_player(cmd.player_index)
 	-- if cmd.parameter == nil then caller.print({"", "/hi ", module.commands.hi.description}) return end
 
 	caller.print({"your_localization.hi"})
@@ -12,7 +12,7 @@ end
 -- Responses on_player_joined_game event
 local function say_hi_to_joined_player(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	player.print({"your_localization.hi"})

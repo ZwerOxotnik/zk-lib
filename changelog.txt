@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.7.6
+Date: 2020-04-11
+  Features:
+    - "Teams" addon: new team saves technologies of a "parent" team
+  Changes:
+    - Changed some localization
+    - Improved commands and its stability
+  Bugfixes:
+    - Fixed some events of "timesaver for crafting" addon
+  Noted:
+    - Refactored some stuff
+---------------------------------------------------------------------------------------------------
 Version: 0.7.4
 Date: 2020-04-09
   Bugfixes:

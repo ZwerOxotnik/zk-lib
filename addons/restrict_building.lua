@@ -28,7 +28,7 @@ local function on_built_entity(event)
 	local created_entity = event.created_entity
 	if not (created_entity and created_entity.valid) then return end
 	if created_entity.force.name == "neutral" then return end
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 	if not (player.controller_type == defines.controllers.character or player.controller_type == defines.controllers.god) then return end
 

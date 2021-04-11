@@ -1,7 +1,7 @@
 local module = {}
 
 local function on_player_joined_or_created(event)
-    local player = game.players[event.player_index]
+    local player = game.get_player(event.player_index)
     if not (player and player.valid) then return end
     if player.mod_settings["zk-lib_special-message"].value ~= true then return end
 

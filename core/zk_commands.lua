@@ -13,7 +13,7 @@ zk_commands.events = {}
 -- 	if not cmd.player_index then
 -- 		.SendDiscordMessage(cmd.parameter)
 -- 	else
--- 		local player = game.players[cmd.player_index]
+-- 		local player = game.get_player(cmd.player_index)
 -- 		if player.admin then
 -- 			.SendDiscordMessage(cmd.parameter)
 -- 		else
@@ -28,7 +28,7 @@ zk_commands.events = {}
 -- 	if not cmd.player_index then
 -- 		.SendDiscordEmbedMessage(cmd.parameter)
 -- 	else
--- 		local player = game.players[cmd.player_index]
+-- 		local player = game.get_player(cmd.player_index)
 -- 		if player.admin then
 -- 			.SendDiscordEmbedMessage(cmd.parameter)
 -- 		else

@@ -101,7 +101,7 @@ end
 
 local function on_player_joined_game(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
 	-- if #player.force.connected_players ~= 1 then
@@ -115,7 +115,7 @@ end
 
 local function on_player_left_game(event)
 	-- Validation of data
-	local player = game.players[event.player_index]
+	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 	local player_modifier = global.adrenaline.players_modifiers[event.player_index]
 	if not player_modifier then return end
@@ -137,7 +137,7 @@ end
 
 -- local function on_player_changed_force(event)
 -- 	-- Validation of data
--- 	local player = game.players[event.player_index]
+-- 	local player = game.get_player(event.player_index)
 -- 	if not (player and player.valid) then return end
 
 -- 	if #event.force.connected_players == 0 then
