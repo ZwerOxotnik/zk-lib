@@ -26,6 +26,8 @@ Also, supports auto-generated mods and has modified event listener and I conside
 | | [customizable] commands of libs (disabled) | |
 | | [Event listener][event-listener] | |
 
+If you're interested in commands, check https://github.com/ZwerOxotnik/cc-template
+
 ## Addons
 
 * https://mods.factorio.com/mod/random-gifts-by-timer
@@ -48,7 +50,7 @@ Also, supports auto-generated mods and has modified event listener and I conside
 Please, use download this mod via Factorio or on [mods.factorio.com][homepage].\
 Recommended to read ["Installing Mods"](https://wiki.factorio.com/index.php?title=Installing_Mods) on the Factorio wiki.
 
-If you wanna download from this source, then use commands below (requires git).
+If you want to download from this source, then use commands below (requires git).
 ```bash
 git clone --recurse-submodules -j8 https://github.com/ZwerOxotnik/zk-lib
 cd zk-lib

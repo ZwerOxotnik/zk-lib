@@ -100,7 +100,7 @@ local function show_team_command(cmd)
 	if cmd.parameter == nil then
 		if cmd.player_index == 0 then return end
 		cmd.parameter = caller.force.name
-	elseif #cmd.parameter > 50 then
+	elseif #cmd.parameter > 52 then
 		print_to_caller({"too-long-team-name"}, caller)
 		return
 	else
@@ -109,7 +109,7 @@ local function show_team_command(cmd)
 
 	local target_force = game.forces[cmd.parameter]
 	if target_force == nil then
-		print_to_caller("Can't find target force", caller)
+		print_to_caller({"force-doesnt-exist", cmd.parameter}, caller)
 		return
 	end
 
@@ -143,7 +143,7 @@ local function kick_teammate_command(cmd)
 	local caller = game.get_player(cmd.player_index)
 	if not (caller and caller.valid) then return end
 	if cmd.parameter == nil then caller.print({"", "/kick-teammate ", module.commands.kick_teammate.description}) return end
-	if #cmd.parameter > 30 then
+	if #cmd.parameter > 32 then
 		caller.print({"too-long-nickname"})
 		return
 	end
@@ -185,13 +185,13 @@ local function create_new_team_command(cmd)
 		caller.print({"", "/create-team ", module.commands.create_team.description})
 		return
 	elseif #cmd.parameter > 35 then
-		caller.print("Can't create new team because the team name is too long")
+		caller.print({"too-long-team-name"})
 		return
 	end
 	cmd.parameter = trim(cmd.parameter)
 
 	if game.forces[cmd.parameter] then
-		caller.print({"teams.double_team", cmd.parameter})
+		caller.print({"gui-map-editor-force-editor.new-force-name-already-used", cmd.parameter})
 	else
 		local new_team = game.create_force(cmd.parameter)
 		if #caller.force.players == 1 and not prohibited_forces[caller.force.name] then
@@ -219,30 +219,25 @@ local function remove_team_command(cmd)
 	if cmd.parameter == nil then
 		caller.print({"", "/remove-team ", module.commands.remove_team.description})
 		return
-	elseif #cmd.parameter > 50 then
-		caller.print("Can't remove the team because the team name is too long")
+	elseif #cmd.parameter > 52 then
+		caller.print({"too-long-team-name"})
 		return
 	end
 	cmd.parameter = trim(cmd.parameter)
 
 	local target_force = game.forces[cmd.parameter]
 	if target_force == nil then
-		caller.print({"", "Can't find ", {"colon"}, ' ', cmd.parameter})
+		caller.print({"force-doesnt-exist", cmd.parameter})
 		return
 	elseif #target_force.players ~= 0 then
 		caller.print("The team isn't empty. There are still players in it")
 		return
 	elseif prohibited_forces[target_force.name] then
-		caller.print("You can't delete '" .. target_force.name .. "'")
+		caller.print({"gui-map-editor-force-editor.cant-delete-built-in-force"})
 		return
 	end
 
-	local player_force = game.forces["player"]
-	if player_force and player_force.valid then
-		game.merge_forces(target_force, player_force)
-	else
-		caller.print("Can't delete '" .. cmd.parameter .."' because \"player\" force doesn't exist")
-	end
+	game.merge_forces(target_force, game.forces["player"])
 end
 
 -- local function update_global_data()
@@ -270,7 +265,7 @@ remote.add_interface("zo-teams-core", {
 -- end
 
 module.commands = {
-	create_team = {name = "create-team", description = {"teams.create-team"}, func = create_new_team_command},
+	create_team = {name = "create-team", description = {"gui-map-editor-force-editor.no-force-name-given"}, func = create_new_team_command},
 	remove_team = {name = "remove-team", description = {"teams.remove-team"}, func = remove_team_command},
 	team_list = {name = "team-list", description = {"teams.team-list"}, func = team_list_command},
 	show_team = {name = "show-team", description = {"teams.show-team"}, func = show_team_command},
