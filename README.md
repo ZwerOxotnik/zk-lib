@@ -32,7 +32,6 @@ If you're interested in commands, check https://github.com/ZwerOxotnik/cc-templa
 
 * https://mods.factorio.com/mod/random-gifts-by-timer
 * https://mods.factorio.com/mod/kill-nest-get-gift
-* https://mods.factorio.com/mod/teams-zo
 * https://mods.factorio.com/mod/scan-rocket-with-radars
 * https://mods.factorio.com/mod/auto-mining
 * https://mods.factorio.com/mod/timesaver-for-crafting
