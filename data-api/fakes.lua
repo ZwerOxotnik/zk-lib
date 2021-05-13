@@ -59,9 +59,9 @@ fakes.create_fake_walkable_tile = function(name)
 	end
 
 	local fake_tile_name = "fakeW_" .. name
-	if corpses[fake_tile_name] then
+	if tiles[fake_tile_name] then
 		log("Tile \"" .. fake_tile_name .. "\" already exists")
-		return corpses[fake_tile_name]
+		return tiles[fake_tile_name]
 	end
 
 	local new_tile = util.table.deepcopy(tiles[fake_tile_name])
@@ -74,7 +74,7 @@ fakes.create_fake_walkable_tile = function(name)
 		"object-layer"
 	}
 	new_tile.autoplace = nil
-	new_tile.localised_name = {"", {"tile-name." .. prototype.name}, " [fake]"}
+	new_tile.localised_name = {"", {"tile-name." .. name}, " [fake-W]"}
 
 	return data:extend({new_tile})
 end
