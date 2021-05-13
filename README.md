@@ -11,7 +11,7 @@
   <img
     width="250"
     src="thumbnail.png"
-    alt="ZwerOxotnik's extendable library"
+    alt="ZwerOxotnik's extendable mod"
   />
 </p>
 
@@ -47,9 +47,9 @@
   align="right"
 />
 
-**Multipurpose library with switchable addons**
+**Multipurpose mod with switchable addons**
 
-**Also, supports auto-generated mods.**
+**Also, supports auto-generated mods etc.**
 
 - **Customizable:** each addon is switchable.
 - **Universal:** many libraries for various purposes.
