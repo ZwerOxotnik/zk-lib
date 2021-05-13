@@ -44,7 +44,6 @@
 
 <img
   src="https://mods-data.factorio.com/assets/961685040434656713a16c830fde63a02ef62381.png"
-  width="50%"
   align="right"
 />
 
