@@ -1,4 +1,5 @@
-require("data-api/puan_api")
+puan_api = require("data-api/puan_api")
+fakes = require("data-api/fakes")
 require("sound/sounds_list")
 
 -- Extends game interactions, see https://wiki.factorio.com/Prototype/CustomInput#linked_game_control

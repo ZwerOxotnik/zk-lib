@@ -7,7 +7,7 @@ Source: github.com/ZwerOxotnik/zk-lib
 ---- Generates sounds etc in programmable speakers
 ---- Use https://github.com/ZwerOxotnik/Mod-generator
 
-puan_api = {}
+local puan_api = {}
 
 puan_api.check_and_get_sound = function(sound, path)
     local new_sound = {}
@@ -67,3 +67,5 @@ puan_api.add_sounds = function(sounds_list)
         return table.insert(programmable_speaker, {name = sounds_list.name, notes = notes})
     end
 end
+
+return puan_api
