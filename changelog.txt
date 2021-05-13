@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.0
+Date: 2021-05-13
+  Features:
+    - Added library "fakes"
+  Changes:
+    - Changed description
+  Notes:
+    - Changed README.md
+    - Added CONTRIBUTING.md
+---------------------------------------------------------------------------------------------------
 Version: 0.7.16
 Date: 2021-04-27
   Changes:
@@ -51,7 +61,7 @@ Date: 2021-04-09
     - "Teams" addon:
     - Input is safer now
   Bugfixes:
-    - Changed desciption of "Teams"
+    - Changed description of "Teams"
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.0
 Date: 2021-04-09
