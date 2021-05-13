@@ -48,7 +48,7 @@
   align="right"
 />
 
-**Multipurpose library with addons**
+**Multipurpose library with switchable addons**
 
 **Also, supports auto-generated mods.**
 
