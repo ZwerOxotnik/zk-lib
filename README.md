@@ -1,9 +1,9 @@
 **[Screenshots](#screenshots)** |
 **[Addons](#addons)** |
-**[FAQ](#information_source-faq)** |
+**[FAQ](#faq)** |
 **[Notice](#notice)** |
-**[Contributing](#octocat-contributing)** |
-**[License](#page_facing_up-license)**
+**[Contributing](#contributing)** |
+**[License](#license)**
 
 ---
 
@@ -56,7 +56,7 @@
 - **Easy:** doesn't require specific requirements.
 
 <p align="center">
-<a href="https://mods.factorio.com/mod/zk-lib"><strong>Download the mod&nbsp;&nbsp;▶</strong></a>
+<a href="https://mods.factorio.com/mod/zk-lib/downloads"><strong>Download the mod&nbsp;&nbsp;▶</strong></a>
 </p>
 
 | Data | Control stage | UI |
@@ -73,8 +73,8 @@ If you're interested in switchable commands with filters, check out https://gith
 Screenshots
 -----------
 
-![](https://mods-data.factorio.com/assets/a9b5a52ec854cf30f62023a9fb18f1e98d69d1b9.png)
-![](https://mods-data.factorio.com/assets/961685040434656713a16c830fde63a02ef62381.png)
+![image1](https://mods-data.factorio.com/assets/a9b5a52ec854cf30f62023a9fb18f1e98d69d1b9.png)
+![image2](https://mods-data.factorio.com/assets/961685040434656713a16c830fde63a02ef62381.png)
 
 Addons
 ------
@@ -91,8 +91,8 @@ Addons
 * "Restrict building" from mods.factorio.com/mod/diplomacy
 * Delete decorations
 
-:information_source: FAQ
-------------------------
+FAQ
+---
 
 **Q**: What the addons are?
 
@@ -110,19 +110,20 @@ Addons
 | 📖 [Installation Guide](https://wiki.factorio.com/index.php?title=Installing_Mods) | 📚 [Help with translations](https://crowdin.com/project/factorio-mods-localization) | 🦜 [Discord](https://discord.gg/zYTM3rZM4T) |
 
 If you want to download from this source, then use commands below (requires [git](https://git-scm.com/downloads)).
+
 ```bash
 git clone --recurse-submodules -j8 https://github.com/ZwerOxotnik/zk-lib
 cd zk-lib
 ```
 
-:octocat: [Contributing](/CONTRIBUTING.md)
------------------------------------------
+[Contributing](/CONTRIBUTING.md)
+--------------------------------
 
-Don't be afraid to contribute! We have many, many things you can do to help out. If you're trying to contribute but stuck, tag @ZwerOxotnik ✨
+Don't be afraid to contribute! We have many, many things you can do to help out. If you're trying to contribute but stuck, tag @ZwerOxotnik
 
 Alternatively, join the [Discord group](https://discordapp.com/invite/YyJVUCa) and send a message there.
 
-Please read the [contributing file](/CONTRIBUTING.md) for other details on how to contribute ✨
+Please read the [contributing file](/CONTRIBUTING.md) for other details on how to contribute.
 
 Notice
 ------
@@ -135,8 +136,8 @@ This project contains work from multiple sources + [addons](#overview).
 
 Also, this project used [Mod generator](https://github.com/ZwerOxotnik/Mod-generator)
 
-:sunrise: Artwork
------------------
+Artwork
+-------
 
 <table>
  <thead>
@@ -157,8 +158,8 @@ Also, this project used [Mod generator](https://github.com/ZwerOxotnik/Mod-gener
  </tbody>
 </table>
 
-:page_facing_up: License
-------------------------
+License
+-------
 
 This project is copyright © 2018-2021 ZwerOxotnik \<zweroxotnik@gmail.com\>.
 
