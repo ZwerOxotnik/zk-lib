@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.8.2
+Date: 2021-05-22
+  Features:
+    - Added library "zk_lib" as util for data stage
+  Changes:
+    - Fixed "auto-mining" for multiplayer
+  Notes:
+    - Refactored some code
+---------------------------------------------------------------------------------------------------
 Version: 0.8.0
 Date: 2021-05-13
   Features:

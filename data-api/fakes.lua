@@ -9,8 +9,9 @@ Source: github.com/ZwerOxotnik/zk-lib
 ---- ####
 
 local fakes = {}
-
 local corpses = data.raw["character-corpse"]
+
+
 -- Creates a fake corpse using an entitty
 -- WARNING: The corpses don't support collision and you can't modify their inventory
 fakes.create_fake_corpse_by_entity = function(entity)
@@ -78,5 +79,6 @@ fakes.create_fake_walkable_tile = function(name)
 
 	return data:extend({new_tile})
 end
+
 
 return fakes

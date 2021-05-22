@@ -27,14 +27,14 @@ local function clear_player_data(event)
 end
 
 local function on_tick(event)
-	local auto_mining = global.auto_mining
-	for k, data in pairs(auto_mining.players_mining) do
-		local player = game.connected_players[k]
-		if player then
+	local players_mining = global.auto_mining.players_mining
+	for k, data in pairs(players_mining) do -- something is wrong
+		local player = game.get_player(k)
+		if player and player.valid and player.connected then
 			player.update_selected_entity(data.position)
 			player.mining_state = {mining = true, position = data.position}
 		else
-			auto_mining.players_mining[k] = nil
+			players_mining[k] = nil
 		end
 	end
 end
@@ -118,12 +118,12 @@ module.get_default_events = function()
 		[defines.events.on_player_removed] = clear_player_data,
 		[defines.events.on_pre_player_died] = clear_player_data,
 		[defines.events.on_player_left_game] = clear_player_data,
-		["event-move-down"] = clicked_stop_auto_mining_hotkey,
-		["event-move-left"] = clicked_stop_auto_mining_hotkey,
-		["event-move-right"] = clicked_stop_auto_mining_hotkey,
-		["event-move-up"] = clicked_stop_auto_mining_hotkey,
-		["event-mine"] = clicked_stop_auto_mining_hotkey,
-		["event-toggle-map"] = toggle_auto_mining
+		["move-down-event"] = clicked_stop_auto_mining_hotkey,
+		["move-left-event"] = clicked_stop_auto_mining_hotkey,
+		["move-right-event"] = clicked_stop_auto_mining_hotkey,
+		["move-up-event"] = clicked_stop_auto_mining_hotkey,
+		["mine-event"] = clicked_stop_auto_mining_hotkey,
+		["toggle-map-event"] = toggle_auto_mining
 	}
 
 	local on_nth_tick = {}
