@@ -3,13 +3,23 @@ fakes = require("data-api/fakes")
 zk_lib = require("data-api/zk_lib")
 require("sound/sounds_list")
 
--- Extends game interactions, see https://wiki.factorio.com/Prototype/CustomInput#linked_game_control
+
+local MOD_PATH = "__zk-lib__"
+
+
 zk_lib.attach_custom_input_event("move-down")
 zk_lib.attach_custom_input_event("move-left")
 zk_lib.attach_custom_input_event("move-right")
 zk_lib.attach_custom_input_event("move-up")
 zk_lib.attach_custom_input_event("mine")
 zk_lib.attach_custom_input_event("toggle-map")
+
+-- TODO: create special scripts
+-- zk_lib.create_tool({
+--   name = "zk-select", -- this is fake cursor to find cursor position via https://lua-api.factorio.com/latest/events.html#on_script_trigger_effect
+--   icon = MOD_PATH .. "/graphics/select.png", --"__core__/graphics/mouse-cursor.png",
+--   radius_color = {0, 0, 0, 0}
+-- })
 
 if data.raw["speech-bubble"]["speech-bubble-no-fade"] == nil then
   data:extend({
