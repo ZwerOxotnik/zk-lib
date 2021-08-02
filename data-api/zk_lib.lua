@@ -107,7 +107,7 @@ end
 ---@return table|boolean
 zk_lib.merge_localization = function(raw_data)
 	local final_data = {}
-	if #raw_data > 399 then
+	if #raw_data >= 380 then
 			log("Too much data")
 			return false
 	elseif #raw_data > 10 then
