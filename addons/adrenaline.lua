@@ -1,5 +1,5 @@
 --[[
-Copyright (c) 2019-2020 ZwerOxotnik <zweroxotnik@gmail.com>
+Copyright (c) 2019-2021 ZwerOxotnik <zweroxotnik@gmail.com>
 Licensed under the MIT licence;
 
 You can write and receive any information on the links below.
@@ -9,15 +9,23 @@ Homepage: https://forums.factorio.com/viewtopic.php?f=190&t=64617&p=395994
 
 ]]--
 
+-- TODO: optimize!
+
 local bonus_modifier = settings.global["adrenaline_bonus_modifier"].value or 2
 local module = {}
 
 local function reset_player_data(player)
-	local player_modifier = global.adrenaline.players_modifiers[player.index]
+	local player_modifiers_data = global.adrenaline.players_modifiers[player.index]
 	if player_modifier == nil then return end
 
-	player.character_mining_speed_modifier = player_modifier.character_mining_speed_modifier
-	player.character_running_speed_modifier = player_modifier.character_running_speed_modifier
+	local value1 = player_modifiers_data.character_mining_speed_modifier
+	if value1 then
+		player.character_mining_speed_modifier = value1
+	end
+	local value = player_modifiers_data.character_running_speed_modifier
+	if value then
+		player.character_running_speed_modifier = value
+	end
 	player_modifier = nil
 end
 
@@ -40,15 +48,15 @@ end
 -- TODO: refactor
 local function check_health(player)
 	local character = player.character
-	local health = character.get_health_ratio()
-	if health > 0.1 then
+	local health_ratio = character.get_health_ratio()
+	if health_ratio > 0.1 then
 		reset_player_data(player)
 		return
 	end
 
-	local force = character.force
-	local adrenaline = global.adrenaline
-	if adrenaline.players_modifiers[player.index] == nil then
+	local player_index = player.index
+	local players_modifiers = global.adrenaline.players_modifiers
+	if players_modifiers[player_index] == nil then
 		-- if #game.connected_players == 1 then
 		-- 	adrenaline.forces_modifiers[force.name] = {}
 		-- 	adrenaline.forces_modifiers[force.name].guns_speed = {}
@@ -58,16 +66,16 @@ local function check_health(player)
 		-- 	end
 		-- end
 
-		adrenaline.players_modifiers[player.index] = {}
-		local player_modifier = adrenaline.players_modifiers[player.index]
-		player_modifier.character_mining_speed_modifier = player.character_mining_speed_modifier
-		player_modifier.character_running_speed_modifier = player.character_running_speed_modifier
+		players_modifiers[player_index] = {}
+		local player_modifiers_data = players_modifiers[player_index]
+		player_modifiers_data.character_mining_speed_modifier = player.character_mining_speed_modifier
+		player_modifiers_data.character_running_speed_modifier = player.character_running_speed_modifier
 	end
 
-	local init_player_modifier = adrenaline.players_modifiers[player.index]
-	local modifier = (1 - health * 10) * bonus_modifier
-	character.character_running_speed_modifier = init_player_modifier.character_mining_speed_modifier + modifier
-	character.character_mining_speed_modifier = init_player_modifier.character_running_speed_modifier + modifier
+	local init_player_modifiers = players_modifiers[player_index]
+	local modifier = (1 - health_ratio * 10) * bonus_modifier
+	character.character_running_speed_modifier = init_player_modifiers.character_mining_speed_modifier + modifier
+	character.character_mining_speed_modifier = init_player_modifiers.character_running_speed_modifier + modifier
 
 	-- local force_modifier = adrenaline.forces_modifiers[force.name]
 	-- if force_modifier then
@@ -117,12 +125,6 @@ local function on_player_left_game(event)
 	-- Validation of data
 	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
-	local player_modifier = global.adrenaline.players_modifiers[event.player_index]
-	if not player_modifier then return end
-
-	-- if #player.force.connected_players == 0 then
-	-- 	reset_force_data(player.force.name)
-	-- end
 	reset_player_data(player)
 end
 
