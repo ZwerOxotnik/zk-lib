@@ -7,6 +7,9 @@ require("sound/sounds_list")
 local MOD_PATH = "__zk-lib__"
 
 
+require("prototypes/utility-sprites")
+
+
 zk_lib.attach_custom_input_event("move-down")
 zk_lib.attach_custom_input_event("move-left")
 zk_lib.attach_custom_input_event("move-right")
