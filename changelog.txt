@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.3
+Date: 11. 09. 2021
+  Changes:
+    - Removed "Private electricity" addon (use "Private electricity" mod)
+    - Removed "Restrict building" addon (use "Restrict building" mod)
+---------------------------------------------------------------------------------------------------
 Version: 0.9.2
 Date: 05. 09. 2021
   Changes:

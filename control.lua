@@ -53,7 +53,7 @@ for name, addon_data in pairs(safe_addons_list) do
 			if settings.global["zk-lib-during-game_" .. name].value == false then
 				if addon.events then
 					for id, _ in pairs(addon.events) do
-						if addon.blacklist_events[id] ~= true and id ~= "lib_id"  then
+						if addon.blacklist_events[id] ~= true and id ~= "lib_id" then
 							addon.events[id] = function() end
 						end
 					end
@@ -103,7 +103,7 @@ for name, addon_data in pairs(insecure_addons_list) do
 	end
 end
 
-local function handle_commands(addon)	
+local function handle_commands(addon)
 	if settings.global["zk-lib-during-game_" .. addon.addon_name].value == true then
 		for key, command in pairs(addon.commands) do
 			commands.add_command(command.name or key, command.description, command.func)
