@@ -74,4 +74,6 @@ for name in pairs(mods) do
 		})
 	end
 end
-data:extend(mods_settings)
+if #mods_settings > 0 then
+	data:extend(mods_settings)
+end
