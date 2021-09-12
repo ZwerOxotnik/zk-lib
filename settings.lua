@@ -42,7 +42,7 @@ data:extend({
 local insecure_addons_list = require("addons/core/insecure-addons-list")
 addons_api.remove_duplicate_addons(insecure_addons_list)
 
-addons_settings = {}
+local addons_settings = {}
 for name, addon in pairs(insecure_addons_list) do
 	table.insert(addons_settings, {
 		type = "bool-setting",
@@ -58,3 +58,20 @@ for name, addon in pairs(insecure_addons_list) do
 	})
 end
 data:extend(addons_settings)
+
+local mods_settings = {}
+for name in pairs(mods) do
+	local is_ok = pcall(require, "__" .. name .. "__/switchable_mod")
+	if is_ok then
+		local setting_name = "mod_" .. name
+		table.insert(mods_settings, {
+			type = "bool-setting",
+			name = setting_name,
+			order = setting_name,
+			setting_type = "runtime-global",
+			default_value = true,
+			localised_name = {"", "[color=orange]", "Mod", {"colon"}, "[/color] ", {"mod-name." .. name}},
+		})
+	end
+end
+data:extend(mods_settings)
