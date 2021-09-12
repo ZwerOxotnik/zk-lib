@@ -126,8 +126,22 @@ end
 
 local function on_mod_state_changed(event)
 	if event.setting == MOD_NAME then
-		state = settings.global[event.setting].value
+		state = settings.global[event.setting].valu
 		reregister_events()
+
+		if state then
+			for _, lib in pairs(libraries) do
+				if lib.on_mod_enabled then
+					lib.on_mod_enabled()
+				end
+			end
+		else
+			for _, lib in pairs(libraries) do
+				if lib.on_mod_disabled then
+					lib.on_mod_disabled()
+				end
+			end
+		end
 	end
 end
 
