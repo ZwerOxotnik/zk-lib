@@ -83,12 +83,9 @@ Addons
 * https://mods.factorio.com/mod/kill-nest-get-gift
 * https://mods.factorio.com/mod/scan-rocket-with-radars
 * https://mods.factorio.com/mod/auto-mining
-* https://mods.factorio.com/mod/timesaver-for-crafting
 * https://mods.factorio.com/mod/searching-flashlightR
 * https://mods.factorio.com/mod/adrenaline
 * https://mods.factorio.com/mod/CopyAssemblerPipeDirection
-* "Private electricity" from mods.factorio.com/mod/diplomacy
-* "Restrict building" from mods.factorio.com/mod/diplomacy
 * Delete decorations
 
 FAQ
