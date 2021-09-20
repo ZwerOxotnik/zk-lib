@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.10
+Date: 20. 09. 2021
+  Changes:
+    - Added Lithuanian translation (thanks to @Vajkis on crowdin)
+  Notes:
+    - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
+---------------------------------------------------------------------------------------------------
 Version: 0.9.9
 Date: 18. 09. 2021
   Changes:
