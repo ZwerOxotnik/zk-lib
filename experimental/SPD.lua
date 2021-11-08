@@ -57,8 +57,13 @@ SPD.get_container = function(name)
 end
 
 ---@param mod_name string
-SPD.register_mod = function(mod_name)
+SPD.assign_performer = function(mod_name)
 	performer_name = mod_name
+end
+
+---@return string?
+SPD.get_assigned_performer = function()
+	return performer_name
 end
 
 ---@param mod_name string
@@ -77,6 +82,7 @@ SPD.process = function(mod_name)
 		end
 	end
 
+	performer_name = nil
 	SPD.containers = {}
 	containers = SPD.containers
 	return true
