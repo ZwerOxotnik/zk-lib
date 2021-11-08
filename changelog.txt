@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.9.13
+Date: 08. 11. 2021
+  Features:
+    - Added experimental library - SPD (Simple postdate data) [Not tested]
+  Bugfixes:
+    - Fixed filter of random items
+---------------------------------------------------------------------------------------------------
 Version: 0.9.12
 Date: 28. 10. 2021
   Changes:
