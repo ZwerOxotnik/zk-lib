@@ -1,6 +1,8 @@
 puan_api = require("data-api/puan_api")
 fakes = require("data-api/fakes")
 zk_lib = require("data-api/zk_lib")
+zk_SPD = require("experimental/SPD")
+zk_SPD.create_container("important-no-cheat-recipes")
 require("sound/sounds_list")
 
 
