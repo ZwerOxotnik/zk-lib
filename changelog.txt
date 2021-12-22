@@ -1,6 +1,9 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.9.15
+Version: 0.10.0
 Date: 22. 12. 2021
+  Features:
+    - Added modified handler from https://github.com/ZwerOxotnik/zk-factorio-static-lib/blob/master/lualibs/event_handler_vZO.lua
+    - Usage: local event_handler = require("__zk-lib__/static-libs/lualibs/event_handler_vZO.lua")
   Bugfixes:
     - Fixed parameter of on_configuration_changed in event listener
 ---------------------------------------------------------------------------------------------------
