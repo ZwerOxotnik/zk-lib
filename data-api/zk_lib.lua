@@ -27,6 +27,7 @@ zk_lib.attach_custom_input_event = function(name)
 end
 
 -- Creates tool as capsule to interact with defines.events.on_script_trigger_effect
+---@param tool_data table
 zk_lib.create_tool = function(tool_data)
 	local name = tool_data.name
 	local flags = tool_data.flags
@@ -93,7 +94,7 @@ zk_lib.create_tool = function(tool_data)
 							{{
 								type = "projectile",
 								projectile = name,
-								starting_speed = 100
+								starting_speed = tool_data.starting_speed or 100
 							}}
 						}}
 					}
