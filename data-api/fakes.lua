@@ -1,5 +1,5 @@
 --[[
-Copyright (C) 2018-2021 ZwerOxotnik <zweroxotnik@gmail.com>
+Copyright (C) 2018-2022 ZwerOxotnik <zweroxotnik@gmail.com>
 Licensed under the EUPL, Version 1.2 only (the "LICENCE");
 Source: github.com/ZwerOxotnik/zk-lib
 ]]--
