@@ -1,7 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.1
+Date: 26. 03. 2021
+  Scripting:
+    - Added "lazyAPI" as an experimental library
+
+---------------------------------------------------------------------------------------------------
 Version: 0.10.0
 Date: 22. 12. 2021
-  Features:
+  Scripting:
     - Added modified handler from https://github.com/ZwerOxotnik/zk-factorio-static-lib/blob/master/lualibs/event_handler_vZO.lua
     - Usage: local event_handler = require("__zk-lib__/static-libs/lualibs/event_handler_vZO.lua")
   Bugfixes:
@@ -14,7 +20,7 @@ Date: 08. 11. 2021
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.13
 Date: 08. 11. 2021
-  Features:
+  Scripting:
     - Added experimental library - SPD (Simple postdate data) [Not tested]
   Bugfixes:
     - Fixed filter of random items
@@ -33,7 +39,7 @@ Version: 0.9.10
 Date: 20. 09. 2021
   Changes:
     - Added Lithuanian translation (thanks to @Vajkis on crowdin)
-  Notes:
+  Translation:
     - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.9
@@ -48,7 +54,7 @@ Date: 13. 09. 2021
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.7
 Date: 13. 09. 2021
-  Changes:
+  Scripting:
     - Removed event_handler_vSM.lua (use "Switchable mods" mod instead)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.6
@@ -58,12 +64,12 @@ Date: 12. 09. 2021
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.5
 Date: 12. 09. 2021
-  Changes:
+  Scripting:
     - Changed event_handler_vSM.lua (not fully tested)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.4
 Date: 12. 09. 2021
-  Features:
+  Scripting:
     - Added event_handler_vSM.lua for switchable mods (not fully tested)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.3
@@ -74,16 +80,14 @@ Date: 11. 09. 2021
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.2
 Date: 05. 09. 2021
-  Changes:
+  Translation:
     - Updated Brazilian Portuguese translation (thanks to @BM123499 (Bruno Melo) on crowdin)
-  Notes:
     - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.1
 Date: 29. 08. 2021
-  Changes:
+  Translation:
     - Updated Ukrainian translation (thanks to @padwiyangel (Эвгений Хуторный) on crowdin)
-  Notes:
     - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.0
@@ -98,7 +102,7 @@ Date: 2021-08-23
 ---------------------------------------------------------------------------------------------------
 Version: 0.8.6
 Date: 2021-08-02
-  Features:
+  Scripting:
     - Added zk_lib.merge_localization
 ---------------------------------------------------------------------------------------------------
 Version: 0.8.4
@@ -108,11 +112,10 @@ Date: 2021-05-22
 ---------------------------------------------------------------------------------------------------
 Version: 0.8.2
 Date: 2021-05-22
-  Features:
+  Scripting:
     - Added library "zk_lib" as an utility for data stage
   Changes:
     - Fixed "auto-mining" for multiplayer
-  Notes:
     - Refactored some code
 ---------------------------------------------------------------------------------------------------
 Version: 0.8.0
@@ -220,11 +223,11 @@ Version: 0.6.0
 Date: 2020-11-26
   Bugfixes:
     - Fixed default events of addons on Nth tick
-  Major features:
+  Features:
     - Separated addons to "safe" addons and insecure addons in order to avoid restarts
   Changes:
     - Refactored
-  Note:
+  Notes:
     - Removed some hidden data for Factorio 1.1
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.0
@@ -235,7 +238,7 @@ Date: 2020-11-22
     - Changed modes for addons
     - Added a notification about not enabled addon
     - Hid a secret message
-  Note:
+  Notes:
     - I quess, it's stable version for current addons
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.4
@@ -246,7 +249,7 @@ Date: 2020-11-22
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.3
 Date: 2020-11-22
-  Major features:
+  Features:
     - Added and adapted https://mods.factorio.com/mod/CopyAssemblerPipeDirection as an addon
     - Added and improved https://mods.factorio.com/mod/adrenaline as an addon
   Bugfixes:
@@ -254,7 +257,7 @@ Date: 2020-11-22
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.2
 Date: 2020-11-22
-  Major features:
+  Features:
     - Added "Private electricity" from https://mods.factorio.com/mod/diplomacy as an addon
     - Added "Restrict building" from https://mods.factorio.com/mod/diplomacy as an addon
   Bugfixes:
@@ -264,7 +267,7 @@ Date: 2020-11-22
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.1
 Date: 2020-11-21
-  Major features:
+  Features:
     - Added and modified https://mods.factorio.com/mod/searching-flashlightR as an addon
   Changes:
     - Improved localization
@@ -293,7 +296,7 @@ Date: 2020-11-20
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.3
 Date: 2020-11-20
-  Major features:
+  Features:
     - Added improved addon https://mods.factorio.com/mod/timesaver-for-crafting
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.2
@@ -309,7 +312,7 @@ Date: 2020-11-20
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 2020-11-19
-  Major features:
+  Features:
     - Added addon https://mods.factorio.com/mod/auto-mining
     - Added addon "Delete decoratives"
   Features:
@@ -343,12 +346,12 @@ Date: 2020-11-18
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.3
 Date: 2020-11-18
-  Major features:
+  Features:
     - Added addon https://mods.factorio.com/mod/teams-zo
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.2
 Date: 2020-11-18
-  Major features:
+  Features:
     - Added addon https://mods.factorio.com/mod/scan-rocket-with-radars
   Changes:
     - Added proper localisation to addons
@@ -357,12 +360,12 @@ Date: 2020-11-18
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.1
 Date: 2020-11-17
-  Major features:
+  Features:
     - Added mutable mode for addons (you can disable addons during the game now)
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 2020-11-27
-  Major features:
+  Features:
     - Added a safe version of addons (https://mods.factorio.com/mod/random-gifts-by-timer + https://mods.factorio.com/mod/kill-nest-get-gift)
   Changes:
     - Optimized files
