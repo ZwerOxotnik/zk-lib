@@ -1,11 +1,14 @@
+name: Auto publish
+
 on:
   push:
+    paths:
+      - 'info.json' # Triggers only if the mod info file is updated
     branches:
       - main
 
-name: Publish
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository and submodules
