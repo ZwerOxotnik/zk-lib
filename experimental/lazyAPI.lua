@@ -33,15 +33,22 @@ local tremove = table.remove
 lazyAPI.add_flag = function(prototype, flag)
   local flags = prototype.flags
   if flags == nil then
-    log("There are no flags")
+    prototype.flags = {flag}
     return
   end
 
-  if flags then
-    flags[#flags+1] = flag
-  else
-    prototype.flags = {flag}
+  for i=1, #flags do
+    if flags[i] == flag then
+      return
+    end
   end
+  for _, _flag in next, flags, #flags do
+    if _flag == flag then
+      return
+    end
+  end
+
+  flags[#flags+1] = flag
 end
 
 
