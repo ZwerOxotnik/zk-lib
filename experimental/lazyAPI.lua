@@ -9,6 +9,7 @@ lazyAPI.tech = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
 
+-- lazyAPI.fix_inconsistent_array(array)
 -- lazyAPI.add_flag(prototype, flag)
 -- lazyAPI.remove_flag(prototype, flag)
 -- lazyAPI.find_flag(prototype, flag)
@@ -26,6 +27,23 @@ lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
 
 local tremove = table.remove
+
+
+---@param array table<number, any>
+---@return number? # first fixed index
+lazyAPI.fix_inconsistent_array = function(array)
+  if next(array, #array) == nil then
+    return
+  end
+
+  local first_fixed_index = #array + 1
+  for i, v in next, array, #array do
+    array[i] = nil
+    array[#array+1] = v
+  end
+
+  return first_fixed_index
+end
 
 
 ---@param prototype table
