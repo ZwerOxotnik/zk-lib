@@ -116,8 +116,9 @@ lazyAPI.find_flag = function(prototype, flag)
 end
 
 
----@param ingredients table
+---@param ingredients table<number, any>
 ---@param ingredient_name string
+---@return table #Removed https://wiki.factorio.com/Types/IngredientPrototype
 lazyAPI.remove_ingredient = function(ingredients, ingredient_name)
   if ingredients == nil then
     log("There are no ingredients")
@@ -127,12 +128,12 @@ lazyAPI.remove_ingredient = function(ingredients, ingredient_name)
   for i=#ingredients, 1, -1 do
     local ingredient = ingredients[i]
     if ingredient[1] == ingredient_name or ingredient["name"] == ingredient_name then
-      tremove(ingredients, i)
+      return tremove(ingredients, i)
     end
   end
   for i, ingredient in next, ingredients, #ingredients do
     if ingredient[1] == ingredient_name or ingredient["name"] == ingredient_name then
-      tremove(ingredients, i)
+      return tremove(ingredients, i)
     end
   end
 end
@@ -153,9 +154,9 @@ lazyAPI.remove_ingredient_everywhere = function(prototype, ingredient_name)
 end
 
 
----@param ingredients table
+---@param ingredients table<number, any>
 ---@param ingredient_name string
----@return table? # table from ingredients with the ingredient
+---@return table? #https://wiki.factorio.com/Types/IngredientPrototype
 lazyAPI.find_ingredient_by_name = function(ingredients, ingredient_name)
   if ingredients == nil then
     log("There are no ingredients")
@@ -179,6 +180,7 @@ end
 ---https://wiki.factorio.com/Prototype/Recipe#results
 ---@param prototype table
 ---@param result_name string
+---@return table #Removed https://wiki.factorio.com/Types/ProductPrototype
 lazyAPI.remove_recipe_result = function(prototype, result_name)
   local results = prototype.results
   if results == nil then
@@ -188,12 +190,12 @@ lazyAPI.remove_recipe_result = function(prototype, result_name)
 
   for i=#results, 1, -1 do
     if results[i]["name"] == result_name then
-      tremove(results, i)
+      return tremove(results, i)
     end
   end
   for i, result in next, results, #results do
     if result["name"] == result_name then
-      tremove(results, i)
+      return tremove(results, i)
     end
   end
 end
@@ -202,7 +204,7 @@ end
 ---https://wiki.factorio.com/Prototype/Recipe#results
 ---@param prototype table
 ---@param result_name string
----@return table? # table from prototype.results with the result
+---@return table? #https://wiki.factorio.com/Types/ProductPrototype
 lazyAPI.find_recipe_result_by_name = function(prototype, result_name)
   local results = prototype.results
   if results == nil then
@@ -228,7 +230,8 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
 lazyAPI.tech.unlock_recipe = function(prototype, recipe_name)
-  if prototype.effects == nil then
+  local effects = prototype.effects
+  if effects == nil then
     prototype.effects = {
       {
         type  = "unlock-recipe",
@@ -237,7 +240,6 @@ lazyAPI.tech.unlock_recipe = function(prototype, recipe_name)
     }
     return
   end
-  local effects = prototype.effects
 
   for i=1, #effects do
     local effect = effects[i]
@@ -263,7 +265,8 @@ end
 ---@param type string #https://wiki.factorio.com/Types/ModifierPrototype
 ---@param recipe_name string
 lazyAPI.tech.add_effect = function(prototype, type, recipe_name)
-  if prototype.effects == nil then
+  local effects = prototype.effects
+  if effects == nil then
     prototype.effects = {
       {
         type   = type,
@@ -272,7 +275,6 @@ lazyAPI.tech.add_effect = function(prototype, type, recipe_name)
     }
     return
   end
-  local effects = prototype.effects
 
   for i=1, #effects do
     local effect = effects[i]
@@ -296,7 +298,7 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param type string #https://wiki.factorio.com/Types/ModifierPrototype
 ---@param recipe_name string
----@return number? # index of the effect in prototype.effects
+---@return table? #https://wiki.factorio.com/Types/ModifierPrototype
 lazyAPI.tech.find_effect = function(prototype, type, recipe_name)
   local effects = prototype.effects
   if effects == nil then
@@ -307,12 +309,12 @@ lazyAPI.tech.find_effect = function(prototype, type, recipe_name)
   for i=1, #effects do
     local effect = effects[i]
     if effect["type"] == type and effect["recipe"] == recipe_name then
-      return i
+      return effect
     end
   end
-  for i, effect in next, effects, #effects do
+  for _, effect in next, effects, #effects do
     if effect["type"] == type and effect["recipe"] == recipe_name then
-      return i
+      return effect
     end
   end
 end
@@ -346,12 +348,12 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param tech_name string
 lazyAPI.tech.add_prerequisite = function(prototype, tech_name)
-  if prototype.prerequisites == nil then
+  local prerequisites = prototype.prerequisites
+  if prerequisites == nil then
     prototype.prerequisites = {tech_name}
     return
   end
 
-  local prerequisites = prototype.prerequisites
   for i=1, #prerequisites do
     if prerequisites[i] == tech_name then
       return
