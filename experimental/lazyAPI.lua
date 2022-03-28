@@ -13,22 +13,33 @@ lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 -- lazyAPI.add_flag(prototype, flag)
 -- lazyAPI.remove_flag(prototype, flag)
 -- lazyAPI.find_flag(prototype, flag)
--- lazyAPI.remove_ingredient(ingredients, item_name)
--- lazyAPI.remove_ingredient_everywhere(prototype, item_name)
+-- lazyAPI.add_item_ingredient(prototype, item_name, amount)
+-- lazyAPI.add_fluid_ingredient(prototype, fluid_name, amount)
+-- lazyAPI.add_ingredient(prototype, target, amount)
+-- lazyAPI.set_item_ingredient(prototype, item_name, amount)
+-- lazyAPI.set_fluid_ingredient(prototype, fluid_name, amount)
+-- lazyAPI.set_ingredient(prototype, target, amount)
+-- lazyAPI.remove_ingredient(ingredients, item_name, type)
+-- lazyAPI.remove_ingredient_everywhere(prototype, item_name, type)
 -- lazyAPI.find_ingredient_by_name(prototype, item_name)
--- lazyAPI.remove_recipe_result(prototype, result_name)
--- lazyAPI.find_recipe_result_by_name(prototype, result_name)
+-- lazyAPI.remove_item_from_result(prototype, item_name)
+-- lazyAPI.remove_fluid_from_result(prototype, fluid_name)
+-- lazyAPI.find_item_in_result(prototype, item_name)
+-- lazyAPI.find_fluid_in_result(prototype, fluid_name)
 
 -- lazyAPI.tech.unlock_recipe(prototype, recipe_name)
 -- lazyAPI.tech.add_effect(prototype, type, recipe_name)
 -- lazyAPI.tech.find_effect(prototype, type, recipe_name)
 -- lazyAPI.tech.find_prerequisite(prototype, tech_name)
 -- lazyAPI.tech.add_prerequisite(prototype, tech_name)
+-- lazyAPI.tech.add_ingredient(prototype, tool_name, amount)
+-- lazyAPI.tech.set_ingredient(prototype, tool_name, amount)
 
 
 local tremove = table.remove
 
 
+--- Fixes keys with positive numbers only
 ---@param array table<number, any>
 ---@return number? # first fixed index
 lazyAPI.fix_inconsistent_array = function(array)
@@ -126,36 +137,201 @@ lazyAPI.find_flag = function(prototype, flag)
 end
 
 
+---Adds an item ingredient in prototype.ingredients
+---https://wiki.factorio.com/Prototype/Recipe#ingredients
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param item_name string #https://wiki.factorio.com/Prototype/Item#name
+---@param amount? number #1 by default
+---@return table #https://wiki.factorio.com/Types/ItemIngredientPrototype
+lazyAPI.add_item_ingredient = function(prototype, item_name, amount)
+	amount = amount or 1
+	local ingredients = prototype.ingredients
+	if prototype == nil then
+		prototype.ingredients = {{item_name, amount}}
+		return prototype.ingredients[1]
+	end
+
+	fix_array(ingredients)
+	for i=1, #ingredients do
+		local ingredient = ingredients[i]
+		if ingredient[1] == item_name then
+			ingredient[2] = ingredient[2] + amount
+			return ingredient
+		elseif ingredient["type"] == "item" and ingredient["name"] == item_name then
+			ingredient[2] = ingredient[2] + amount
+			return ingredient
+		end
+	end
+
+	ingredients[#ingredients+1] = {item_name, amount}
+	return ingredients[#ingredients]
+end
+
+
+---Adds a fluid ingredient in prototype.ingredients
+---https://wiki.factorio.com/Prototype/Recipe#ingredients
+---https://wiki.factorio.com/Types/FluidIngredientPrototype
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param fluid_name string #https://wiki.factorio.com/Prototype/Fluid#name
+---@param amount? number #1 by default
+---@return table #https://wiki.factorio.com/Types/FluidIngredientPrototype
+lazyAPI.add_fluid_ingredient = function(prototype, fluid_name, amount)
+	amount = amount or 1
+	local ingredients = prototype.ingredients
+	if prototype == nil then
+		prototype.ingredients = {{type = "fluid", name = fluid_name, amount = amount}}
+		return prototype.ingredients[1]
+	end
+
+	fix_array(ingredients)
+	for i=1, #ingredients do
+		local ingredient = ingredients[i]
+		if ingredient["type"] == "fluid" and ingredient["name"] == fluid_name then
+			ingredient[2] = ingredient[2] + amount
+			return ingredient
+		end
+	end
+
+	ingredients[#ingredients+1] = {type = "fluid", name = fluid_name, amount = amount}
+	return ingredients[#ingredients]
+end
+
+
+---Adds an ingredient in prototype.ingredients
+---https://wiki.factorio.com/Prototype/Recipe#ingredients
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param target table #https://wiki.factorio.com/Prototype/Item or https://wiki.factorio.com/Prototype/Fluid#name
+---@param amount? number #1 by default
+---@return table #https://wiki.factorio.com/Types/IngredientPrototype
+lazyAPI.add_ingredient = function(prototype, target, amount)
+	local type = target.type
+	if type == "fluid" then
+		return lazyAPI.add_item_ingredient(prototype, target.name, amount)
+	elseif type == "item" then
+		return lazyAPI.add_fluid_ingredient(prototype, target.name, amount)
+	end
+end
+
+
+---Sets an item ingredient in prototype.ingredients
+---https://wiki.factorio.com/Prototype/Recipe#ingredients
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param item_name string #https://wiki.factorio.com/Prototype/Item#name
+---@param amount? number #1 by default
+lazyAPI.set_item_ingredient = function(prototype, item_name, amount)
+	amount = amount or 1
+	local ingredients = prototype.ingredients
+	if prototype == nil then
+		prototype.ingredients = {{item_name, amount}}
+		return
+	end
+
+	fix_array(ingredients)
+	for i=1, #ingredients do
+		local ingredient = ingredients[i]
+		if ingredient[1] == item_name then
+			ingredient[2] = amount
+			return
+		elseif ingredient["type"] == "item" and ingredient["name"] == item_name then
+			ingredient[2] = amount
+			return
+		end
+	end
+
+	ingredients[#ingredients+1] = {item_name, amount}
+end
+
+
+---Sets a fluid ingredient in prototype.ingredients
+---https://wiki.factorio.com/Prototype/Recipe#ingredients
+---https://wiki.factorio.com/Types/FluidIngredientPrototype
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param fluid_name string #https://wiki.factorio.com/Prototype/Fluid#name
+---@param amount? number #1 by default
+---@return table #https://wiki.factorio.com/Types/FluidIngredientPrototype
+lazyAPI.set_fluid_ingredient = function(prototype, fluid_name, amount)
+	amount = amount or 1
+	local ingredients = prototype.ingredients
+	if prototype == nil then
+		prototype.ingredients = {{type = "fluid", name = fluid_name, amount = amount}}
+		return
+	end
+
+	fix_array(ingredients)
+	for i=1, #ingredients do
+		local ingredient = ingredients[i]
+		if ingredient["type"] == "fluid" and ingredient["name"] == fluid_name then
+			ingredient[2] = amount
+			return
+		end
+	end
+
+	ingredients[#ingredients+1] = {type = "fluid", name = fluid_name, amount = amount}
+end
+
+
+---Sets an ingredient in prototype.ingredients
+---https://wiki.factorio.com/Prototype/Recipe#ingredients
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param target table #https://wiki.factorio.com/Prototype/Item or https://wiki.factorio.com/Prototype/Fluid#name
+---@param amount? number #1 by default
+lazyAPI.set_ingredient = function(prototype, target, amount)
+	local type = target.type
+	if type == "fluid" then
+		lazyAPI.set_item_ingredient(prototype, target.name, amount)
+	elseif type == "item" then
+		lazyAPI.set_fluid_ingredient(prototype, target.name, amount)
+	end
+end
+
+
 ---@param ingredients table<number, any>
 ---@param ingredient_name string
+---@param type? "item"|"fluid" #"item" by default
 ---@return table #Removed https://wiki.factorio.com/Types/IngredientPrototype
-lazyAPI.remove_ingredient = function(ingredients, ingredient_name)
+lazyAPI.remove_ingredient = function(ingredients, ingredient_name, type)
+	type = type or "item"
 	if ingredients == nil then
 		log("There are no ingredients")
 		return
 	end
 
 	fix_array(ingredients)
-	for i=#ingredients, 1, -1 do
-		local ingredient = ingredients[i]
-		if ingredient[1] == ingredient_name or ingredient["name"] == ingredient_name then
-			return tremove(ingredients, i)
+	if type == "item" then
+		for i=#ingredients, 1, -1 do
+			local ingredient = ingredients[i]
+			if ingredient[1] == ingredient_name then
+				return tremove(ingredients, i)
+			elseif ingredient["type"] == "item" and ingredient["name"] == ingredient_name then
+				return tremove(ingredients, i)
+			end
+		end
+	end
+	if type == "fluid" then
+		for i=#ingredients, 1, -1 do
+			local ingredient = ingredients[i]
+			if ingredient["type"] == "fluid" and ingredient["name"] == ingredient_name then
+				return tremove(ingredients, i)
+			end
 		end
 	end
 end
+local remove_ingredient = lazyAPI.remove_ingredient
 
 
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@param ingredient_name string
-lazyAPI.remove_ingredient_everywhere = function(prototype, ingredient_name)
+---@param type? "item"|"fluid" #"item" by default
+lazyAPI.remove_ingredient_everywhere = function(prototype, ingredient_name, type)
+	type = type or "item"
 	if prototype.normal then
-		lazyAPI.remove_ingredient(prototype.normal.ingredients, ingredient_name)
+		remove_ingredient(prototype.normal.ingredients, ingredient_name, type)
 	end
 	if prototype.expensive then
-		lazyAPI.remove_ingredient(prototype.expensive.ingredients, ingredient_name)
+		remove_ingredient(prototype.expensive.ingredients, ingredient_name, type)
 	end
 	if prototype.ingredients then
-		lazyAPI.remove_ingredient(prototype.ingredients, ingredient_name)
+		remove_ingredient(prototype.ingredients, ingredient_name, type)
 	end
 end
 
@@ -181,29 +357,8 @@ end
 
 ---https://wiki.factorio.com/Prototype/Recipe#results
 ---@param prototype table
----@param result_name string
----@return table #Removed https://wiki.factorio.com/Types/ProductPrototype
-lazyAPI.remove_recipe_result = function(prototype, result_name)
-	local results = prototype.results
-	if results == nil then
-		log("There are no results in the prototype")
-		return
-	end
-
-	fix_array(results)
-	for i=#results, 1, -1 do
-		if results[i]["name"] == result_name then
-			return tremove(results, i)
-		end
-	end
-end
-
-
----https://wiki.factorio.com/Prototype/Recipe#results
----@param prototype table
----@param result_name string
----@return table? #https://wiki.factorio.com/Types/ProductPrototype
-lazyAPI.find_recipe_result_by_name = function(prototype, result_name)
+---@param item_name string
+lazyAPI.remove_item_from_result = function(prototype, item_name)
 	local results = prototype.results
 	if results == nil then
 		log("There are no results in the prototype")
@@ -213,7 +368,75 @@ lazyAPI.find_recipe_result_by_name = function(prototype, result_name)
 	fix_array(results)
 	for i=#results, 1, -1 do
 		local result = results[i]
-		if result["name"] == result_name then
+		if result[1] == item_name then
+			tremove(results, i)
+		elseif result["type"] == "item" and result["name"] == item_name then
+			tremove(results, i)
+		end
+	end
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table
+---@param fluid_name string
+lazyAPI.remove_fluid_from_result = function(prototype, fluid_name)
+	local results = prototype.results
+	if results == nil then
+		log("There are no results in the prototype")
+		return
+	end
+
+	fix_array(results)
+	for i=#results, 1, -1 do
+		local result = results[i]
+		if result[1] == fluid_name then
+			tremove(results, i)
+		elseif result["type"] == "item" and result["name"] == fluid_name then
+			tremove(results, i)
+		end
+	end
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table
+---@param item_name string
+---@return table? #https://wiki.factorio.com/Types/ProductPrototype
+lazyAPI.find_item_in_result = function(prototype, item_name)
+	local results = prototype.results
+	if results == nil then
+		log("There are no results in the prototype")
+		return
+	end
+
+	fix_array(results)
+	for i=#results, 1, -1 do
+		local result = results[i]
+		if result[1] == item_name then
+			return result
+		elseif result["type"] == "item" and result["name"] == item_name then
+			return result
+		end
+	end
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table
+---@param fluid_name string
+---@return table? #https://wiki.factorio.com/Types/ProductPrototype
+lazyAPI.find_fluid_in_result = function(prototype, fluid_name)
+	local results = prototype.results
+	if results == nil then
+		log("There are no results in the prototype")
+		return
+	end
+
+	fix_array(results)
+	for i=#results, 1, -1 do
+		local result = results[i]
+		if result["type"] == "fluid" and result["name"] == fluid_name then
 			return result
 		end
 	end
@@ -341,4 +564,68 @@ lazyAPI.tech.add_prerequisite = function(prototype, tech_name)
 	end
 
 	prerequisites[#prerequisites+1] = tech_name
+end
+
+
+---Adds an ingredient for the research
+---https://wiki.factorio.com/Prototype/Technology#unit
+---https://wiki.factorio.com/Types/ItemIngredientPrototype
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param tool_name string #https://wiki.factorio.com/Prototype/Tool#name
+---@param amount? number #1 by default
+---@return table? #https://wiki.factorio.com/Types/ItemIngredientPrototype
+lazyAPI.tech.add_ingredient = function(prototype, tool_name, amount)
+	local unit = prototype.unit
+	if unit == nil then
+		log("There are no unit in the prototype")
+		return
+	end
+
+	local ingredients = unit.ingredients
+	fix_array(ingredients)
+	amount = amount or 1
+	for i=1, #ingredients do
+		local ingredient = ingredients[i]
+		if ingredient[1] == tool_name then
+			ingredient[2] = ingredient[2] + amount
+			return ingredient
+		elseif ingredient["name"] == tool_name then
+			ingredient[2] = ingredient[2] + amount
+			return ingredient
+		end
+	end
+
+	ingredients[#ingredients+1] = {tool_name, amount}
+	return ingredients[#ingredients]
+end
+
+
+---Sets an ingredient for the research
+---https://wiki.factorio.com/Prototype/Technology#unit
+---https://wiki.factorio.com/Types/ItemIngredientPrototype
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param tool_name string #https://wiki.factorio.com/Prototype/Tool#name
+---@param amount? number #1 by default
+lazyAPI.tech.set_ingredient = function(prototype, tool_name, amount)
+	local unit = prototype.unit
+	if unit == nil then
+		log("There are no unit in the prototype")
+		return
+	end
+
+	local ingredients = unit.ingredients
+	fix_array(ingredients)
+	amount = amount or 1
+	for i=1, #ingredients do
+		local ingredient = ingredients[i]
+		if ingredient[1] == tool_name then
+			ingredient[2] = amount
+			return
+		elseif ingredient["name"] == tool_name then
+			ingredient[2] = amount
+			return
+		end
+	end
+
+	ingredients[#ingredients+1] = {tool_name, amount}
 end
