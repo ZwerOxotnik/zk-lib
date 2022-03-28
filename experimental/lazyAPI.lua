@@ -37,22 +37,35 @@ lazyAPI.fix_inconsistent_array = function(array)
 		return
 	end
 
-	local temp = {}
-	for i, v in next, array do
-		if i > len_before then
-			array[i] = nil
-			temp[#temp+1] = v
+	local temp_arr, last_key
+	for k, v in next, array do
+		if k > len_before then
+			array[k] = nil
+			if next(array, k) == nil then
+				array[len_before+1] = v
+				return len_before + 1
+			end
+			last_key = k
+			temp_arr = {v}
+			break
 		end
 	end
-	for i=1, #temp do
-		array[#array+1] = temp[i]
-	end
 
-	if #temp > 0 then
-		return len_before + 1
+	if temp_arr == nil then return end
+
+	for k, v in next, array, last_key do
+		if k > len_before then
+			array[k] = nil
+			temp_arr[#temp_arr+1] = v
+		end
 	end
+	for i=1, #temp_arr do
+		array[#array+1] = temp_arr[i]
+	end
+	return len_before + 1
 end
 lazyAPI.fix_array = lazyAPI.fix_inconsistent_array
+local fix_array = lazyAPI.fix_array
 
 
 ---@param prototype table
@@ -64,7 +77,7 @@ lazyAPI.add_flag = function(prototype, flag)
 		return
 	end
 
-	lazyAPI.fix_array(flags)
+	fix_array(flags)
 	for i=1, #flags do
 		if flags[i] == flag then
 			return
@@ -84,7 +97,7 @@ lazyAPI.remove_flag = function(prototype, flag)
 		return
 	end
 
-	lazyAPI.fix_array(flags)
+	fix_array(flags)
 	for i=#flags, 1, -1 do
 		if flags[i] == flag then
 			tremove(flags, i)
@@ -104,7 +117,7 @@ lazyAPI.find_flag = function(prototype, flag)
 		return
 	end
 
-	lazyAPI.fix_array(flags)
+	fix_array(flags)
 	for i=1, #flags do
 		if flags[i] == flag then
 			return i
@@ -122,7 +135,7 @@ lazyAPI.remove_ingredient = function(ingredients, ingredient_name)
 		return
 	end
 
-	lazyAPI.fix_array(ingredients)
+	fix_array(ingredients)
 	for i=#ingredients, 1, -1 do
 		local ingredient = ingredients[i]
 		if ingredient[1] == ingredient_name or ingredient["name"] == ingredient_name then
@@ -156,7 +169,7 @@ lazyAPI.find_ingredient_by_name = function(ingredients, ingredient_name)
 		return
 	end
 
-	lazyAPI.fix_array(ingredients)
+	fix_array(ingredients)
 	for i=1, #ingredients do
 		local ingredient = ingredients[i]
 		if ingredient[1] == ingredient_name or ingredient["name"] == ingredient_name then
@@ -177,7 +190,7 @@ lazyAPI.remove_recipe_result = function(prototype, result_name)
 		return
 	end
 
-	lazyAPI.fix_array(results)
+	fix_array(results)
 	for i=#results, 1, -1 do
 		if results[i]["name"] == result_name then
 			return tremove(results, i)
@@ -197,7 +210,7 @@ lazyAPI.find_recipe_result_by_name = function(prototype, result_name)
 		return
 	end
 
-	lazyAPI.fix_array(results)
+	fix_array(results)
 	for i=#results, 1, -1 do
 		local result = results[i]
 		if result["name"] == result_name then
@@ -222,7 +235,7 @@ lazyAPI.tech.unlock_recipe = function(prototype, recipe_name)
 		return
 	end
 
-	lazyAPI.fix_array(effects)
+	fix_array(effects)
 	for i=1, #effects do
 		local effect = effects[i]
 		if effect["recipe"] == recipe_name then
@@ -253,7 +266,7 @@ lazyAPI.tech.add_effect = function(prototype, type, recipe_name)
 		return
 	end
 
-	lazyAPI.fix_array(effects)
+	fix_array(effects)
 	for i=1, #effects do
 		local effect = effects[i]
 		if effect["type"] == type and effect["recipe"] == recipe_name then
@@ -280,7 +293,7 @@ lazyAPI.tech.find_effect = function(prototype, type, recipe_name)
 		return
 	end
 
-	lazyAPI.fix_array(effects)
+	fix_array(effects)
 	for i=1, #effects do
 		local effect = effects[i]
 		if effect["type"] == type and effect["recipe"] == recipe_name then
@@ -301,7 +314,7 @@ lazyAPI.tech.find_prerequisite = function(prototype, tech_name)
 		return
 	end
 
-	lazyAPI.fix_array(prerequisites)
+	fix_array(prerequisites)
 	for i=1, #prerequisites do
 		if prerequisites[i] == tech_name then
 			return i
@@ -320,7 +333,7 @@ lazyAPI.tech.add_prerequisite = function(prototype, tech_name)
 		return
 	end
 
-	lazyAPI.fix_array(prerequisites)
+	fix_array(prerequisites)
 	for i=1, #prerequisites do
 		if prerequisites[i] == tech_name then
 			return
