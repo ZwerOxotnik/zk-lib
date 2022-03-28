@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.10.4
+Date: 28. 03. 2021
+  Bugfixes:
+    - Fixed lazyAPI.fix_inconsistent_array
+---------------------------------------------------------------------------------------------------
 Version: 0.10.3
 Date: 27. 03. 2021
   Scripting:
@@ -24,7 +29,7 @@ Date: 22. 12. 2021
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.14
 Date: 08. 11. 2021
-  Changes:
+  Scripting:
     - Created zk_SPD containers
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.13
@@ -46,14 +51,13 @@ Date: 27. 10. 2021
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.10
 Date: 20. 09. 2021
-  Changes:
-    - Added Lithuanian translation (thanks to @Vajkis on crowdin)
   Translation:
+    - Added Lithuanian translation (thanks to @Vajkis on crowdin)
     - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.9
 Date: 18. 09. 2021
-  Changes:
+  Scripting:
     - Added "zk_action_button_dark" button
 ---------------------------------------------------------------------------------------------------
 Version: 0.9.8
