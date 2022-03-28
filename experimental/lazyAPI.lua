@@ -32,15 +32,14 @@ local tremove = table.remove
 ---@param array table<number, any>
 ---@return number? # first fixed index
 lazyAPI.fix_inconsistent_array = function(array)
-	local size = #array
-	if next(array, size) == nil then
+	local len_before = #array
+	if next(array, len_before) == nil then
 		return
 	end
 
-	local first_fixed_index = size + 1
 	local temp = {}
 	for i, v in next, array do
-		if i > size then
+		if i > len_before then
 			array[i] = nil
 			temp[#temp+1] = v
 		end
@@ -49,7 +48,9 @@ lazyAPI.fix_inconsistent_array = function(array)
 		array[#array+1] = temp[i]
 	end
 
-	return first_fixed_index
+	if #temp > 0 then
+		return len_before + 1
+	end
 end
 lazyAPI.fix_array = lazyAPI.fix_inconsistent_array
 
