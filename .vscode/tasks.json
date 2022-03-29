@@ -28,19 +28,19 @@
 		{
 			"label": "Test site",
 			"type": "shell",
-			"command": "hugo server -D -s predocs",
+			"command": "hugo server -D -s .predocs",
 			"group": "test"
 		},
 		{
 			"label": "Build site",
 			"type": "shell",
-			"command": "hugo --minify -s predocs",
+			"command": "hugo --minify -s .predocs",
 			"group": "build"
 		},
 		{
 			"label": "Delete generated site",
 			"type": "shell",
-			"command": "rm -rf predocs/public",
+			"command": "rm -rf .predocs/public",
 			"group": "test"
 		}
 	]

@@ -173,7 +173,7 @@ docs/_build
 /public
 
 #Hugo-geekdoc theme
-/predocs/themes/hugo-geekdoc
+/.predocs/themes/hugo-geekdoc
 
 #Hugo output (site)
-/predocs/public
+/.predocs/public
