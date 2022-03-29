@@ -168,3 +168,12 @@ docs/_build
 
 # lua2p debug files
 *.meta.lua
+
+# Hugo default output directory
+/public
+
+#Hugo-geekdoc theme
+/predocs/themes/hugo-geekdoc
+
+#Hugo output (site)
+/predocs/public

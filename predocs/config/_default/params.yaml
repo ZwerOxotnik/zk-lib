@@ -1,0 +1,18 @@
+---
+description: >
+  Multipurpose Factorio library with switchable addons
+images:
+  - "https://github.com/ZwerOxotnik/zk-lib/raw/main/thumbnail.png"
+
+geekdocToC: 3
+geekdocTagsToMenu: true
+
+geekdocRepo: https://github.com/ZwerOxotnik/zk-lib
+geekdocEditPath: blob/main/predocs
+GeekdocLogo: android-chrome-192x192.png
+
+geekdocSearch: true
+geekdocSearchShowParent: true
+
+geekdocImageLazyLoading: true
+geekdocDarkModeDim: true

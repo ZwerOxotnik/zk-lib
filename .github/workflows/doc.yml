@@ -1,34 +1,49 @@
-name: Publish doc site
+name: Publish site
 
 on:
   push:
     branches:
       - main  # Set a branch to deploy
+  pull_request:
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true
+          submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
 
-      - uses: actions/setup-python@v2
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
         with:
-          python-version: '3.6' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+          hugo-version: 'latest'
+          # extended: true
 
-      # this Action should follow steps to set up Python build environment
-      - name: Install Python dependencies
-        uses: py-actions/py-dependency-install@v2
+      - name: Create predocs/themes/hugo-geekdoc/
+        run: mkdir -p predocs/themes/hugo-geekdoc/
+        shell: bash
+  
+      - name: Download hugo-geekdoc
+        run: curl -L https://github.com/thegeeklab/hugo-geekdoc/releases/latest/download/hugo-geekdoc.tar.gz | tar -xz -C predocs/themes/hugo-geekdoc/ --strip-components=1
+        shell: bash
 
-      - name: Build html
-        run: |
-          sphinx-build -b html predocs docs/_build/html
+      - uses: actions/cache@v2
+        with:
+          path: /tmp/hugo_cache
+          key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-hugomod-
+
+      - name: Build
+        run: hugo --minify -s predocs
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
+          publish_dir: .predocs/public

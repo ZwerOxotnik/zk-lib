@@ -24,6 +24,24 @@
 			"command": "luacheck",
 			"args": ["${file}"],
 			"group": "test"
+		},
+		{
+			"label": "Test site",
+			"type": "shell",
+			"command": "hugo server -D -s predocs",
+			"group": "test"
+		},
+		{
+			"label": "Build site",
+			"type": "shell",
+			"command": "hugo --minify -s predocs",
+			"group": "build"
+		},
+		{
+			"label": "Delete generated site",
+			"type": "shell",
+			"command": "rm -rf predocs/public",
+			"group": "test"
 		}
 	]
 }
