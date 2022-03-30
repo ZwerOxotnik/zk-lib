@@ -14,13 +14,13 @@ local locale = require("static-libs/lualibs/locale")
 
 
 -- Add your functions in lazyAPI.add_extension(function) and
--- lazyAPI.apply_wrapper will pass wrapped prototype into your function
+-- lazyAPI.wrap_prototype will pass wrapped prototype into your function
 ---@type table<number, function>
 local extensions = {}
 
 
 -- lazyAPI.add_extension(function)
--- lazyAPI.apply_wrapper(prototype)
+-- lazyAPI.wrap_prototype(prototype)
 -- lazyAPI.fix_inconsistent_array(array) | lazyAPI.fix_array(array)
 -- lazyAPI.array_to_locale(array)
 -- lazyAPI.array_to_locale_as_new(array)
@@ -782,10 +782,10 @@ local prot_funcs = {
 
 ---@param prototype table
 ---@return table # wrapped prototype with lazyAPI functions
-lazyAPI.apply_wrapper = function(prototype)
+lazyAPI.wrap_prototype = function(prototype)
 	local type = prototype.type
 	if type == nil then
-		error("lazyAPI.apply_wrapper(prototype) got not a prototype")
+		error("lazyAPI.wrap_prototype(prototype) got not a prototype")
 	end
 
 	local wrapped_prot = {
