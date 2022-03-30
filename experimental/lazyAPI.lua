@@ -627,7 +627,7 @@ lazyAPI.tech.set_tool = function(prototype, tool_name, amount)
 end
 
 
-local function get_flags_funcs(o)
+local function give_flag_funcs(o)
 	for k, f in pairs(lazyAPI.flags) do
 		o[k] = f
 	end
@@ -662,7 +662,7 @@ lazyAPI.apply_wrapper = function(prototype)
 	if f then f(wrapped_prot) end
 
 	-- I'm lazy to check all prototypes :/
-	get_flags_funcs(wrapped_prot)
+	give_flag_funcs(wrapped_prot)
 
 	return wrapped_prot
 end
