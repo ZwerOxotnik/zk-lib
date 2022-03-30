@@ -11,15 +11,15 @@ require("prototypes/utility-sprites")
 require("prototypes/styles")
 
 
-zk_lib.attach_custom_input_event("move-down")
-zk_lib.attach_custom_input_event("move-left")
-zk_lib.attach_custom_input_event("move-right")
-zk_lib.attach_custom_input_event("move-up")
-zk_lib.attach_custom_input_event("mine")
-zk_lib.attach_custom_input_event("toggle-map")
+lazyAPI.attach_custom_input_event("move-down")
+lazyAPI.attach_custom_input_event("move-left")
+lazyAPI.attach_custom_input_event("move-right")
+lazyAPI.attach_custom_input_event("move-up")
+lazyAPI.attach_custom_input_event("mine")
+lazyAPI.attach_custom_input_event("toggle-map")
 
 -- TODO: create special scripts
--- zk_lib.create_tool({
+-- lazyAPI.create_trigger_capsule({
 --   name = "zk-select", -- this is fake cursor to find cursor position via https://lua-api.factorio.com/latest/events.html#on_script_trigger_effect
 --   icon = "__zk-lib__/graphics/select.png", --"__core__/graphics/mouse-cursor.png",
 --   radius_color = {0, 0, 0, 0}
