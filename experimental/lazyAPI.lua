@@ -45,7 +45,9 @@ local extensions = {}
 -- lazyAPI.recipe.remove_item_from_result(ingredients, item_name)
 -- lazyAPI.recipe.remove_fluid_from_result(ingredients, fluid_name)
 -- lazyAPI.recipe.find_item_in_result(prototype, item_name)
+-- lazyAPI.recipe.count_item_in_result(prototype, item_name)
 -- lazyAPI.recipe.find_fluid_in_result(prototype, fluid_name)
+-- lazyAPI.recipe.count_fluid_in_result(prototype, fluid_name)
 
 -- lazyAPI.tech.unlock_recipe(prototype, recipe_name)
 -- lazyAPI.tech.add_effect(prototype, type, recipe_name)
@@ -129,7 +131,7 @@ lazyAPI.create_trigger_capsule = function(tool_data)
 			type = "projectile",
 			name = name,
 			flags = {"not-on-map"},
-			acceleration = 100,
+			acceleration = tool_data.acceleration or 100,
 			action =
 			{{
 				-- runs the script when projectile lands:
@@ -546,6 +548,31 @@ end
 
 ---https://wiki.factorio.com/Prototype/Recipe#results
 ---@param prototype table
+---@param item_name string
+---@return number #amount
+lazyAPI.recipe.count_item_in_result = function(prototype, item_name)
+	local results = (prototype.prototype or prototype).results
+	if results == nil then
+		log("There are no results in the prototype")
+		return
+	end
+
+	fix_array(results)
+	local amount = 0
+	for i=#results, 1, -1 do
+		local result = results[i]
+		if result[1] == item_name then
+			amount = amount + result[2]
+		elseif result["type"] == "item" and result["name"] == item_name then
+			amount = amount + result["amount"]
+		end
+	end
+	return amount
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table
 ---@param fluid_name string
 ---@return table? #https://wiki.factorio.com/Types/ProductPrototype
 lazyAPI.recipe.find_fluid_in_result = function(prototype, fluid_name)
@@ -562,6 +589,29 @@ lazyAPI.recipe.find_fluid_in_result = function(prototype, fluid_name)
 			return result
 		end
 	end
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table
+---@param fluid_name string
+---@return number #amount
+lazyAPI.recipe.count_fluid_in_result = function(prototype, fluid_name)
+	local results = (prototype.prototype or prototype).results
+	if results == nil then
+		log("There are no results in the prototype")
+		return
+	end
+
+	fix_array(results)
+	local amount = 0
+	for i=#results, 1, -1 do
+		local result = results[i]
+		if result["type"] == "fluid" and result["name"] == fluid_name then
+			amount = amount + result["amount"]
+		end
+	end
+	return amount
 end
 
 
