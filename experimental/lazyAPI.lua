@@ -1,12 +1,16 @@
--- Are you lazy to change/add/remove/check some prototypes in the data stage? Use this library then.\
+-- Are you lazy to change/add/remove/check some prototypes/stuff in the data stage? Use this library then.\
 -- Currently, this is an experimental library, not everything is stable yet. (anything can be changed, removed, added etc.)\
 -- No messy data, efficient API.
---- @class lazyAPI
-lazyAPI = {}
+---@module "__zk-lib__/experimental/lazyAPI"
+---@class lazyAPI
+local lazyAPI = {}
 lazyAPI.tech = {}
 lazyAPI.flags = {}
 lazyAPI.recipe = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
+
+
+local locale = require("static-libs/lualibs/locale")
 
 
 -- Add your functions in lazyAPI.add_extension(function) and
@@ -18,6 +22,10 @@ local extensions = {}
 -- lazyAPI.add_extension(function)
 -- lazyAPI.apply_wrapper(prototype)
 -- lazyAPI.fix_inconsistent_array(array) | lazyAPI.fix_array(array)
+-- lazyAPI.array_to_locale(array)
+-- lazyAPI.array_to_locale_as_new(array)
+-- lazyAPI.merge_locales(...)
+-- lazyAPI.merge_locales_as_new(...)
 
 -- lazyAPI.flags.add_flag(prototype, flag)
 -- lazyAPI.flags.remove_flag(prototype, flag)
@@ -47,6 +55,12 @@ local extensions = {}
 
 
 local tremove = table.remove
+
+
+lazyAPI.array_to_locale = locale.array_to_locale
+lazyAPI.array_to_locale_as_new = locale.array_to_locale_as_new
+lazyAPI.merge_locales = locale.merge_locales
+lazyAPI.merge_locales_as_new = locale.merge_locales_as_new
 
 
 ---@param func function #your function
@@ -683,3 +697,5 @@ lazyAPI.apply_wrapper = function(prototype)
 
 	return wrapped_prot
 end
+
+return lazyAPI

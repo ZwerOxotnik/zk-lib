@@ -1,7 +1,7 @@
 local zk_lib = {}
 
 
-local ceil = math.ceil
+local locale = require("static-libs/lualibs/locale")
 
 
 local custom_input = data.raw["custom-input"]
@@ -104,33 +104,7 @@ zk_lib.create_tool = function(tool_data)
 	})
 end
 
----@param raw_data table
----@return table|boolean
-zk_lib.merge_localization = function(raw_data)
-	local final_data = {}
-	if #raw_data >= 380 then
-			log("Too much data")
-			return false
-	elseif #raw_data > 10 then
-		for i=1, ceil(#raw_data/20)+1 do
-			final_data[i] = {""}
-		end
-		local i1 = 1
-		local i2 = 2
-		for _, _data in pairs(raw_data) do
-			final_data[i1][i2] = _data
-			if i2 >= 20 then
-		    i1 = i1 + 1
-		    i2 = 2
-			else
-		    i2 = i2 + 1
-			end
-		end
-	else
-		final_data = raw_data
-	end
-
-	return final_data
-end
+---@deprecated #Use lazyAPI.array_to_locale instead or require("static-libs.lualibs.locale").array_to_locale
+zk_lib.merge_localization = locale.array_to_locale
 
 return zk_lib
