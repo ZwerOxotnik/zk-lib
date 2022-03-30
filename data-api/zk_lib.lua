@@ -104,7 +104,7 @@ zk_lib.create_tool = function(tool_data)
 	})
 end
 
----@deprecated #Use lazyAPI.array_to_locale instead or require("static-libs.lualibs.locale").array_to_locale
+---@deprecated #Use lazyAPI.array_to_locale instead or require("__zk-lib__/static-libs/lualibs/locale").array_to_locale
 zk_lib.merge_localization = locale.array_to_locale
 
 return zk_lib
