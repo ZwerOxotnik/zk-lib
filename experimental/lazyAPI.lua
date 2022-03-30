@@ -9,6 +9,13 @@ lazyAPI.recipe = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
 
+-- Add your functions in lazyAPI.add_extension(function) and
+-- lazyAPI.apply_wrapper will pass wrapped prototype into your function
+---@type table<number, function>
+local extensions = {}
+
+
+-- lazyAPI.add_extension(function)
 -- lazyAPI.apply_wrapper(prototype)
 -- lazyAPI.fix_inconsistent_array(array) | lazyAPI.fix_array(array)
 
@@ -40,6 +47,12 @@ lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
 
 local tremove = table.remove
+
+
+---@param func function #your function
+lazyAPI.add_extension = function(func)
+	extensions[#extensions+1] = func
+end
 
 
 --- Fixes keys with positive numbers only
@@ -663,6 +676,10 @@ lazyAPI.apply_wrapper = function(prototype)
 
 	-- I'm lazy to check all prototypes :/
 	give_flag_funcs(wrapped_prot)
+
+	for _, _f in pairs(extensions) do
+		_f(wrapped_prot)
+	end
 
 	return wrapped_prot
 end
