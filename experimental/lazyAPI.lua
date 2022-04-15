@@ -135,7 +135,7 @@ local fix_array = lazyAPI.fix_array
 ---@param name function #name of your listener
 ---@param func function #your function
 ---@return boolean #is added?
-lazyAPI.add_listener = function(action_name, name, types, func)
+lazyAPI.add_listener = function(action_name, types, name, func)
 	if next(types) == nil then
 		return false
 	end
@@ -162,7 +162,7 @@ lazyAPI.add_listener = function(action_name, name, types, func)
 	end
 	return true
 end
-lazyAPI.add_listener("remove_prototype", "lazyAPI_remove_recipe", {"recipe"}, function(prototype, recipe_name, type)
+lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", function(prototype, recipe_name, type)
 	fix_array(technologies)
 	for i=1, #technologies do
 		lazyAPI.tech.remove_unlock_recipe_effect_everywhere(technologies[i], recipe_name)
