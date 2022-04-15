@@ -50,9 +50,10 @@ local extensions = {}
 -- lazyAPI.recipe.find_fluid_in_result(prototype, fluid_name)
 -- lazyAPI.recipe.count_fluid_in_result(prototype, fluid_name)
 
--- lazyAPI.tech.unlock_recipe(prototype, recipe_name)
--- lazyAPI.tech.has_unlock_recipe(prototype, recipe_name)
--- lazyAPI.tech.remove_unlock_recipe(prototype, recipe_name)
+-- lazyAPI.tech.unlock_recipe(prototype, recipe_name, difficulty)
+-- lazyAPI.tech.has_unlock_recipe(prototype, recipe_name, difficulty)
+-- lazyAPI.tech.remove_unlock_recipe(prototype, recipe_name, difficulty)
+-- lazyAPI.tech.remove_unlock_recipe_everywhere(prototype, recipe_name)
 -- lazyAPI.tech.add_effect(prototype, type, recipe_name)
 -- lazyAPI.tech.find_effect(prototype, type, recipe_name)
 -- lazyAPI.tech.find_prerequisite(prototype, tech_name)
@@ -291,7 +292,7 @@ lazyAPI.recipe.remove = function(prototype)
 	local recipe_name = prot.name
 	fix_array(technologies)
 	for i=1, #technologies do
-		lazyAPI.tech.remove_unlock_recipe(technologies[i], recipe_name)
+		lazyAPI.tech.remove_unlock_recipe_everywhere(technologies[i], recipe_name)
 	end
 	-- WARNING: it's not ready
 
@@ -638,16 +639,26 @@ end
 ---https://wiki.factorio.com/Prototype/Technology#effects
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
+---@param difficulty? string
 ---@return table #prototype
-lazyAPI.tech.unlock_recipe = function(prototype, recipe_name)
-	local effects = (prototype.prototype or prototype).effects
+lazyAPI.tech.unlock_recipe = function(prototype, recipe_name, difficulty)
+	local effects
+	local prot = (prototype.prototype or prototype)
+	if difficulty then
+		if prot[difficulty] == nil then
+			prot[difficulty] = {}
+		end
+		effects = prot[difficulty].effects
+	else
+		effects = prot.effects
+	end
 	if effects == nil then
-		prototype.effects = {
-			{
-				type  = "unlock-recipe",
-				recipe = recipe_name
-			}
-		}
+		local new_effect = {type = "unlock-recipe", recipe = recipe_name}
+		if difficulty then
+			prototype[difficulty].effects = {new_effect}
+		else
+			prototype.effects = {new_effect}
+		end
 		return prototype
 	end
 
@@ -670,9 +681,16 @@ end
 ---https://wiki.factorio.com/Prototype/Technology#effects
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
+---@param difficulty? string
 ---@return number? #index effect
-lazyAPI.tech.has_unlock_recipe = function(prototype, recipe_name)
-	local effects = (prototype.prototype or prototype).effects
+lazyAPI.tech.has_unlock_recipe = function(prototype, recipe_name, difficulty)
+	local effects
+	local prot = (prototype.prototype or prototype)
+	if difficulty then
+		effects = prot[difficulty] and prot[difficulty].effects
+	else
+		effects = prot.effects
+	end
 	if effects == nil then
 		return
 	end
@@ -687,16 +705,8 @@ lazyAPI.tech.has_unlock_recipe = function(prototype, recipe_name)
 end
 
 
----https://wiki.factorio.com/Prototype/Technology#effects
----@param prototype table #https://wiki.factorio.com/Prototype/Technology
----@param recipe_name string
----@return table #prototype
-lazyAPI.tech.remove_unlock_recipe = function(prototype, recipe_name)
-	local effects = (prototype.prototype or prototype).effects
-	if effects == nil then
-		return prototype
-	end
-
+local function remove_unlock_recipe(effects, recipe_name)
+	if effects == nil then return end
 	fix_array(effects)
 	for i=1, #effects do
 		local effect = effects[i]
@@ -704,7 +714,40 @@ lazyAPI.tech.remove_unlock_recipe = function(prototype, recipe_name)
 			tremove(effects, i)
 		end
 	end
+end
 
+
+---https://wiki.factorio.com/Prototype/Technology#effects
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param recipe_name string
+---@param difficulty? string
+---@return table #prototype
+lazyAPI.tech.remove_unlock_recipe = function(prototype, recipe_name, difficulty)
+	local effects
+	local prot = (prototype.prototype or prototype)
+	if difficulty then
+		effects = prot[difficulty] and prot[difficulty].effects
+	else
+		effects = prot.effects
+	end
+
+	remove_unlock_recipe(effects, recipe_name)
+	return prototype
+end
+
+---https://wiki.factorio.com/Prototype/Technology#effects
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param recipe_name string
+---@return table #prototype
+lazyAPI.tech.remove_unlock_recipe_everywhere = function(prototype, recipe_name)
+	local prot = (prototype.prototype or prototype)
+	remove_unlock_recipe(prot.effects, recipe_name)
+	if prot.normal then
+		remove_unlock_recipe(prot.normal.effects, recipe_name)
+	end
+	if prot.expensive then
+		remove_unlock_recipe(prot.expensive.effects, recipe_name)
+	end
 	return prototype
 end
 
@@ -713,9 +756,12 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param type string #https://wiki.factorio.com/Types/ModifierPrototype
 ---@param recipe_name string
+---@param difficulty? string
 ---@return table #prototype
-lazyAPI.tech.add_effect = function(prototype, type, recipe_name)
-	local effects = (prototype.prototype or prototype).effects
+lazyAPI.tech.add_effect = function(prototype, type, recipe_name, difficulty)
+	local effects
+	local prot = (prototype.prototype or prototype)
+	effects = (difficulty and prot[difficulty] and prot[difficulty].effects) or prot.effects
 	if effects == nil then
 		prototype.effects = {
 			{
