@@ -5,6 +5,7 @@
 ---@class lazyAPI
 local lazyAPI = {}
 lazyAPI.tech = {}
+lazyAPI.base = {}
 lazyAPI.flags = {}
 lazyAPI.recipe = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
@@ -15,11 +16,21 @@ local locale = require("static-libs/lualibs/locale")
 
 -- Add your functions in lazyAPI.add_extension(function) and
 -- lazyAPI.wrap_prototype will pass wrapped prototype into your function
----@type table<number, function>
+---@type function[]
 local extensions = {}
 
 
+local listeners = {
+	remove_prototype = {}
+}
+local subscriptions = {
+	remove_prototype = {}
+}
+
+
 -- lazyAPI.add_extension(function)
+-- lazyAPI.add_listener(action_name, name, types, func)
+-- lazyAPI.remove_listener(action_name, name)
 -- lazyAPI.wrap_prototype(prototype)
 -- lazyAPI.fix_inconsistent_array(array) | lazyAPI.fix_array(array)
 -- lazyAPI.array_to_locale(array)
@@ -29,11 +40,12 @@ local extensions = {}
 -- lazyAPI.create_trigger_capsule(tool_data)
 -- lazyAPI.attach_custom_input_event(name)
 
+-- lazyAPI.base.remove_prototype(prototype)
+
 -- lazyAPI.flags.add_flag(prototype, flag)
 -- lazyAPI.flags.remove_flag(prototype, flag)
 -- lazyAPI.flags.find_flag(prototype, flag)
 
--- lazyAPI.recipe.remove(prototype)
 -- lazyAPI.recipe.add_item_ingredient(ingredients, item_name, amount)
 -- lazyAPI.recipe.add_fluid_ingredient(ingredients, fluid_name, amount)
 -- lazyAPI.recipe.add_ingredient(ingredients, target, amount)
@@ -116,6 +128,67 @@ lazyAPI.fix_inconsistent_array = function(array)
 end
 lazyAPI.fix_array = lazyAPI.fix_inconsistent_array
 local fix_array = lazyAPI.fix_array
+
+
+---@param action_name function #name of your
+---@param types string[] #https://wiki.factorio.com/Data.raw or "all"
+---@param name function #name of your listener
+---@param func function #your function
+---@return boolean #is added?
+lazyAPI.add_listener = function(action_name, name, types, func)
+	if next(types) == nil then
+		return false
+	end
+
+	for _, listener in ipairs(listeners[action_name]) do
+		if listener.name == name then
+			return false
+		end
+	end
+
+	table.insert(
+		listeners[action_name],
+		{
+			name = name,
+			types = types,
+			action_name = action_name,
+			func = func
+		}
+	)
+	for _, type in ipairs(types) do
+		subscriptions[action_name][type] = subscriptions[action_name][type] or {}
+		local subscription = subscriptions[action_name][type]
+		table.insert(subscription, func)
+	end
+	return true
+end
+lazyAPI.add_listener("remove_prototype", "lazyAPI_remove_recipe", {"recipe"}, function(prototype, recipe_name, type)
+	fix_array(technologies)
+	for i=1, #technologies do
+		lazyAPI.tech.remove_unlock_recipe_effect_everywhere(technologies[i], recipe_name)
+	end
+end)
+
+lazyAPI.remove_listener = function(action_name, name)
+	for i, listener in ipairs(listeners[action_name]) do
+		if listener.name == name then
+			tremove(listeners[action_name], i)
+			for _, type in ipairs(listener.types) do
+				local funks = subscriptions[action_name][type]
+				for j, func in ipairs(funks) do
+					if func == listener.func then
+						tremove(subscriptions[action_name][type], j)
+						break
+					end
+				end
+				if #funks == 0 then
+					subscriptions[action_name][type] = nil
+				end
+			end
+			return
+		end
+	end
+end
 
 
 -- Creates tool as capsule to interact with defines.events.on_script_trigger_effect
@@ -224,6 +297,27 @@ end
 
 
 ---@param prototype table
+---@return table #prototype
+lazyAPI.base.remove_prototype = function(prototype)
+	local prot = prototype.prototype or prototype
+	local name = prot.name
+	local category_type = prot.type
+	if subscriptions.remove_prototype[category_type] then
+		for _, func in pairs(subscriptions.remove_prototype[category_type]) do
+			func(prot, name, category_type)
+		end
+	end
+	if subscriptions.remove_prototype.all then
+		for _, func in pairs(subscriptions.remove_prototype.all) do
+			func(prot, name, category_type)
+		end
+	end
+	data.raw[category_type][name] = nil
+	return prototype
+end
+
+
+---@param prototype table
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
 ---@return table #prototype
 lazyAPI.flags.add_flag = function(prototype, flag)
@@ -282,22 +376,6 @@ lazyAPI.flags.find_flag = function(prototype, flag)
 			return i
 		end
 	end
-end
-
-
----@param prototype table
----@return table #prototype
-lazyAPI.recipe.remove = function(prototype)
-	local prot = prototype.prototype or prototype
-	local recipe_name = prot.name
-	fix_array(technologies)
-	for i=1, #technologies do
-		lazyAPI.tech.remove_unlock_recipe_effect_everywhere(technologies[i], recipe_name)
-	end
-	-- WARNING: it's not ready
-
-	data.raw.recipe[recipe_name] = nil
-	return prototype
 end
 
 
@@ -919,14 +997,8 @@ lazyAPI.tech.set_tool = function(prototype, tool_name, amount)
 end
 
 
-local function give_flag_funcs(o)
-	for k, f in pairs(lazyAPI.flags) do
-		o[k] = f
-	end
-end
-
 local prot_funcs = {
-	["techology"] = function(o)
+	["technology"] = function(o)
 		for k, f in pairs(lazyAPI.tech) do
 			o[k] = f
 		end
@@ -953,9 +1025,19 @@ lazyAPI.wrap_prototype = function(prototype)
 	local f = prot_funcs[type]
 	if f then f(wrapped_prot) end
 
-	-- I'm lazy to check all prototypes :/
-	give_flag_funcs(wrapped_prot)
+	-- Sets base functions
+	for k, _f in pairs(lazyAPI.base) do
+		wrapped_prot[k] = _f
+	end
+	wrapped_prot.remove = lazyAPI.base.remove_prototype
 
+	-- Sets flags functions
+	-- I'm lazy to check all prototypes :/
+	for k, _f in pairs(lazyAPI.flags) do
+		wrapped_prot[k] = _f
+	end
+
+	-- Let extensions to use the wrapped prototype
 	for _, _f in pairs(extensions) do
 		_f(wrapped_prot)
 	end
