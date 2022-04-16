@@ -10,6 +10,7 @@ lazyAPI.flags = {}
 lazyAPI.recipe = {}
 lazyAPI.module = {}
 lazyAPI.tech = {}
+lazyAPI.technology = lazyAPI.tech
 lazyAPI["mining-drill"] = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
@@ -1322,24 +1323,6 @@ lazyAPI["mining-drill"].remove_resource_category = function(prototype, name)
 end
 
 
-local prot_funcs = {
-	["technology"] = function(o)
-		for k, f in pairs(lazyAPI.tech) do
-			o[k] = f
-		end
-	end,
-	["recipe"] = function(o)
-		for k, f in pairs(lazyAPI.recipe) do
-			o[k] = f
-		end
-	end,
-	["mining-drill"] = function(o)
-		for k, f in pairs(lazyAPI["mining-drill"]) do
-			o[k] = f
-		end
-	end
-}
-
 ---@param prototype table
 ---@return table # wrapped prototype with lazyAPI functions
 lazyAPI.wrap_prototype = function(prototype)
@@ -1352,15 +1335,6 @@ lazyAPI.wrap_prototype = function(prototype)
 		prototype = prototype
 	}
 
-	local f = prot_funcs[type]
-	if f then f(wrapped_prot) end
-
-	-- Sets base functions
-	for k, _f in pairs(lazyAPI.base) do
-		wrapped_prot[k] = _f
-	end
-	wrapped_prot.remove = lazyAPI.base.remove_prototype
-
 	-- Sets flags functions
 	-- I'm lazy to check all prototypes :/
 	for k, _f in pairs(lazyAPI.flags) do
@@ -1372,6 +1346,20 @@ lazyAPI.wrap_prototype = function(prototype)
 	for k, _f in pairs(lazyAPI.resistance) do
 		wrapped_prot[k] = _f
 	end
+
+	-- Sets functions for the type
+	local lazy_funks = lazyAPI[type]
+	if lazy_funks then
+		for k, _f in pairs(lazy_funks) do
+			wrapped_prot[k] = _f
+		end
+	end
+
+	-- Sets base functions
+	for k, _f in pairs(lazyAPI.base) do
+		wrapped_prot[k] = _f
+	end
+	wrapped_prot.remove = lazyAPI.base.remove_prototype
 
 	-- Let extensions to use the wrapped prototype
 	for _, _f in pairs(extensions) do
