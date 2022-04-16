@@ -4,10 +4,11 @@
 ---@module "__zk-lib__/experimental/lazyAPI"
 ---@class lazyAPI
 local lazyAPI = {}
-lazyAPI.tech = {}
 lazyAPI.base = {}
+lazyAPI.resistance = {}
 lazyAPI.flags = {}
 lazyAPI.recipe = {}
+lazyAPI.tech = {}
 lazyAPI["mining-drill"] = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
@@ -42,6 +43,9 @@ local subscriptions = {
 -- lazyAPI.attach_custom_input_event(name)
 
 -- lazyAPI.base.remove_prototype(prototype)
+
+-- lazyAPI.resistance.set(prototype, type, percent, decrease)
+-- lazyAPI.resistance.remove(prototype, type)
 
 -- lazyAPI.flags.add_flag(prototype, flag)
 -- lazyAPI.flags.remove_flag(prototype, flag)
@@ -171,6 +175,47 @@ lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", fu
 	fix_array(technologies)
 	for i=1, #technologies do
 		lazyAPI.tech.remove_unlock_recipe_effect_everywhere(technologies[i], recipe_name)
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"item"}, "lazyAPI_remove_item", function(prototype, item_name, type)
+	local recipes = data.raw.recipes
+	fix_array(recipes)
+	for i=1, #recipes do
+		local recipe = recipes[i]
+		if recipe.result == item_name then
+			recipes[recipe.name] = nil
+		else
+			lazyAPI.recipe.remove_ingredient_everywhere(recipe, item_name, "item")
+		end
+	end
+
+	local achievements = data.raw["produce-per-hour-achievement"]
+	fix_array(achievements)
+	for i=1, #achievements do
+		local achievement = achievements[i]
+		if achievement.item_product == item_name then
+			achievements[achievement.name] = nil
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"fluid"}, "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
+	local recipes = data.raw.recipes
+	fix_array(recipes)
+	for i=1, #recipes do
+		lazyAPI.recipe.remove_ingredient_everywhere(recipes[i], fluid_name, "fluid")
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource", function(prototype, resource_name, type)
+	local autoplace = data.raw["autoplace-control"][resource_name]
+	if autoplace.category == "resource" then
+		data.raw["autoplace-control"][resource_name] = nil
+	end
+
+	local presets = data.raw["map-gen-presets"]
+	fix_array(presets)
+	for i=1, #presets do
+		local autoplace_controls = presets[i]["rich-resources"].basic_settings.autoplace_controls
+		autoplace_controls[resource_name] = nil
 	end
 end)
 
@@ -317,6 +362,60 @@ lazyAPI.base.remove_prototype = function(prototype)
 		end
 	end
 	data.raw[category_type][name] = nil
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Types/Resistances
+-- https://wiki.factorio.com/Damage#Resistance
+---@param prototype table
+---@param type string
+---@param percent number
+---@param decrease number
+---@return table #prototype
+lazyAPI.resistance.set = function(prototype, type, percent, decrease)
+	local prot = prototype.prototype or prototype
+	local resistances = prot.resistances
+	if resistances == nil then
+		prot.resistances = {{type = type, percent = percent, decrease = decrease}}
+		return prototype
+	end
+
+	fix_array(resistances)
+	for i=1, #resistances do
+		local resistance = resistances[i]
+		if resistance.type == type then
+			resistance.percent = percent
+			resistance.decrease = decrease
+			return prototype
+		end
+	end
+
+
+	resistances[#resistances+1] = {type = type, percent = percent, decrease = decrease}
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Types/Resistances
+-- https://wiki.factorio.com/Damage#Resistance
+---@param prototype table
+---@return table #prototype
+lazyAPI.resistance.remove = function(prototype, type)
+	local prot = prototype.prototype or prototype
+	local resistances = prot.resistances
+	if resistances == nil then
+		return prototype
+	end
+
+	fix_array(resistances)
+	for i=#resistances, 1, -1 do
+		local resistance = resistances[i]
+		if resistance.type == type then
+			tremove(resistances, i)
+		end
+	end
+
 	return prototype
 end
 
