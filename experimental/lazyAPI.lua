@@ -371,7 +371,7 @@ end
 ---@param prototype table
 ---@param type string
 ---@param percent number
----@param decrease number
+---@param decrease? number
 ---@return table #prototype
 lazyAPI.resistance.set = function(prototype, type, percent, decrease)
 	local prot = prototype.prototype or prototype
