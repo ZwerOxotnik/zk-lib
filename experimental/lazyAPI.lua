@@ -8,6 +8,7 @@ lazyAPI.tech = {}
 lazyAPI.base = {}
 lazyAPI.flags = {}
 lazyAPI.recipe = {}
+lazyAPI["mining-drill"] = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
 
@@ -72,6 +73,10 @@ local subscriptions = {
 -- lazyAPI.tech.add_prerequisite(prototype, tech_name)
 -- lazyAPI.tech.add_tool(prototype, tool_name, amount)
 -- lazyAPI.tech.set_tool(prototype, tool_name, amount)
+
+-- lazyAPI["mining-drill"].find_resource_category(prototype, name)
+-- lazyAPI["mining-drill"].add_resource_category(prototype, name)
+-- lazyAPI["mining-drill"].remove_resource_category(prototype, name)
 
 
 local tremove = table.remove
@@ -282,8 +287,7 @@ lazyAPI.attach_custom_input_event = function(name)
 		return custom_input[new_name]
 	end
 
-	data:extend(
-	{{
+	data:extend({{
 		type = 'custom-input',
 		name = new_name,
 		key_sequence = '',
@@ -997,6 +1001,71 @@ lazyAPI.tech.set_tool = function(prototype, tool_name, amount)
 end
 
 
+-- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
+---@param prototype table
+---@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
+---@return number? #index of resource_category in the resource_categories
+lazyAPI["mining-drill"].find_resource_category = function(prototype, name)
+	local resource_categories = (prototype.prototype or prototype).resource_categories
+	if resource_categories == nil then
+		log("There are no resource_categories in the prototype")
+		return
+	end
+
+	fix_array(resource_categories)
+	for i=1, #resource_categories do
+		if resource_categories[i] == name then
+			return i
+		end
+	end
+end
+
+
+-- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
+---@param prototype table
+---@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
+---@return table #prototype
+lazyAPI["mining-drill"].add_resource_category = function(prototype, name)
+		local resource_categories = (prototype.prototype or prototype).resource_categories
+	if resource_categories == nil then
+		log("There are no resource_categories in the prototype")
+		return prototype
+	end
+
+	fix_array(resource_categories)
+	for i=1, #resource_categories do
+		if resource_categories[i] == name then
+			return prototype
+		end
+	end
+
+	resource_categories[#resource_categories+1] = name
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
+---@param prototype table
+---@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
+---@return table #prototype
+lazyAPI["mining-drill"].remove_resource_category = function(prototype, name)
+		local resource_categories = (prototype.prototype or prototype).resource_categories
+	if resource_categories == nil then
+		log("There are no resource_categories in the prototype")
+		return prototype
+	end
+
+	fix_array(resource_categories)
+	for i=#resource_categories, 1, -1 do
+		if resource_categories[i] == name then
+			tremove(resource_categories, i)
+		end
+	end
+
+	return prototype
+end
+
+
 local prot_funcs = {
 	["technology"] = function(o)
 		for k, f in pairs(lazyAPI.tech) do
@@ -1005,6 +1074,11 @@ local prot_funcs = {
 	end,
 	["recipe"] = function(o)
 		for k, f in pairs(lazyAPI.recipe) do
+			o[k] = f
+		end
+	end,
+	["mining-drill"] = function(o)
+		for k, f in pairs(lazyAPI["mining-drill"]) do
 			o[k] = f
 		end
 	end
