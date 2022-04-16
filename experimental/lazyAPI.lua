@@ -8,6 +8,7 @@ lazyAPI.base = {}
 lazyAPI.resistance = {}
 lazyAPI.flags = {}
 lazyAPI.recipe = {}
+lazyAPI.module = {}
 lazyAPI.tech = {}
 lazyAPI["mining-drill"] = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
@@ -39,10 +40,14 @@ local subscriptions = {
 -- lazyAPI.array_to_locale_as_new(array)
 -- lazyAPI.merge_locales(...)
 -- lazyAPI.merge_locales_as_new(...)
+-- lazyAPI.get_barrel_recipes(name)
 -- lazyAPI.create_trigger_capsule(tool_data)
 -- lazyAPI.attach_custom_input_event(name)
 
 -- lazyAPI.base.remove_prototype(prototype)
+-- lazyAPI.base.find_in_array(prototype, field, data)
+-- lazyAPI.base.has_in_array(prototype, field, data)
+-- lazyAPI.base.remove_from_array(prototype, field, data)
 
 -- lazyAPI.resistance.set(prototype, type, percent, decrease)
 -- lazyAPI.resistance.remove(prototype, type)
@@ -67,6 +72,14 @@ local subscriptions = {
 -- lazyAPI.recipe.find_fluid_in_result(prototype, fluid_name)
 -- lazyAPI.recipe.count_fluid_in_result(prototype, fluid_name)
 
+-- lazyAPI.module.is_recipe_allowed(prototype, recipe_name)
+-- lazyAPI.module.find_allowed_recipe(prototype, recipe_name)
+-- lazyAPI.module.find_blacklisted_recipe_index(prototype, recipe_name)
+-- lazyAPI.module.allow_recipe(prototype, recipe_name)
+-- lazyAPI.module.prohibit_recipe(prototype, recipe_name)
+-- lazyAPI.module.remove_allowed_recipe(prototype, recipe_name)
+-- lazyAPI.module.remove_blacklisted_recipe(prototype, recipe_name)
+
 -- lazyAPI.tech.unlock_recipe(prototype, recipe_name, difficulty)
 -- lazyAPI.tech.find_unlock_recipe_effect(prototype, recipe_name, difficulty)
 -- lazyAPI.tech.remove_unlock_recipe_effect(prototype, recipe_name, difficulty)
@@ -85,6 +98,7 @@ local subscriptions = {
 
 local tremove = table.remove
 local technologies = data.raw.technology
+local recipes = data.raw.recipes
 
 
 lazyAPI.array_to_locale = locale.array_to_locale
@@ -139,6 +153,71 @@ lazyAPI.fix_array = lazyAPI.fix_inconsistent_array
 local fix_array = lazyAPI.fix_array
 
 
+---@param prototype table
+---@param field string
+---@param data any
+---@return number? #index
+lazyAPI.base.find_in_array = function(prototype, field, data)
+	local array = (prototype.prototype or prototype)[field]
+	if array == nil then
+		log("There are no " .. field .. " in the prototype")
+		return
+	end
+
+	fix_array(array)
+	for i=1, #array do
+		if array[i] == data then
+			return i
+		end
+	end
+end
+local find_in_array = lazyAPI.base.find_in_array
+
+
+---@param prototype table
+---@param field string
+---@param data any
+---@return boolean
+lazyAPI.base.has_in_array = function(prototype, field, data)
+	local array = (prototype.prototype or prototype)[field]
+	if array == nil then
+		log("There are no " .. field .. " in the prototype")
+		return false
+	end
+
+	fix_array(array)
+	for i=1, #array do
+		if array[i] == data then
+			return true
+		end
+	end
+	return false
+end
+local has_in_array = lazyAPI.base.has_in_array
+
+
+---@param prototype table
+---@param field string
+---@param data any
+---@return table prototype
+lazyAPI.base.remove_from_array = function(prototype, field, data)
+	local array = (prototype.prototype or prototype)[field]
+	if array == nil then
+		log("There are no " .. field .. " in the prototype")
+		return prototype
+	end
+
+	fix_array(array)
+	for i=#array, 1, -1 do
+		if array[i] == data then
+			tremove(array, i)
+		end
+	end
+	return prototype
+end
+local remove_from_array = lazyAPI.base.remove_from_array
+
+
 ---@param action_name function #name of your
 ---@param types string[] #https://wiki.factorio.com/Data.raw or "all"
 ---@param name function #name of your listener
@@ -178,7 +257,6 @@ lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", fu
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"item"}, "lazyAPI_remove_item", function(prototype, item_name, type)
-	local recipes = data.raw.recipes
 	fix_array(recipes)
 	for i=1, #recipes do
 		local recipe = recipes[i]
@@ -199,7 +277,6 @@ lazyAPI.add_listener("remove_prototype", {"item"}, "lazyAPI_remove_item", functi
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"fluid"}, "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
-	local recipes = data.raw.recipes
 	fix_array(recipes)
 	for i=1, #recipes do
 		lazyAPI.recipe.remove_ingredient_everywhere(recipes[i], fluid_name, "fluid")
@@ -238,6 +315,13 @@ lazyAPI.remove_listener = function(action_name, name)
 			return
 		end
 	end
+end
+
+
+---@param name string #barrel name without prefix
+---@return table filled_barrel, table empty_barrel
+lazyAPI.get_barrel_recipes = function(name)
+	return recipes["fill-" .. name], recipes["empty-" .. name]
 end
 
 
@@ -446,19 +530,7 @@ end
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
 ---@return table #prototype
 lazyAPI.flags.remove_flag = function(prototype, flag)
-	local flags = (prototype.prototype or prototype).flags
-	if flags == nil then
-		log("There are no flags")
-		return prototype
-	end
-
-	fix_array(flags)
-	for i=#flags, 1, -1 do
-		if flags[i] == flag then
-			tremove(flags, i)
-		end
-	end
-	return prototype
+	return remove_from_array(prototype, "flags", flag)
 end
 
 
@@ -467,18 +539,7 @@ end
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
 ---@return number? # index of the flag in prototype.flags
 lazyAPI.flags.find_flag = function(prototype, flag)
-	local flags = (prototype.prototype or prototype).flags
-	if flags == nil then
-		log("There are no flags")
-		return
-	end
-
-	fix_array(flags)
-	for i=1, #flags do
-		if flags[i] == flag then
-			return i
-		end
-	end
+	return find_in_array(prototype, "flags", flag)
 end
 
 
@@ -737,7 +798,7 @@ lazyAPI.recipe.find_item_in_result = function(prototype, item_name)
 	end
 
 	fix_array(results)
-	for i=#results, 1, -1 do
+	for i=1, #results do
 		local result = results[i]
 		if result[1] == item_name then
 			return result
@@ -761,7 +822,7 @@ lazyAPI.recipe.count_item_in_result = function(prototype, item_name)
 
 	fix_array(results)
 	local amount = 0
-	for i=#results, 1, -1 do
+	for i=1, #results do
 		local result = results[i]
 		if result[1] == item_name then
 			amount = amount + result[2]
@@ -785,7 +846,7 @@ lazyAPI.recipe.find_fluid_in_result = function(prototype, fluid_name)
 	end
 
 	fix_array(results)
-	for i=#results, 1, -1 do
+	for i=1, #results do
 		local result = results[i]
 		if result["type"] == "fluid" and result["name"] == fluid_name then
 			return result
@@ -807,13 +868,136 @@ lazyAPI.recipe.count_fluid_in_result = function(prototype, fluid_name)
 
 	fix_array(results)
 	local amount = 0
-	for i=#results, 1, -1 do
+	for i=1, #results do
 		local result = results[i]
 		if result["type"] == "fluid" and result["name"] == fluid_name then
 			amount = amount + result["amount"]
 		end
 	end
 	return amount
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation
+---@param prototype table
+---@param recipe_name string
+---@return boolean
+lazyAPI.module.is_recipe_allowed = function(prototype, recipe_name)
+	local prot = prototype.prototype or prototype
+	if prot.limitation then
+		if find_in_array(prototype, "limitation", recipe_name) then
+			return true
+		end
+		return false
+	elseif prot.limitation_blacklist then
+		if find_in_array(prototype, "limitation_blacklist", recipe_name) then
+			return false
+		end
+		return true
+	end
+	return true
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation
+---@param prototype table
+---@param recipe_name string
+---@return number? #index from https://wiki.factorio.com/Prototype/Module#limitation
+lazyAPI.module.find_allowed_recipe_index = function(prototype, recipe_name)
+	return find_in_array(prototype, "limitation", recipe_name)
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation
+---@param prototype table
+---@param recipe_name string
+---@return table prototype
+lazyAPI.module.allow_recipe = function(prototype, recipe_name)
+	local prot = prototype.prototype or prototype
+	local blacklist = prot.limitation_blacklist
+	if blacklist then
+		fix_array(blacklist)
+		for i=#blacklist, 1, -1 do
+			if blacklist[i] == recipe_name then
+				tremove(blacklist, i)
+			end
+		end
+	end
+
+	local limitation = prot.limitation
+	if limitation == nil then
+		prot.limitation = {recipe_name}
+		return prototype
+	end
+
+	fix_array(limitation)
+	for i=1, #limitation do
+		if limitation[i] == recipe_name then
+			return prototype
+		end
+	end
+	limitation[#limitation+1] = recipe_name
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation_blacklist
+---@param prototype table
+---@param recipe_name string
+---@return table prototype
+lazyAPI.module.prohibit_recipe = function(prototype, recipe_name)
+	local prot = prototype.prototype or prototype
+	local limitation = prot.limitation
+	if limitation then
+		fix_array(limitation)
+		for i=#limitation, 1, -1 do
+			if limitation[i] == recipe_name then
+				tremove(limitation, i)
+			end
+		end
+	end
+
+	local blacklist = prot.limitation_blacklist
+	if blacklist == nil then
+		prot.limitation_blacklist = {recipe_name}
+		return prototype
+	end
+
+	fix_array(blacklist)
+	for i=1, #blacklist do
+		if blacklist[i] == recipe_name then
+			return prototype
+		end
+	end
+	blacklist[#blacklist+1] = recipe_name
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation_blacklist
+---@param prototype table
+---@param recipe_name string
+---@return number? #index from https://wiki.factorio.com/Prototype/Module#limitation_blacklist
+lazyAPI.module.find_blacklisted_recipe_index = function(prototype, recipe_name)
+	return find_in_array(prototype, "limitation_blacklist", recipe_name)
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation
+---@param prototype table
+---@param recipe_name string
+---@return table prototype
+lazyAPI.module.remove_allowed_recipe = function(prototype, recipe_name)
+	return remove_from_array(prototype, "limitation", recipe_name)
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation_blacklist
+---@param prototype table
+---@param recipe_name string
+---@return table prototype
+lazyAPI.module.remove_blacklisted_recipe = function(prototype, recipe_name)
+	return remove_from_array(prototype, "limitation_blacklist", recipe_name)
 end
 
 
@@ -859,11 +1043,11 @@ lazyAPI.tech.unlock_recipe = function(prototype, recipe_name, difficulty)
 end
 
 
----https://wiki.factorio.com/Prototype/Technology#effects
+-- https://wiki.factorio.com/Prototype/Technology#effects
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
 ---@param difficulty? string
----@return number? #index effect
+---@return table? #https://wiki.factorio.com/Types/UnlockRecipeModifierPrototype
 lazyAPI.tech.find_unlock_recipe_effect = function(prototype, recipe_name, difficulty)
 	local effects
 	local prot = (prototype.prototype or prototype)
@@ -880,7 +1064,7 @@ lazyAPI.tech.find_unlock_recipe_effect = function(prototype, recipe_name, diffic
 	for i=1, #effects do
 		local effect = effects[i]
 		if effect["recipe"] == recipe_name and effect["type"] == "unlock-recipe" then
-			return i
+			return effect
 		end
 	end
 end
@@ -996,18 +1180,7 @@ end
 ---@param tech_name string
 ---@return number? # index of the prerequisite in prototype.prerequisites
 lazyAPI.tech.find_prerequisite = function(prototype, tech_name)
-	local prerequisites = (prototype.prototype or prototype).prerequisites
-	if prerequisites == nil then
-		log("There are no prerequisites in the prototype")
-		return
-	end
-
-	fix_array(prerequisites)
-	for i=1, #prerequisites do
-		if prerequisites[i] == tech_name then
-			return i
-		end
-	end
+	return find_in_array(prototype, "prerequisites", tech_name)
 end
 
 
@@ -1105,18 +1278,7 @@ end
 ---@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return number? #index of resource_category in the resource_categories
 lazyAPI["mining-drill"].find_resource_category = function(prototype, name)
-	local resource_categories = (prototype.prototype or prototype).resource_categories
-	if resource_categories == nil then
-		log("There are no resource_categories in the prototype")
-		return
-	end
-
-	fix_array(resource_categories)
-	for i=1, #resource_categories do
-		if resource_categories[i] == name then
-			return i
-		end
-	end
+	return find_in_array(prototype, "resource_categories", name)
 end
 
 
@@ -1148,20 +1310,7 @@ end
 ---@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return table #prototype
 lazyAPI["mining-drill"].remove_resource_category = function(prototype, name)
-		local resource_categories = (prototype.prototype or prototype).resource_categories
-	if resource_categories == nil then
-		log("There are no resource_categories in the prototype")
-		return prototype
-	end
-
-	fix_array(resource_categories)
-	for i=#resource_categories, 1, -1 do
-		if resource_categories[i] == name then
-			tremove(resource_categories, i)
-		end
-	end
-
-	return prototype
+	return remove_from_array(prototype, "resource_categories", name)
 end
 
 
