@@ -44,6 +44,7 @@ local subscriptions = {
 -- lazyAPI.create_trigger_capsule(tool_data)
 -- lazyAPI.attach_custom_input_event(name)
 
+-- lazyAPI.base.get_type(prototype)
 -- lazyAPI.base.remove_prototype(prototype)
 -- lazyAPI.base.find_in_array(prototype, field, data)
 -- lazyAPI.base.has_in_array(prototype, field, data)
@@ -426,6 +427,13 @@ lazyAPI.attach_custom_input_event = function(name)
 	}})
 
 	return custom_input[new_name]
+end
+
+
+---@param prototype table
+---@return string #https://wiki.factorio.com/Data.raw
+lazyAPI.base.get_type = function(prototype)
+	return (prototype.prototype or prototype).type
 end
 
 
@@ -1356,6 +1364,12 @@ lazyAPI.wrap_prototype = function(prototype)
 	-- Sets flags functions
 	-- I'm lazy to check all prototypes :/
 	for k, _f in pairs(lazyAPI.flags) do
+		wrapped_prot[k] = _f
+	end
+
+	-- Sets resistance functions
+	-- I should check prototypes though
+	for k, _f in pairs(lazyAPI.resistance) do
 		wrapped_prot[k] = _f
 	end
 
