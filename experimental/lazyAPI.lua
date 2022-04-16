@@ -73,7 +73,7 @@ local subscriptions = {
 -- lazyAPI.recipe.count_fluid_in_result(prototype, fluid_name)
 
 -- lazyAPI.module.is_recipe_allowed(prototype, recipe_name)
--- lazyAPI.module.find_allowed_recipe(prototype, recipe_name)
+-- lazyAPI.module.find_allowed_recipe_index(prototype, recipe_name)
 -- lazyAPI.module.find_blacklisted_recipe_index(prototype, recipe_name)
 -- lazyAPI.module.allow_recipe(prototype, recipe_name)
 -- lazyAPI.module.prohibit_recipe(prototype, recipe_name)
