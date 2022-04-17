@@ -11,7 +11,8 @@ lazyAPI.recipe = {}
 lazyAPI.module = {}
 lazyAPI.tech = {}
 lazyAPI.technology = lazyAPI.tech
-lazyAPI["mining-drill"] = {}
+lazyAPI.mining_drill = {}
+lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
 
@@ -58,6 +59,7 @@ local subscriptions = {
 -- lazyAPI.flags.remove_flag(prototype, flag)
 -- lazyAPI.flags.find_flag(prototype, flag)
 
+--- There are several issues still
 -- lazyAPI.recipe.add_item_ingredient(prototype, item_name, amount, difficulty)
 -- lazyAPI.recipe.add_fluid_ingredient(prototype, fluid_name, amount, difficulty)
 -- lazyAPI.recipe.add_ingredient(ingredients, target, amount, difficulty)
@@ -90,12 +92,14 @@ local subscriptions = {
 -- lazyAPI.tech.find_effect(prototype, type, recipe_name)
 -- lazyAPI.tech.find_prerequisite(prototype, tech_name)
 -- lazyAPI.tech.add_prerequisite(prototype, tech_name)
+-- lazyAPI.tech.remove_prerequisite(prototype, tech_name)
+-- lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
 -- lazyAPI.tech.add_tool(prototype, tool_name, amount)
 -- lazyAPI.tech.set_tool(prototype, tool_name, amount)
 
--- lazyAPI["mining-drill"].find_resource_category(prototype, name)
--- lazyAPI["mining-drill"].add_resource_category(prototype, name)
--- lazyAPI["mining-drill"].remove_resource_category(prototype, name)
+-- lazyAPI.mining_drill.find_resource_category(prototype, name)
+-- lazyAPI.mining_drill.add_resource_category(prototype, name)
+-- lazyAPI.mining_drill.remove_resource_category(prototype, name)
 
 
 local tremove = table.remove
@@ -220,6 +224,31 @@ lazyAPI.base.remove_from_array = function(prototype, field, data)
 	return prototype
 end
 local remove_from_array = lazyAPI.base.remove_from_array
+
+
+---@param prototype table
+---@param field string
+---@param data any
+---@return table prototype
+lazyAPI.base.add_to_array = function(prototype, field, data)
+	local prot = prototype.prototype or prototype
+	local array = prot[field]
+	if array == nil then
+		prot[field] = {data}
+		return prototype
+	end
+
+	fix_array(array)
+	for i=1, #array do
+		if array[i] == data then
+			return prototype
+		end
+	end
+
+	array[#array+1] = data
+	return prototype
+end
+local add_to_array = lazyAPI.base.add_to_array
 
 
 ---@param action_name function #name of your
@@ -519,21 +548,7 @@ end
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
 ---@return table #prototype
 lazyAPI.flags.add_flag = function(prototype, flag)
-	local flags = (prototype.prototype or prototype).flags
-	if flags == nil then
-		prototype.flags = {flag}
-		return prototype
-	end
-
-	fix_array(flags)
-	for i=1, #flags do
-		if flags[i] == flag then
-			return prototype
-		end
-	end
-
-	flags[#flags+1] = flag
-	return prototype
+	return add_to_array(prototype, "flags", flag)
 end
 
 
@@ -1266,30 +1281,26 @@ end
 ---@param difficulty? difficulty
 ---@return table #prototype
 lazyAPI.tech.add_effect = function(prototype, type, recipe_name, difficulty)
-	local prot = (prototype.prototype or prototype)
+	local prot = prototype.prototype or prototype
 	local effects
 	if difficulty then
 		if prot[difficulty] then
 			effects = prot[difficulty].effects
 		else
-			prot[difficulty].effects = {
-				{
-					type   = type,
-					recipe = recipe_name
-				}
-			}
+			prot[difficulty].effects = {{
+				type   = type,
+				recipe = recipe_name
+			}}
 			return prototype
 		end
 	else
 		effects = prot.effects
 	end
 	if effects == nil then
-		prot[difficulty].effects = {
-			{
+		prot[difficulty].effects = {{
 				type   = type,
 				recipe = recipe_name
-			}
-		}
+		}}
 		return prototype
 	end
 
@@ -1345,21 +1356,16 @@ end
 ---@param tech_name string
 ---@return table #prototype
 lazyAPI.tech.add_prerequisite = function(prototype, tech_name)
-	local prerequisites = (prototype.prototype or prototype).prerequisites
-	if prerequisites == nil then
-		prototype.prerequisites = {tech_name}
-		return prototype
-	end
+	return add_to_array(prototype, "prerequisites", tech_name)
+end
 
-	fix_array(prerequisites)
-	for i=1, #prerequisites do
-		if prerequisites[i] == tech_name then
-			return prototype
-		end
-	end
 
-	prerequisites[#prerequisites+1] = tech_name
-	return prototype
+---https://wiki.factorio.com/Prototype/Technology#prerequisites
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param tech_name string
+---@return table #prototype
+lazyAPI.tech.remove_prerequisite = function(prototype, tech_name)
+	return remove_from_array(prototype, "prerequisites", tech_name)
 end
 
 
@@ -1429,11 +1435,57 @@ lazyAPI.tech.set_tool = function(prototype, tool_name, amount)
 end
 
 
+-- https://wiki.factorio.com/Prototype/Technology#prerequisites
+---@param prototype? string|table #https://wiki.factorio.com/Prototype/Technology otherwise it replace in each technology
+---@param old_tech   string|table #https://wiki.factorio.com/Prototype/Technology
+---@param new_tech   string|table #https://wiki.factorio.com/Prototype/Technology
+function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
+	if prototype then
+		local prerequisites
+		if type(prototype) == "string" then
+			local technology = technologies[prototype]
+			if technology == nil then
+				log("there's no \"" .. prototype .. "\" technology")
+			end
+			prot = technology.prerequisites
+		else
+			prot = (prototype.prototype or prototype).prerequisites
+		end
+
+		fix_array(prerequisites)
+		for i=1, #prerequisites do
+			if prerequisites[i] == old_tech then
+				prerequisites[i] = new_tech
+			end
+		end
+		return
+	end
+
+	if type(old_tech) == "table" then
+		old_tech = old_tech.name
+	end
+	if type(new_tech) == "table" then
+		new_tech = new_tech.name
+	end
+
+	fix_array(technologies)
+	for i=1, #technologies do
+		local prerequisites = technologies[i].prerequisites
+		fix_array(prerequisites)
+		for j=1, #prerequisites do
+			if prerequisites[j] == old_tech then
+				prerequisites[j] = new_tech
+			end
+		end
+	end
+end
+
+
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
 ---@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return number? #index of resource_category in the resource_categories
-lazyAPI["mining-drill"].find_resource_category = function(prototype, name)
+lazyAPI.mining_drill.find_resource_category = function(prototype, name)
 	return find_in_array(prototype, "resource_categories", name)
 end
 
@@ -1442,30 +1494,16 @@ end
 ---@param prototype table
 ---@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return table #prototype
-lazyAPI["mining-drill"].add_resource_category = function(prototype, name)
-		local resource_categories = (prototype.prototype or prototype).resource_categories
-	if resource_categories == nil then
-		log("There are no resource_categories in the prototype")
-		return prototype
-	end
-
-	fix_array(resource_categories)
-	for i=1, #resource_categories do
-		if resource_categories[i] == name then
-			return prototype
-		end
-	end
-
-	resource_categories[#resource_categories+1] = name
-	return prototype
+lazyAPI.mining_drill.add_resource_category = function(prototype, name)
+	return add_to_array(prototype, "resource_categories", name)
 end
 
 
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
----@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
+---@param name string # mame from https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return table #prototype
-lazyAPI["mining-drill"].remove_resource_category = function(prototype, name)
+lazyAPI.mining_drill.remove_resource_category = function(prototype, name)
 	return remove_from_array(prototype, "resource_categories", name)
 end
 
@@ -1478,9 +1516,7 @@ lazyAPI.wrap_prototype = function(prototype)
 		error("lazyAPI.wrap_prototype(prototype) got not a prototype")
 	end
 
-	local wrapped_prot = {
-		prototype = prototype
-	}
+	local wrapped_prot = {prototype = prototype}
 
 	-- Sets flags functions
 	-- I'm lazy to check all prototypes :/
