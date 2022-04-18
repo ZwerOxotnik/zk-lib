@@ -43,6 +43,7 @@ local subscriptions = {
 -- lazyAPI.merge_locales(...)
 -- lazyAPI.merge_locales_as_new(...)
 -- lazyAPI.get_barrel_recipes(name)
+-- lazyAPI.remove_prototypes_by_name(name)
 -- lazyAPI.create_trigger_capsule(tool_data)
 -- lazyAPI.attach_custom_input_event(name)
 
@@ -55,6 +56,7 @@ local subscriptions = {
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data)
 -- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data)
 
+-- lazyAPI.resistance.find(prototype, type)
 -- lazyAPI.resistance.set(prototype, type, percent, decrease)
 -- lazyAPI.resistance.remove(prototype, type)
 
@@ -62,7 +64,8 @@ local subscriptions = {
 -- lazyAPI.flags.remove_flag(prototype, flag)
 -- lazyAPI.flags.find_flag(prototype, flag)
 
---- There are several issues still
+--# There are several issues still
+-- lazyAPI.recipe.set_subgroup(prototype, subgroup, order)
 -- lazyAPI.recipe.add_item_ingredient(prototype, item_name, amount, difficulty)
 -- lazyAPI.recipe.add_fluid_ingredient(prototype, fluid_name, amount, difficulty)
 -- lazyAPI.recipe.add_ingredient(ingredients, target, amount, difficulty)
@@ -287,13 +290,14 @@ local replace_in_prototype = lazyAPI.base.replace_in_prototype
 ---@param new_data any
 ---@return table prototypes
 lazyAPI.base.replace_in_prototypes = function(prototypes, field, old_data, new_data)
-	fix_array(prototypes)
-	for i=1, #prototypes do
-		local array = prototypes[i][field]
-		fix_array(array)
-		for j=1, #array do
-			if array[j] == old_data then
-				array[j] = new_data
+	for _, prototype in pairs(prototypes) do
+		local array = prototype[field]
+		if array then
+			fix_array(array)
+			for i=1, #array do
+				if array[i] == old_data then
+					array[i] = new_data
+				end
 			end
 		end
 	end
@@ -406,6 +410,18 @@ end
 ---@return table filled_barrel, table empty_barrel
 lazyAPI.get_barrel_recipes = function(name)
 	return recipes["fill-" .. name], recipes["empty-" .. name]
+end
+
+
+---@param name string
+lazyAPI.remove_prototypes_by_name = function(name)
+	for _, prototypes in pairs(data.raw) do
+		for _name, prototype in pairs(prototypes) do
+			if _name == name then
+				lazyAPI.base.remove_prototype(prototype)
+			end
+		end
+	end
 end
 
 
@@ -533,7 +549,7 @@ end
 
 
 ---@param prototype table
----@return table #prototype
+---@return table prototype
 lazyAPI.base.remove_prototype = function(prototype)
 	local prot = prototype.prototype or prototype
 	local name = prot.name
@@ -554,12 +570,33 @@ end
 
 
 -- https://wiki.factorio.com/Types/Resistances
+---@param prototype table
+---@param type string
+---@return table? #https://wiki.factorio.com/Types/Resistances
+lazyAPI.resistance.find = function(prototype, type)
+	local prot = prototype.prototype or prototype
+	local resistances = prot.resistances
+	if resistances == nil then
+		return
+	end
+
+	fix_array(resistances)
+	for i=1, #resistances do
+		local resistance = resistances[i]
+		if resistance.type == type then
+			return resistance
+		end
+	end
+end
+
+
+-- https://wiki.factorio.com/Types/Resistances
 -- https://wiki.factorio.com/Damage#Resistance
 ---@param prototype table
 ---@param type string
 ---@param percent number
 ---@param decrease? number
----@return table #prototype
+---@return table prototype
 lazyAPI.resistance.set = function(prototype, type, percent, decrease)
 	local prot = prototype.prototype or prototype
 	local resistances = prot.resistances
@@ -587,7 +624,7 @@ end
 -- https://wiki.factorio.com/Types/Resistances
 -- https://wiki.factorio.com/Damage#Resistance
 ---@param prototype table
----@return table #prototype
+---@return table prototype
 lazyAPI.resistance.remove = function(prototype, type)
 	local prot = prototype.prototype or prototype
 	local resistances = prot.resistances
@@ -609,7 +646,7 @@ end
 
 ---@param prototype table
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
----@return table #prototype
+---@return table prototype
 lazyAPI.flags.add_flag = function(prototype, flag)
 	return add_to_array(prototype, "flags", flag)
 end
@@ -617,7 +654,7 @@ end
 
 ---@param prototype table
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
----@return table #prototype
+---@return table prototype
 lazyAPI.flags.remove_flag = function(prototype, flag)
 	return remove_from_array(prototype, "flags", flag)
 end
@@ -709,6 +746,26 @@ lazyAPI.recipe.add_fluid_ingredient = function(prototype, fluid_name, amount, di
 end
 
 
+---@param prototype table
+---@param subgroup string
+---@param order? string
+---@return table prototype
+lazyAPI.recipe.set_subgroup = function(prototype, subgroup, order)
+	local target_name = (prototype.prototype or prototype).name
+	for _, prototypes in pairs(data.raw) do
+		for name, prot in pairs(prototypes) do
+			if name == target_name then
+				prot.subgroup = subgroup
+				if order then
+					prot.order = order
+				end
+			end
+		end
+	end
+	return prototype
+end
+
+
 ---https://wiki.factorio.com/Prototype/Recipe
 ---@param ingredients table<number, any>
 ---@param target table #https://wiki.factorio.com/Prototype/Item or https://wiki.factorio.com/Prototype/Fluid#name
@@ -730,7 +787,7 @@ end
 ---@param item_name string #https://wiki.factorio.com/Prototype/Item#name
 ---@param amount? number #1 by default
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.recipe.set_item_ingredient = function(prototype, item_name, amount, difficulty)
 	amount = amount or 1
 	local ingredients
@@ -770,7 +827,7 @@ end
 ---@param fluid_name string #https://wiki.factorio.com/Prototype/Fluid#name
 ---@param amount? number #1 by default
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.recipe.set_fluid_ingredient = function(prototype, fluid_name, amount, difficulty)
 	amount = amount or 1
 	local ingredients
@@ -806,7 +863,7 @@ end
 ---@param target table #https://wiki.factorio.com/Prototype/Item or https://wiki.factorio.com/Prototype/Fluid#name
 ---@param amount? number #1 by default
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.recipe.set_ingredient = function(prototype, target, amount, difficulty)
 	local type = target.type
 	if type == "fluid" then
@@ -862,7 +919,7 @@ local remove_ingredient = lazyAPI.recipe.remove_ingredient
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@param ingredient_name string
 ---@param type? ingredient_type #"item" by default
----@return table #prototype
+---@return table prototype
 lazyAPI.recipe.remove_ingredient_everywhere = function(prototype, ingredient_name, type)
 	type = type or "item"
 	local prot = prototype.prototype or prototype
@@ -912,7 +969,7 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@param item_name string
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.recipe.remove_item_from_result = function(prototype, item_name, difficulty)
 	local results
 	local prot = prototype.prototype or prototype
@@ -944,7 +1001,7 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@param fluid_name string
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.recipe.remove_fluid_from_result = function(prototype, fluid_name, difficulty)
 	local results
 	local prot = prototype.prototype or prototype
@@ -1263,7 +1320,7 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.tech.unlock_recipe = function(prototype, recipe_name, difficulty)
 	local effects
 	local prot = prototype.prototype or prototype
@@ -1344,7 +1401,7 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.tech.remove_unlock_recipe_effect = function(prototype, recipe_name, difficulty)
 	local effects
 	local prot = prototype.prototype or prototype
@@ -1361,7 +1418,7 @@ end
 ---https://wiki.factorio.com/Prototype/Technology#effects
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
----@return table #prototype
+---@return table prototype
 lazyAPI.tech.remove_unlock_recipe_effect_everywhere = function(prototype, recipe_name)
 	local prot = prototype.prototype or prototype
 	remove_unlock_recipe_effect(prot.effects, recipe_name)
@@ -1380,7 +1437,7 @@ end
 ---@param type string #https://wiki.factorio.com/Types/ModifierPrototype
 ---@param recipe_name string
 ---@param difficulty? difficulty
----@return table #prototype
+---@return table prototype
 lazyAPI.tech.add_effect = function(prototype, type, recipe_name, difficulty)
 	local prot = prototype.prototype or prototype
 	local effects
@@ -1455,7 +1512,7 @@ end
 ---https://wiki.factorio.com/Prototype/Technology#prerequisites
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param tech_name string
----@return table #prototype
+---@return table prototype
 lazyAPI.tech.add_prerequisite = function(prototype, tech_name)
 	return add_to_array(prototype, "prerequisites", tech_name)
 end
@@ -1464,7 +1521,7 @@ end
 ---https://wiki.factorio.com/Prototype/Technology#prerequisites
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param tech_name string
----@return table #prototype
+---@return table prototype
 lazyAPI.tech.remove_prerequisite = function(prototype, tech_name)
 	return remove_from_array(prototype, "prerequisites", tech_name)
 end
@@ -1509,7 +1566,7 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param tool_name string #https://wiki.factorio.com/Prototype/Tool#name
 ---@param amount? number #1 by default
----@return table #prototype
+---@return table prototype
 lazyAPI.tech.set_tool = function(prototype, tool_name, amount)
 	local unit = (prototype.prototype or prototype).unit
 	if unit == nil then
@@ -1540,7 +1597,7 @@ end
 ---@param prototype string|table #https://wiki.factorio.com/Prototype/Technology or its name
 ---@param old_tech  string|table #https://wiki.factorio.com/Prototype/Technology or its name
 ---@param new_tech  string|table #https://wiki.factorio.com/Prototype/Technology or its name
----@return table #prototype
+---@return table prototype
 function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
 	if type(old_tech) == "table" then
 		old_tech = old_tech.name
@@ -1591,7 +1648,7 @@ end
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
 ---@param name string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
----@return table #prototype
+---@return table prototype
 lazyAPI.mining_drill.add_resource_category = function(prototype, name)
 	return add_to_array(prototype, "resource_categories", name)
 end
@@ -1600,7 +1657,7 @@ end
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
 ---@param name string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
----@return table #prototype
+---@return table prototype
 lazyAPI.mining_drill.remove_resource_category = function(prototype, name)
 	return remove_from_array(prototype, "resource_categories", name)
 end
@@ -1610,7 +1667,7 @@ end
 ---@param prototype table
 ---@param old_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
 ---@param new_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
----@return table #prototype
+---@return table prototype
 lazyAPI.mining_drill.replace_resource_category = function(prototype, old_category, new_category)
 	replace_in_prototype(mining_drills, "resource_categories", old_category, new_category)
 	return prototype
@@ -1646,9 +1703,15 @@ lazyAPI.wrap_prototype = function(prototype)
 
 	-- Sets resistance functions
 	-- I should check prototypes though
-	for k, _f in pairs(lazyAPI.resistance) do
+	wrapped_prot.find_resistance = lazyAPI.resistance.find
+	wrapped_prot.set_resistance = lazyAPI.resistance.set
+	wrapped_prot.remove_resistance = lazyAPI.resistance.remove
+
+	-- Sets base functions
+	for k, _f in pairs(lazyAPI.base) do
 		wrapped_prot[k] = _f
 	end
+	wrapped_prot.remove = lazyAPI.base.remove_prototype
 
 	-- Sets functions for the type
 	local lazy_funks = lazyAPI[type]
@@ -1657,12 +1720,6 @@ lazyAPI.wrap_prototype = function(prototype)
 			wrapped_prot[k] = _f
 		end
 	end
-
-	-- Sets base functions
-	for k, _f in pairs(lazyAPI.base) do
-		wrapped_prot[k] = _f
-	end
-	wrapped_prot.remove = lazyAPI.base.remove_prototype
 
 	-- Let extensions to use the wrapped prototype
 	for _, _f in pairs(extensions) do
