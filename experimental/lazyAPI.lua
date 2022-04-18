@@ -47,10 +47,13 @@ local subscriptions = {
 -- lazyAPI.attach_custom_input_event(name)
 
 -- lazyAPI.base.get_type(prototype)
+-- lazyAPI.base.set_subgroup(prototype, subgroup, order)
 -- lazyAPI.base.remove_prototype(prototype)
 -- lazyAPI.base.find_in_array(prototype, field, data)
 -- lazyAPI.base.has_in_array(prototype, field, data)
 -- lazyAPI.base.remove_from_array(prototype, field, data)
+-- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data)
+-- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data)
 
 -- lazyAPI.resistance.set(prototype, type, percent, decrease)
 -- lazyAPI.resistance.remove(prototype, type)
@@ -83,6 +86,8 @@ local subscriptions = {
 -- lazyAPI.module.prohibit_recipe(prototype, recipe_name)
 -- lazyAPI.module.remove_allowed_recipe(prototype, recipe_name)
 -- lazyAPI.module.remove_blacklisted_recipe(prototype, recipe_name)
+-- lazyAPI.module.replace_recipe(prototype, old_recipe, new_recipe)
+-- lazyAPI.module.replace_recipe_everywhere(prototype, old_recipe, new_recipe)
 
 -- lazyAPI.tech.unlock_recipe(prototype, recipe_name, difficulty)
 -- lazyAPI.tech.find_unlock_recipe_effect(prototype, recipe_name, difficulty)
@@ -94,17 +99,22 @@ local subscriptions = {
 -- lazyAPI.tech.add_prerequisite(prototype, tech_name)
 -- lazyAPI.tech.remove_prerequisite(prototype, tech_name)
 -- lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
+-- lazyAPI.tech.replace_prerequisite_everywhere(old_tech, new_tech)
 -- lazyAPI.tech.add_tool(prototype, tool_name, amount)
 -- lazyAPI.tech.set_tool(prototype, tool_name, amount)
 
 -- lazyAPI.mining_drill.find_resource_category(prototype, name)
 -- lazyAPI.mining_drill.add_resource_category(prototype, name)
 -- lazyAPI.mining_drill.remove_resource_category(prototype, name)
+-- lazyAPI.mining_drill.replace_resource_category(prototype, old_category, new_category)
+-- lazyAPI.mining_drill.replace_resource_category_everywhere(prototype, old_category, new_category)
 
 
 local tremove = table.remove
 local technologies = data.raw.technology
 local recipes = data.raw.recipes
+local modules = data.raw.module
+local mining_drills = data.raw["mining-drill"]
 ---@alias ingredient_type "item" | "fluid"
 ---@alias difficulty "normal" | "expensive"
 
@@ -249,6 +259,47 @@ lazyAPI.base.add_to_array = function(prototype, field, data)
 	return prototype
 end
 local add_to_array = lazyAPI.base.add_to_array
+
+
+---@param prototype table
+---@param field string
+---@param old_data any
+---@param new_data any
+---@return table prototype
+lazyAPI.base.replace_in_prototype = function(prototype, field, old_data, new_data)
+	local array = (prototype.prototype or prototype)[field]
+	if array == nil then return prototype end
+
+	fix_array(array)
+	for i=1, #array do
+		if array[i] == old_data then
+			array[i] = new_data
+		end
+	end
+	return prototype
+end
+local replace_in_prototype = lazyAPI.base.replace_in_prototype
+
+
+---@param prototypes table #https://wiki.factorio.com/Data.raw or similar structure
+---@param field string
+---@param old_data any
+---@param new_data any
+---@return table prototypes
+lazyAPI.base.replace_in_prototypes = function(prototypes, field, old_data, new_data)
+	fix_array(prototypes)
+	for i=1, #prototypes do
+		local array = prototypes[i][field]
+		fix_array(array)
+		for j=1, #array do
+			if array[j] == old_data then
+				array[j] = new_data
+			end
+		end
+	end
+	return prototypes
+end
+local replace_in_prototypes = lazyAPI.base.replace_in_prototypes
 
 
 ---@param action_name function #name of your
@@ -466,6 +517,18 @@ end
 ---@return string #https://wiki.factorio.com/Data.raw
 lazyAPI.base.get_type = function(prototype)
 	return (prototype.prototype or prototype).type
+end
+
+
+---@param prototype table
+---@param subgroup string
+---@param order? string
+lazyAPI.base.set_subgroup = function(prototype, subgroup, order)
+	local prot = prototype.prototype or prototype
+	prot.subgroup = subgroup
+	if order then
+		prot.order = order
+	end
 end
 
 
@@ -1158,6 +1221,44 @@ lazyAPI.module.remove_blacklisted_recipe = function(prototype, recipe_name)
 end
 
 
+-- https://wiki.factorio.com/Prototype/Module#limitation_blacklist
+---@param prototype table
+---@param old_recipe string|table #https://wiki.factorio.com/Prototype/Recipe or its name
+---@param new_recipe string|table #https://wiki.factorio.com/Prototype/Recipe or its name
+---@return table prototype
+lazyAPI.module.replace_recipe = function(prototype, old_recipe, new_recipe)
+	if type(old_tech) == "table" then
+		old_tech = old_tech.name
+	end
+	if type(new_tech) == "table" then
+		new_tech = new_tech.name
+	end
+
+	replace_in_prototype(prototype, "limitation", old_recipe, new_recipe)
+	replace_in_prototype(prototype, "limitation_blacklist", old_recipe, new_recipe)
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/Module#limitation_blacklist
+---@param prototype? table
+---@param old_recipe string|table #https://wiki.factorio.com/Prototype/Recipe or its name
+---@param new_recipe string|table #https://wiki.factorio.com/Prototype/Recipe or its name
+---@return table? prototype
+lazyAPI.module.replace_recipe_everywhere = function(prototype, old_recipe, new_recipe)
+	if type(old_tech) == "table" then
+		old_tech = old_tech.name
+	end
+	if type(new_tech) == "table" then
+		new_tech = new_tech.name
+	end
+
+	replace_in_prototypes(modules, "limitation", old_recipe, new_recipe)
+	replace_in_prototypes(modules, "limitation_blacklist", old_recipe, new_recipe)
+	return prototype
+end
+
+
 ---https://wiki.factorio.com/Prototype/Technology#effects
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param recipe_name string
@@ -1436,31 +1537,11 @@ end
 
 
 -- https://wiki.factorio.com/Prototype/Technology#prerequisites
----@param prototype? string|table #https://wiki.factorio.com/Prototype/Technology otherwise it replace in each technology
----@param old_tech   string|table #https://wiki.factorio.com/Prototype/Technology
----@param new_tech   string|table #https://wiki.factorio.com/Prototype/Technology
+---@param prototype string|table #https://wiki.factorio.com/Prototype/Technology or its name
+---@param old_tech  string|table #https://wiki.factorio.com/Prototype/Technology or its name
+---@param new_tech  string|table #https://wiki.factorio.com/Prototype/Technology or its name
+---@return table #prototype
 function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
-	if prototype then
-		local prerequisites
-		if type(prototype) == "string" then
-			local technology = technologies[prototype]
-			if technology == nil then
-				log("there's no \"" .. prototype .. "\" technology")
-			end
-			prot = technology.prerequisites
-		else
-			prot = (prototype.prototype or prototype).prerequisites
-		end
-
-		fix_array(prerequisites)
-		for i=1, #prerequisites do
-			if prerequisites[i] == old_tech then
-				prerequisites[i] = new_tech
-			end
-		end
-		return
-	end
-
 	if type(old_tech) == "table" then
 		old_tech = old_tech.name
 	end
@@ -1468,22 +1549,39 @@ function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
 		new_tech = new_tech.name
 	end
 
-	fix_array(technologies)
-	for i=1, #technologies do
-		local prerequisites = technologies[i].prerequisites
-		fix_array(prerequisites)
-		for j=1, #prerequisites do
-			if prerequisites[j] == old_tech then
-				prerequisites[j] = new_tech
-			end
+	if type(prototype) == "string" then
+		local technology = technologies[prototype]
+		if technology == nil then
+			log("there's no \"" .. prototype .. "\" prerequisites")
+			return
 		end
+		replace_in_prototype(technology, "prerequisites", old_tech, new_tech)
+	else
+		replace_in_prototype(prototype,  "prerequisites", old_tech, new_tech)
 	end
+
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/Technology#prerequisites
+---@param old_tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
+---@param new_tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
+function lazyAPI.tech.replace_prerequisite_everywhere(old_tech, new_tech)
+	if type(old_tech) == "table" then
+		old_tech = old_tech.name
+	end
+	if type(new_tech) == "table" then
+		new_tech = new_tech.name
+	end
+
+	replace_in_prototypes(technologies, "prerequisites", old_tech, new_tech)
 end
 
 
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
----@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
+---@param name string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return number? #index of resource_category in the resource_categories
 lazyAPI.mining_drill.find_resource_category = function(prototype, name)
 	return find_in_array(prototype, "resource_categories", name)
@@ -1492,7 +1590,7 @@ end
 
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
----@param name string #Name from https://wiki.factorio.com/Prototype/ResourceCategory
+---@param name string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return table #prototype
 lazyAPI.mining_drill.add_resource_category = function(prototype, name)
 	return add_to_array(prototype, "resource_categories", name)
@@ -1501,10 +1599,32 @@ end
 
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
----@param name string # mame from https://wiki.factorio.com/Prototype/ResourceCategory
+---@param name string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
 ---@return table #prototype
 lazyAPI.mining_drill.remove_resource_category = function(prototype, name)
 	return remove_from_array(prototype, "resource_categories", name)
+end
+
+
+-- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
+---@param prototype table
+---@param old_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
+---@param new_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
+---@return table #prototype
+lazyAPI.mining_drill.replace_resource_category = function(prototype, old_category, new_category)
+	replace_in_prototype(mining_drills, "resource_categories", old_category, new_category)
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
+---@param prototype? table
+---@param old_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
+---@param new_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
+---@return table? #prototype
+lazyAPI.mining_drill.replace_resource_category_everywhere = function(prototype, old_category, new_category)
+	replace_in_prototypes(prototype, "resource_categories", old_category, new_category)
+	return prototype
 end
 
 
