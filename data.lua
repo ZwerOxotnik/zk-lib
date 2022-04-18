@@ -26,14 +26,12 @@ lazyAPI.attach_custom_input_event("toggle-map")
 -- })
 
 if data.raw["speech-bubble"]["speech-bubble-no-fade"] == nil then
-  data:extend({
-    {
-      type = "speech-bubble",
-      name = "speech-bubble-no-fade",
-      style = "compilatron_speech_bubble",
-      wrapper_flow_style = "compilatron_speech_bubble_wrapper",
-      fade_in_out_ticks = 5,
-      flags = {"not-on-map", "placeable-off-grid"}
-    }
-  })
+	data:extend({{
+		type = "speech-bubble",
+		name = "speech-bubble-no-fade",
+		style = "compilatron_speech_bubble",
+		wrapper_flow_style = "compilatron_speech_bubble_wrapper",
+		fade_in_out_ticks = 5,
+		flags = {"not-on-map", "placeable-off-grid"}
+	}})
 end
