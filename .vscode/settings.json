@@ -70,7 +70,8 @@
 	"Lua.diagnostics.disable": [
 		"lowercase-global",
 		"undefined-doc-name",
-		"undefined-doc-class"
+		"undefined-doc-class",
+		"undefined-global"
 	],
 	"triggerTaskOnSave.tasks": {
 		"Luacheck": ["*.lua"]

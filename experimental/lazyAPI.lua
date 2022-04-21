@@ -46,6 +46,8 @@ local subscriptions = {
 -- lazyAPI.remove_prototypes_by_name(name)
 -- lazyAPI.create_trigger_capsule(tool_data)
 -- lazyAPI.attach_custom_input_event(name)
+-- lazyAPI.make_empty_sprite(frame_count)
+-- lazyAPI.make_empty_sprites()
 
 -- lazyAPI.base.get_type(prototype)
 -- lazyAPI.base.set_subgroup(prototype, subgroup, order)
@@ -526,6 +528,25 @@ lazyAPI.attach_custom_input_event = function(name)
 	}})
 
 	return custom_input[new_name]
+end
+
+
+---@param frame_count? number #1 by default
+---@return table #https://wiki.factorio.com/Types/Sprite
+function lazyAPI.make_empty_sprite(frame_count)
+	return {
+		filename = "__core__/graphics/empty.png",
+		size = 1, frame_count = frame_count or 1
+	}
+end
+
+
+---@return table #https://wiki.factorio.com/Types/SpriteVariations
+function lazyAPI.make_empty_sprites()
+	return {{
+		filename = "__core__/graphics/empty.png",
+		height = 1, width = 1
+	}}
 end
 
 

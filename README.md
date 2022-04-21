@@ -11,7 +11,7 @@
   <img
     width="250"
     src="thumbnail.png"
-    alt="ZwerOxotnik's extendable mod"
+    alt="thumbnail"
   />
 </p>
 
@@ -59,12 +59,12 @@
 <a href="https://mods.factorio.com/mod/zk-lib/downloads"><strong>Download the mod&nbsp;&nbsp;▶</strong></a>
 </p>
 
-| Data | Control stage | UI |
-| ----------- | ---------- | --------- |
-| [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua) | [universal command widget](zk-lib/universal-command-widget) (WIP) |
-| [fakes](/data-api/fakes.lua) - creates fake entitites | ["Static libs"](#static-libs) for embedding | |
-| [lazyAPI](/experimental/lazyAPI.lua) - Are you lazy to change/add/remove/check some prototypes in the data stage? Use this library then. | [Event listener][event-listener] (not improtant, currently) | |
-| [SPD](/experimental/SPD.lua) - Simple postdate data (WIP) | [event_handler_vZO](/static-libs/lualibs/event_handler_vZO.lua) - improved version of Factorio event_handler |
+| Settings stage | Data | Control stage | UI |
+| -------------- | ---- | ------------- | -- |
+| [ZKSettings](/experimental/ZKSettings.lua) - libary with new features for settings | [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua) | [universal command widget](zk-lib/universal-command-widget) (WIP) |
+| | [fakes](/data-api/fakes.lua) - creates fake entitites | ["Static libs"](#static-libs) for embedding | |
+| | [lazyAPI](/experimental/lazyAPI.lua) - Are you lazy to change/add/remove/check some prototypes in the data stage? Use this library then. | [Event listener][event-listener] (not improtant, currently) | |
+| | [SPD](/experimental/SPD.lua) - Simple postdate data (WIP) | [event_handler_vZO](/static-libs/lualibs/event_handler_vZO.lua) - improved version of Factorio event_handler |
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 

@@ -38,7 +38,7 @@ puan_api.add_dummy_entity = function(sound, path)
 		flags = {"not-on-map"},
 		mined_sound = puan_api.check_and_get_sound(sound, path),
 		pictures = {{
-			filename = "__zk-lib__/graphics/IconDummy.png",
+			filename = "__core__/graphics/empty.png",
 			height = 1, width = 1
 		}}
 	}}
