@@ -17,8 +17,12 @@ ZKSettings.note_color = "gray"
 local Locale = require("static-libs/lualibs/locale")
 ZKSettings.array_to_locale = Locale.array_to_locale
 ZKSettings.array_to_locale_as_new = Locale.array_to_locale_as_new
+ZKSettings.locale_to_array = Locale.locale_to_array
 ZKSettings.merge_locales = Locale.merge_locales
 ZKSettings.merge_locales_as_new = Locale.merge_locales_as_new
+
+
+---@alias setting_type "int-setting" | "double-setting" | "string-setting" | "bool-setting"
 
 
 ---@param name string
@@ -120,8 +124,8 @@ end
 
 -- https://wiki.factorio.com/Tutorial:Mod_settings
 ---@param name string
----@param setting_type? string #"startup" by default
----@param setting_data table #setting_type is "startup" by default
+---@param setting_type? setting_type #"startup" by default
+---@param setting_data table
 ---@return table setting_data
 ZKSettings.create_setting = function(name, setting_type, setting_data)
 	setting_data.name = name
@@ -136,7 +140,7 @@ end
 
 -- https://wiki.factorio.com/Tutorial:Mod_settings
 ---@param name string
----@param setting_type? string #"startup" by default
+---@param setting_type? setting_type #"startup" by default
 ---@param default_value? boolean #true by default
 ---@param setting_data? table
 ---@return table setting_data
@@ -157,7 +161,7 @@ end
 ---@param prefix string
 ---@param commands_data table
 ZKSettings.create_setting_for_commands = function(prefix, commands_data)
-	
+	--WIP
 end
 
 

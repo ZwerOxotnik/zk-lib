@@ -1,5 +1,6 @@
 local addons_api = require("addons/core/addons_api")
 ZKSettings = require("__zk-lib__/experimental/ZKSettings")
+local ZKSettings = ZKSettings
 
 ZKSettings.create_bool_setting("zk-lib-warn-about-addons")
 ZKSettings.create_bool_setting("EL_debug-mode", "runtime-global", false)

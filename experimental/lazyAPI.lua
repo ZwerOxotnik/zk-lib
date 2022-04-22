@@ -16,7 +16,7 @@ lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 
 
-local locale = require("static-libs/lualibs/locale")
+local Locale = require("static-libs/lualibs/locale")
 
 
 -- Add your functions in lazyAPI.add_extension(function) and
@@ -124,10 +124,11 @@ local mining_drills = data.raw["mining-drill"]
 ---@alias difficulty "normal" | "expensive"
 
 
-lazyAPI.array_to_locale = locale.array_to_locale
-lazyAPI.array_to_locale_as_new = locale.array_to_locale_as_new
-lazyAPI.merge_locales = locale.merge_locales
-lazyAPI.merge_locales_as_new = locale.merge_locales_as_new
+lazyAPI.array_to_locale = Locale.array_to_locale
+lazyAPI.array_to_locale_as_new = Locale.array_to_locale_as_new
+lazyAPI.locale_to_array = Locale.locale_to_array
+lazyAPI.merge_locales = Locale.merge_locales
+lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 
 
 ---@param func function #your function
