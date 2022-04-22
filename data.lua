@@ -1,4 +1,5 @@
 lazyAPI = require("experimental/lazyAPI")
+local lazyAPI = lazyAPI
 puan_api = require("data-api/puan_api")
 fakes = require("data-api/fakes")
 zk_lib = require("data-api/zk_lib")

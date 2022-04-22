@@ -124,12 +124,29 @@ end
 
 -- https://wiki.factorio.com/Tutorial:Mod_settings
 ---@param name string
+---@param type string
 ---@param setting_type? setting_type #"startup" by default
----@param setting_data table
+---@param default_value any
+---@param setting_data? table
 ---@return table setting_data
-ZKSettings.create_setting = function(name, setting_type, setting_data)
+ZKSettings.create_setting = function(name, type, setting_type, default_value, setting_data)
+	setting_data = setting_data or {}
+	setting_data.type = type
 	setting_data.name = name
-	setting_data.setting_type = setting_type or setting_data.setting_type or "startup"
+	setting_type = setting_type or setting_data.setting_type or "startup"
+	setting_data.setting_type = setting_type
+	default_value = default_value or setting_data.default_value
+	setting_data.default_value = default_value
+
+	if type == "bool-setting" then
+		-- Don't mess with boolean logic
+		if default_value or default_value == nil then
+			setting_data.default_value = true
+		else
+			setting_data.default_value = false
+		end
+	end
+
 	data:extend({setting_data})
 	ZKSettings.remember_setting(setting_data)
 	ZKSettings.show_default_value(setting_data)
@@ -145,16 +162,7 @@ end
 ---@param setting_data? table
 ---@return table setting_data
 ZKSettings.create_bool_setting = function(name, setting_type, default_value, setting_data)
-	setting_data = setting_data or {}
-	setting_data.type = "bool-setting"
-	-- Don't mess with boolean logic
-	default_value = default_value or setting_data.default_value
-	if default_value or default_value == nil then
-		setting_data.default_value = true
-	else
-		setting_data.default_value = false
-	end
-	return ZKSettings.create_setting(name, setting_type, setting_data)
+	return ZKSettings.create_setting(name, "bool-setting", setting_type, default_value, setting_data)
 end
 
 
