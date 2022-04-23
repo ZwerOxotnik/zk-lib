@@ -145,7 +145,6 @@ local subscriptions = {
 -- lazyAPI.merge_locales(...)
 -- lazyAPI.merge_locales_as_new(...)
 -- lazyAPI.get_barrel_recipes(name)
--- lazyAPI.remove_prototypes_by_name(name)
 -- lazyAPI.create_trigger_capsule(tool_data)
 -- lazyAPI.attach_custom_input_event(name)
 -- lazyAPI.make_empty_sprite(frame_count)
@@ -155,11 +154,19 @@ local subscriptions = {
 -- lazyAPI.remove_recipes_by_item(item)
 -- lazyAPI.remove_loot_everywhere(item)
 -- lazyAPI.replace_loot_everywhere(item, new_item)
+-- lazyAPI.remove_entities_by_name(name)
+-- lazyAPI.has_entities_by_name(name)
+-- lazyAPI.find_entities_by_name(name)
+-- lazyAPI.remove_items_by_name(name)
+-- lazyAPI.has_items_by_name(name)
+-- lazyAPI.find_items_by_name(name)
+-- lazyAPI.remove_recipe_from_modules(recipe)
 
 
 -- lazyAPI.base.get_type(prototype)
 -- lazyAPI.base.get_name(prototype)
 -- lazyAPI.base.get_field(prototype, field_name)
+-- lazyAPI.base.change_name(prototype, new_name)
 -- lazyAPI.base.set_subgroup(prototype, subgroup, order)
 -- lazyAPI.base.remove_prototype(prototype)
 -- lazyAPI.base.find_in_array(prototype, field, data)
@@ -490,6 +497,7 @@ lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", fu
 		lazyAPI.tech.remove_unlock_recipe_effect_everywhere(technology, recipe_name)
 		-- lazyAPI.tech.remove_if_no_effects(technology) -- WARNING: this is not safe
 	end
+	lazyAPI.remove_recipe_from_modules(recipe_name)
 end)
 lazyAPI.add_listener("remove_prototype", {"fluid"}, "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
 	for _, recipe in pairs(recipes) do
@@ -522,17 +530,58 @@ lazyAPI.add_listener("remove_prototype", {"armor"}, "lazyAPI_remove_armor", func
 		lazyAPI.character.remove_armor(character, armor_name)
 	end
 end)
+lazyAPI.add_listener("remove_prototype", {"virtual-signal"}, "lazyAPI_remove_virtual-signal", function(prototype, vSignal_name, type)
+	for _, lamp in pairs(data_raw.lamp) do
+		local signal_to_color_mapping = lamp.signal_to_color_mapping
+		if signal_to_color_mapping then
+			fix_array(signal_to_color_mapping)
+			for i=#signal_to_color_mapping, 1, -1 do
+			 	if signal_to_color_mapping[i].name == vSignal_name then
+					tremove(signal_to_color_mapping, i)
+				end
+			end
+		end
+	end
+
+	-- Perhaps, I should add a default replacement.
+	for _, RCS in pairs(data_raw["rail-chain-signal"]) do
+		if RCS.default_red_output_signal and RCS.default_red_output_signal.name == vSignal_name then
+			RCS.default_red_output_signal = nil
+		elseif RCS.default_orange_output_signal and RCS.default_orange_output_signal.name == vSignal_name then
+			RCS.default_orange_output_signal = nil
+		elseif RCS.default_green_output_signal and RCS.default_green_output_signal.name == vSignal_name then
+			RCS.default_green_output_signal = nil
+		elseif RCS.default_blue_output_signal and RCS.default_blue_output_signal.name == vSignal_name then
+			RCS.default_blue_output_signal = nil
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"unit"}, "lazyAPI_remove_unit", function(prototype, unit_name, type)
+	for _, spawner in pairs(data_raw["unit-spawner"]) do
+		local result_units = spawner.result_units
+		if result_units then
+			fix_array(result_units)
+			for i=#result_units, 1, -1 do
+			 	if result_units[i][1] == unit_name then
+					tremove(result_units, i)
+				end
+			end
+		end
+	end
+end)
 lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource", function(prototype, resource_name, type)
 	local autoplace = data_raw["autoplace-control"][resource_name]
 	if autoplace.category == "resource" then
 		data_raw["autoplace-control"][resource_name] = nil
 	end
 
-	local presets = data_raw["map-gen-presets"]
-	fix_array(presets)
-	for i=1, #presets do
-		local autoplace_controls = presets[i]["rich-resources"].basic_settings.autoplace_controls
-		autoplace_controls[resource_name] = nil
+	for _, preset in pairs(data_raw["map-gen-presets"]) do
+		for _, preset_data in pairs(preset) do
+			local basic_settings = preset_data.basic_settings
+			if basic_settings and basic_settings.autoplace_controls then
+				basic_settings.autoplace_controls[resource_name] = nil
+			end
+		end
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities_with_health", function(prototype, entity_name, type)
@@ -601,13 +650,93 @@ end
 
 
 ---@param name string
-lazyAPI.remove_prototypes_by_name = function(name)
-	for _, prototypes in pairs(data_raw) do
-		for _name, prototype in pairs(prototypes) do
+lazyAPI.remove_entities_by_name = function(name)
+	for type in pairs(lazyAPI.entities_with_health) do --TODO: Recheck
+		for _name, prototype in pairs(data_raw[type]) do
 			if _name == name then
 				lazyAPI.base.remove_prototype(prototype)
 			end
 		end
+	end
+end
+
+
+---@param name string
+---@return boolean
+lazyAPI.has_entities_by_name = function(name)
+	for type in pairs(lazyAPI.entities_with_health) do --TODO: Recheck
+		for _name in pairs(data_raw[type]) do
+			if _name == name then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+
+---@param name string
+---@return table[]
+lazyAPI.find_entities_by_name = function(name)
+	local result = {}
+	for type in pairs(lazyAPI.entities_with_health) do --TODO: Recheck
+		for _name, prototype in pairs(data_raw[type]) do
+			if _name == name then
+				result[#result+1] = prototype
+			end
+		end
+	end
+	return result
+end
+
+
+---@param name string
+lazyAPI.remove_items_by_name = function(name)
+	for type in pairs(lazyAPI.all_items) do
+		for _name, prototype in pairs(data_raw[type]) do
+			if _name == name then
+				lazyAPI.base.remove_prototype(prototype)
+			end
+		end
+	end
+end
+
+
+---@param name string
+---@return boolean
+lazyAPI.has_items_by_name = function(name)
+	for type in pairs(lazyAPI.all_items) do
+		for _name in pairs(data_raw[type]) do
+			if _name == name then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+
+---@param name string
+---@return table[]
+lazyAPI.find_items_by_name = function(name)
+	local result = {}
+	for type in pairs(lazyAPI.all_items) do
+		for _name, prototype in pairs(data_raw[type]) do
+			if _name == name then
+				result[#result+1] = prototype
+			end
+		end
+	end
+	return result
+end
+
+
+---@param recipe string|table #https://wiki.factorio.com/Prototype/Recipe or its name
+lazyAPI.remove_recipe_from_modules = function(recipe)
+	local recipe_name = (type(recipe) == "string" and recipe) or lazyAPI.base.get_name(recipe)
+	for _, prototype in pairs(data_raw.module) do
+		remove_from_array(prototype, "limitation", recipe_name)
+		remove_from_array(prototype, "limitation_blacklist", recipe_name)
 	end
 end
 
@@ -808,6 +937,17 @@ end
 ---@return any
 lazyAPI.base.get_field = function(prototype, field_name)
 	return (prototype.prototype or prototype)[field_name]
+end
+
+
+-- WIP
+---@param prototype table
+---@param new_name string
+---@return table prototype
+lazyAPI.base.change_name = function(prototype, new_name)
+	log("WIP")
+	local prot = prototype.prototype or prototype
+	return prot
 end
 
 
@@ -1750,12 +1890,8 @@ end
 ---@param new_recipe string|table #https://wiki.factorio.com/Prototype/Recipe or its name
 ---@return table prototype
 lazyAPI.module.replace_recipe = function(prototype, old_recipe, new_recipe)
-	if type(old_tech) == "table" then
-		old_tech = old_tech.name
-	end
-	if type(new_tech) == "table" then
-		new_tech = new_tech.name
-	end
+	old_tech = (type(old_tech) == "string" and old_tech) or lazyAPI.base.get_name(old_tech)
+	new_tech = (type(new_tech) == "string" and new_tech) or lazyAPI.base.get_name(new_tech)
 
 	replace_in_prototype(prototype, "limitation", old_recipe, new_recipe)
 	replace_in_prototype(prototype, "limitation_blacklist", old_recipe, new_recipe)
