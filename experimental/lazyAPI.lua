@@ -6,6 +6,8 @@
 local lazyAPI = {}
 lazyAPI.base = {}
 lazyAPI.resistance = {}
+lazyAPI.loot = {}
+lazyAPI.EntityWithHealth = {}
 lazyAPI.flags = {}
 lazyAPI.recipe = {}
 lazyAPI.module = {}
@@ -15,6 +17,104 @@ lazyAPI.mining_drill = {}
 lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
+lazyAPI.entities_with_health = {
+	["accumulator"] = true,
+	["artillery-turret"] = true,
+	["beacon"] = true,
+	["boiler"] = true,
+	["burner-generator"] = true,
+	["character"] = true,
+	["arithmetic-combinator"] = true,
+	["decider-combinator"] = true,
+	["constant-combinator"] = true,
+	["logistic-container"] = true,
+	["infinity-container"] = true,
+	["assembling-machine"] = true,
+	["rocket-silo"] = true,
+	["furnace"] = true,
+	["electric-energy-interface"] = true,
+	["electric-pole"] = true,
+	["unit-spawner"] = true,
+	["combat-robot"] = true,
+	["construction-robot"] = true,
+	["logistic-robot"] = true,
+	["gate"] = true,
+	["generator"] = true,
+	["heat-interface"] = true,
+	["heat-pipe"] = true,
+	["inserter"] = true,
+	["lab"] = true,
+	["lamp"] = true,
+	["land-mine"] = true,
+	["linked-container"] = true,
+	["market"] = true,
+	["mining-drill"] = true,
+	["offshore-pump"] = true,
+	["pipe"] = true,
+	["infinity-pipe"] = true,
+	["pipe-to-ground"] = true,
+	["player-port"] = true,
+	["power-switch"] = true,
+	["programmable-speaker"] = true,
+	["pump"] = true,
+	["radar"] = true,
+	["curved-rail"] = true,
+	["straight-rail"] = true,
+	["rail-chain-signal"] = true,
+	["rail-signal"] = true,
+	["reactor"] = true,
+	["roboport"] = true,
+	["simple-entity-with-owner"] = true,
+	["simple-entity-with-force"] = true,
+	["solar-panel"] = true,
+	["storage-tank"] = true,
+	["train-stop"] = true,
+	["linked-belt"] = true,
+	["loader-1x1"] = true,
+	["loader"] = true,
+	["splitter"] = true,
+	["transport-belt"] = true,
+	["underground-belt"] = true,
+	["turret"] = true,
+	["ammo-turret"] = true,
+	["electric-turret"] = true,
+	["fluid-turret"] = true,
+	["unit"] = true,
+	["car"] = true,
+	["artillery-wagon"] = true,
+	["cargo-wagon"] = true,
+	["fluid-wagon"] = true,
+	["locomotive"] = true,
+	["spider-vehicle"] = true,
+	["wall"] = true,
+	["fish"] = true,
+	["simple-entity"] = true,
+	["spider-leg"] = true,
+	["tree"] = true
+}
+lazyAPI.all_items = {
+	["item"] = true,
+	["ammo"] = true,
+	["capsule"] = true,
+	["gun"] = true,
+	["item-with-entity-data"] = true,
+	["item-with-label"] = true,
+	["item-with-inventory"] = true,
+	["blueprint-book"] = true,
+	["item-with-tags"] = true,
+	["selection-tool"] = true,
+	["blueprint"] = true,
+	["copy-paste-tool"] = true,
+	["deconstruction-item"] = true,
+	["upgrade-item"] = true,
+	["module"] = true,
+	["rail-planner"] = true,
+	["spidertron-remote"] = true,
+	["tool"] = true,
+	["armor"] = true,
+	["mining-tool"] = true, -- TODO: recheck
+	["repair-tool"] = true
+}
 
 
 local Locale = require("static-libs/lualibs/locale")
@@ -53,6 +153,8 @@ local subscriptions = {
 -- lazyAPI.remove_item_ingredient_everywhere(item_name)
 -- lazyAPI.remove_items_by_entity(entity)
 -- lazyAPI.remove_recipes_by_item(item)
+-- lazyAPI.remove_loot_everywhere(item)
+-- lazyAPI.replace_loot_everywhere(item, new_item)
 
 
 -- lazyAPI.base.get_type(prototype)
@@ -70,6 +172,19 @@ local subscriptions = {
 -- lazyAPI.resistance.set(prototype, type, percent, decrease)
 -- lazyAPI.resistance.remove(prototype, type)
 
+-- lazyAPI.loot.find(prototype, item)
+-- lazyAPI.loot.replace(prototype, item)
+-- lazyAPI.loot.add(prototype, item)
+-- lazyAPI.loot.remove(prototype, item)
+
+-- lazyAPI.EntityWithHealth.find_resistance(prototype, type)
+-- lazyAPI.EntityWithHealth.set_resistance(prototype, type, percent, decrease)
+-- lazyAPI.EntityWithHealth.remove_resistance(prototype, type)
+-- lazyAPI.EntityWithHealth.find_loot(prototype, item)
+-- lazyAPI.EntityWithHealth.replace_loot(prototype, item)
+-- lazyAPI.EntityWithHealth.set_loot(prototype, item)
+-- lazyAPI.EntityWithHealth.remove_loot(prototype, item)
+
 -- lazyAPI.flags.add_flag(prototype, flag)
 -- lazyAPI.flags.remove_flag(prototype, flag)
 -- lazyAPI.flags.find_flag(prototype, flag)
@@ -84,10 +199,11 @@ local subscriptions = {
 -- lazyAPI.recipe.set_fluid_ingredient(prototype, fluid_name, amount, difficulty)
 -- lazyAPI.recipe.set_ingredient(prototype, target, amount, difficulty)
 -- lazyAPI.recipe.remove_ingredient(prototype, ingredient_name, type, difficulty)
--- lazyAPI.recipe.remove_ingredient_everywhere(prototype, item_name, type)
+-- lazyAPI.recipe.remove_ingredient_everywhere(prototype, item, type)
 -- lazyAPI.recipe.find_ingredient_by_name(prototype, ingredient_name, difficulty)
 -- lazyAPI.recipe.has_result(prototype)
 -- lazyAPI.recipe.remove_if_empty_result(prototype)
+-- lazyAPI.recipe.remove_item_from_result_everywhere(prototype, item)
 -- lazyAPI.recipe.remove_item_from_result(prototype, item_name, difficulty)
 -- lazyAPI.recipe.remove_fluid_from_result(prototype, fluid_name, difficulty)
 -- lazyAPI.recipe.find_item_in_result(prototype, item_name, difficulty)
@@ -130,11 +246,11 @@ local subscriptions = {
 
 
 local tremove = table.remove
-local technologies = data.raw.technology
-local recipes = data.raw.recipe
-local modules = data.raw.module
-local items = data.raw.item
-local mining_drills = data.raw["mining-drill"]
+local data_raw = data.raw
+local technologies = data_raw.technology
+local recipes = data_raw.recipe
+local modules = data_raw.module
+local mining_drills = data_raw["mining-drill"]
 ---@alias ingredient_type "item" | "fluid"
 ---@alias difficulty "normal" | "expensive"
 
@@ -308,7 +424,7 @@ end
 local replace_in_prototype = lazyAPI.base.replace_in_prototype
 
 
----@param prototypes table #https://wiki.factorio.com/Data.raw or similar structure
+---@param prototypes table #https://wiki.factorio.com/data_raw or similar structure
 ---@param field string
 ---@param old_data any
 ---@param new_data any
@@ -331,7 +447,7 @@ local replace_in_prototypes = lazyAPI.base.replace_in_prototypes
 
 
 ---@param action_name function #name of your
----@param types string[] #https://wiki.factorio.com/Data.raw or "all"
+---@param types string[] #https://wiki.factorio.com/data_raw or "all"
 ---@param name function #name of your listener
 ---@param func function #your function
 ---@return boolean #is added?
@@ -375,52 +491,25 @@ lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", fu
 		-- lazyAPI.tech.remove_if_no_effects(technology) -- WARNING: this is not safe
 	end
 end)
-lazyAPI.add_listener("remove_prototype", {"item"}, "lazyAPI_remove_item", function(prototype, item_name, type)
-	for _, recipe in pairs(recipes) do
-		if recipe.result == item_name then
-			lazyAPI.base.remove_prototype(recipe)
-		else
-			-- TODO: improve
-			lazyAPI.recipe.remove_ingredient_everywhere(recipe, item_name, "item")
-		end
-	end
-
-	local achievements = data.raw["produce-per-hour-achievement"]
-	for k, achievement in pairs(achievements) do
-		if achievement.item_product == item_name then
-			achievements[k] = nil
-		end
-	end
-end)
 lazyAPI.add_listener("remove_prototype", {"fluid"}, "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
 	for _, recipe in pairs(recipes) do
 		lazyAPI.recipe.remove_ingredient_everywhere(recipe, fluid_name, "fluid")
 	end
 end)
-lazyAPI.add_listener("remove_prototype", {"container"}, "lazyAPI_remove_container", function(prototype, container_name, type)
-	lazyAPI.base.remove_prototype(recipes[container_name])
-	lazyAPI.remove_recipes_by_item(container_name)
-	lazyAPI.remove_items_by_entity(container_name)
-end)
 lazyAPI.add_listener("remove_prototype", {"assembling-machine"}, "lazyAPI_remove_assembling-machine", function(prototype, machine_name, type)
-	lazyAPI.base.remove_prototype(recipes[machine_name]) --TODO: Recheck
-	lazyAPI.remove_recipes_by_item(machine_name)
-	lazyAPI.remove_items_by_entity(machine_name)
-	for _, machine in pairs(data.raw["assembling-machine"]) do
+	for _, machine in pairs(data_raw["assembling-machine"]) do
 		if machine.next_upgrade == machine_name then
 			machine.next_upgrade = nil
 		end
 	end
-	for _, tt in pairs(data.raw["tips-and-tricks-item"]) do
+	for _, tt in pairs(data_raw["tips-and-tricks-item"]) do
 		if tt.trigger then
 			local triggers = tt.trigger.triggers
 			if triggers then
 				fix_array(triggers)
 				for i=#triggers, 1, -1 do
 					local trigger = triggers[i]
-					if trigger.machine and trigger.machine == machine_name
-						or trigger.entity and trigger.entity == machine_name
-					then
+					if trigger.machine and trigger.machine == machine_name then
 						tremove(triggers, i)
 					end
 				end
@@ -428,42 +517,54 @@ lazyAPI.add_listener("remove_prototype", {"assembling-machine"}, "lazyAPI_remove
 		end
 	end
 end)
-lazyAPI.add_listener("remove_prototype", {"beacon"}, "lazyAPI_remove_beacon", function(prototype, beacon_name, type)
-	lazyAPI.base.remove_prototype(recipes[beacon_name])
-	lazyAPI.remove_recipes_by_item(beacon_name)
-	lazyAPI.remove_items_by_entity(beacon_name)
-end)
-lazyAPI.add_listener("remove_prototype", {"ammo"}, "lazyAPI_remove_ammo", function(prototype, ammo_name, type)
-	lazyAPI.base.remove_prototype(recipes[ammo_name])
-	lazyAPI.remove_recipes_by_item(ammo_name)
-end)
 lazyAPI.add_listener("remove_prototype", {"armor"}, "lazyAPI_remove_armor", function(prototype, armor_name, type)
-	lazyAPI.base.remove_prototype(recipes[armor_name])
-	lazyAPI.remove_recipes_by_item(armor_name)
-	for _, character in pairs(data.raw.character) do
+	for _, character in pairs(data_raw.character) do
 		lazyAPI.character.remove_armor(character, armor_name)
 	end
 end)
-lazyAPI.add_listener("remove_prototype", {"capsule"}, "lazyAPI_remove_capsule", function(prototype, capsule_name, type)
-	lazyAPI.base.remove_prototype(recipes[capsule_name])
-	lazyAPI.remove_recipes_by_item(capsule_name)
-end)
-lazyAPI.add_listener("remove_prototype", {"car"}, "lazyAPI_remove_car", function(prototype, car_name, type)
-	lazyAPI.base.remove_prototype(recipes[car_name])
-	lazyAPI.remove_recipes_by_item(car_name)
-	lazyAPI.remove_items_by_entity(car_name)
-end)
 lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource", function(prototype, resource_name, type)
-	local autoplace = data.raw["autoplace-control"][resource_name]
+	local autoplace = data_raw["autoplace-control"][resource_name]
 	if autoplace.category == "resource" then
-		data.raw["autoplace-control"][resource_name] = nil
+		data_raw["autoplace-control"][resource_name] = nil
 	end
 
-	local presets = data.raw["map-gen-presets"]
+	local presets = data_raw["map-gen-presets"]
 	fix_array(presets)
 	for i=1, #presets do
 		local autoplace_controls = presets[i]["rich-resources"].basic_settings.autoplace_controls
 		autoplace_controls[resource_name] = nil
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities_with_health", function(prototype, entity_name, type)
+	if not lazyAPI.entities_with_health[type] then return end
+
+	lazyAPI.remove_items_by_entity(entity_name)
+	for _, tt in pairs(data_raw["tips-and-tricks-item"]) do
+		if tt.trigger then
+			local triggers = tt.trigger.triggers
+			if triggers then
+				fix_array(triggers)
+				for i=#triggers, 1, -1 do
+					local trigger = triggers[i]
+					if trigger.entity and trigger.entity == entity_name then
+						tremove(triggers, i)
+					end
+				end
+			end
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_item", function(prototype, item_name, type)
+	if not lazyAPI.all_items[type] then return end
+
+	lazyAPI.remove_recipes_by_item(item_name)
+	lazyAPI.remove_loot_everywhere(item_name)
+
+	local achievements = data_raw["produce-per-hour-achievement"]
+	for k, achievement in pairs(achievements) do
+		if achievement.item_product == item_name then
+			achievements[k] = nil
+		end
 	end
 end)
 
@@ -501,7 +602,7 @@ end
 
 ---@param name string
 lazyAPI.remove_prototypes_by_name = function(name)
-	for _, prototypes in pairs(data.raw) do
+	for _, prototypes in pairs(data_raw) do
 		for _name, prototype in pairs(prototypes) do
 			if _name == name then
 				lazyAPI.base.remove_prototype(prototype)
@@ -588,11 +689,11 @@ lazyAPI.create_trigger_capsule = function(tool_data)
 		}
 	})
 
-	return data.raw.capsule[name], data.raw.projectile[name]
+	return data_raw.capsule[name], data_raw.projectile[name]
 end
 
 
-local custom_input = data.raw["custom-input"]
+local custom_input = data_raw["custom-input"]
 -- Extends game interactions, see https://wiki.factorio.com/Prototype/CustomInput#linked_game_control
 ---@return table #custom-input
 lazyAPI.attach_custom_input_event = function(name)
@@ -647,9 +748,11 @@ end
 ---@return table? prototype
 lazyAPI.remove_items_by_entity = function(entity)
 	local entity_name = (type(entity) == "string" and entity) or lazyAPI.base.get_name(entity)
-	for _, item in pairs(items) do
-		if item.place_result == entity_name then
-			lazyAPI.base.remove_prototype(item)
+	for type in pairs(lazyAPI.all_items) do
+		for _, item in pairs(data_raw[type]) do
+			if item.place_result == entity_name then
+				lazyAPI.base.remove_prototype(item)
+			end
 		end
 	end
 end
@@ -660,9 +763,28 @@ end
 lazyAPI.remove_recipes_by_item = function(item)
 	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
 	for _, recipe in pairs(recipes) do
-		lazyAPI.recipe.remove_item_from_result(recipe, item_name)
+		lazyAPI.recipe.remove_item_from_result_everywhere(recipe, item_name)
 		lazyAPI.recipe.remove_ingredient_everywhere(recipe, item_name, "item")
 		lazyAPI.recipe.remove_if_empty_result(recipe)
+	end
+end
+
+
+---@param item string|table
+lazyAPI.remove_loot_everywhere = function(item)
+	for type in pairs(lazyAPI.entities_with_health) do
+		for _, prototype in pairs(data_raw[type]) do
+			lazyAPI.loot.remove(prototype, item)
+		end
+	end
+end
+
+---@param item string|table
+lazyAPI.replace_loot_everywhere = function(item, new_item)
+	for type in pairs(lazyAPI.entities_with_health) do
+		for _, prototype in pairs(data_raw[type]) do
+			lazyAPI.loot.replace(prototype, item, new_item)
+		end
 	end
 end
 
@@ -719,7 +841,7 @@ lazyAPI.base.remove_prototype = function(prototype)
 			func(prot, name, category_type)
 		end
 	end
-	data.raw[category_type][name] = nil
+	data_raw[category_type][name] = nil
 	return prototype
 end
 
@@ -797,6 +919,119 @@ lazyAPI.resistance.remove = function(prototype, type)
 
 	return prototype
 end
+
+
+-- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
+---@param prototype table
+---@param item string|table
+---@return table? #https://wiki.factorio.com/Types/Loot
+lazyAPI.loot.find = function(prototype, item)
+	local prot = prototype.prototype or prototype
+	local loot = prot.loot
+	if loot == nil then
+		return
+	end
+
+	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
+	fix_array(loot)
+	for i=1, #loot do
+		local iLoot = loot[i]
+		if iLoot.item == item_name then
+			return iLoot
+		end
+	end
+end
+
+
+-- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
+-- https://wiki.factorio.com/Types/Loot
+---@param prototype table
+---@param item string|table
+---@param new_item string|table
+---@return table prototype
+lazyAPI.loot.replace = function(prototype, item, new_item)
+	local prot = prototype.prototype or prototype
+	local loot = prot.loot
+	if loot == nil then
+		return prototype
+	end
+
+	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
+	local new_item_name = (type(new_item) == "string" and new_item) or lazyAPI.base.get_name(new_item)
+	fix_array(loot)
+	for i=1, #loot do
+		local iLoot = loot[i]
+		if iLoot.item == item_name then
+			iLoot.item = new_item_name
+		end
+	end
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
+-- https://wiki.factorio.com/Types/Loot
+---@param prototype table
+---@param item string|table
+---@param count_min? number
+---@param count_max? number
+---@param probability? number
+---@return table protype
+lazyAPI.loot.set = function(prototype, item, count_min, count_max, probability)
+	local prot = prototype.prototype or prototype
+	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
+	local loot = prot.loot
+	if loot == nil then
+		prot.loot = {{item = item_name, count_min = count_min, count_max = count_max, probability = probability}}
+		return prototype
+	end
+
+	fix_array(loot)
+	for i=1, #loot do
+		local iLoot = loot[i]
+		if iLoot.item == item_name then
+			iLoot.count_min = count_min
+			iLoot.count_max = count_max
+			iLoot.probability = probability
+			return prototype
+		end
+	end
+
+	loot[#loot+1] = {item = item_name, count_min = count_min, count_max = count_max, probability = probability}
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
+---@param prototype table
+---@param item string|table
+---@return table prototype
+lazyAPI.loot.remove = function(prototype, item)
+	local prot = prototype.prototype or prototype
+	local loot = prot.loot
+	if loot == nil then
+		return prototype
+	end
+
+	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
+	fix_array(loot)
+	for i=#loot, 1, -1 do
+		local iLoot = loot[i]
+		if iLoot.item == item_name then
+			tremove(loot, i)
+		end
+	end
+	return prototype
+end
+
+
+lazyAPI.EntityWithHealth.find_resistance = lazyAPI.resistance.find
+lazyAPI.EntityWithHealth.set_resistance = lazyAPI.resistance.set
+lazyAPI.EntityWithHealth.remove_resistance = lazyAPI.resistance.find
+lazyAPI.EntityWithHealth.find_loot = lazyAPI.loot.find
+lazyAPI.EntityWithHealth.replace_loot = lazyAPI.loot.replace
+lazyAPI.EntityWithHealth.set_loot = lazyAPI.loot.set
+lazyAPI.EntityWithHealth.remove_loot = lazyAPI.loot.remove
 
 
 ---@param prototype table
@@ -906,7 +1141,7 @@ end
 ---@return table prototype
 lazyAPI.recipe.set_subgroup = function(prototype, subgroup, order)
 	local target_name = (prototype.prototype or prototype).name
-	for _, prototypes in pairs(data.raw) do
+	for _, prototypes in pairs(data_raw) do
 		for name, prot in pairs(prototypes) do
 			if name == target_name then
 				prot.subgroup = subgroup
@@ -1071,23 +1306,23 @@ local remove_ingredient = lazyAPI.recipe.remove_ingredient
 
 
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
----@param ingredient_name string
----@param type? ingredient_type #"item" by default
+---@param ingredient string|table
+---@param _type? ingredient_type #"item" by default
 ---@return table prototype
-lazyAPI.recipe.remove_ingredient_everywhere = function(prototype, ingredient_name, type)
-	type = type or "item"
+lazyAPI.recipe.remove_ingredient_everywhere = function(prototype, ingredient, _type)
+	_type = _type or "item"
+	local ingredient_name = (type(ingredient) == "string" and ingredient) or lazyAPI.base.get_name(ingredient)
 	local prot = prototype.prototype or prototype
 	if prot.normal then
-		remove_ingredient(prot, ingredient_name, type, "normal")
+		remove_ingredient(prot, ingredient_name, _type, "normal")
 	end
 	if prot.expensive then
-		remove_ingredient(prot, ingredient_name, type, "expensive")
+		remove_ingredient(prot, ingredient_name, _type, "expensive")
 	end
 	if prot.ingredients then
-		remove_ingredient(prot, ingredient_name, type)
+		remove_ingredient(prot, ingredient_name, _type)
 	end
-
-	return prot
+	return prototype
 end
 
 
@@ -1150,6 +1385,7 @@ lazyAPI.recipe.remove_if_empty_result = function(prototype)
 	lazyAPI.base.remove_prototype(prot)
 end
 
+
 ---https://wiki.factorio.com/Prototype/Recipe#results
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@param item_name string
@@ -1165,16 +1401,16 @@ lazyAPI.recipe.remove_item_from_result = function(prototype, item_name, difficul
 		results = prot.results
 	end
 
-	if results == nil then
-		if difficulty then
-			if prot[difficulty].result == item_name then
-				prot[difficulty].result = nil
-			end
-		else
-			if prot.result == item_name then
-				prot.result = nil
-			end
+	if difficulty then
+		if prot[difficulty].result == item_name then
+			prot[difficulty].result = nil
 		end
+	else
+		if prot.result == item_name then
+			prot.result = nil
+		end
+	end
+	if results == nil then
 		return prototype
 	end
 
@@ -1186,6 +1422,26 @@ lazyAPI.recipe.remove_item_from_result = function(prototype, item_name, difficul
 		elseif result["type"] == "item" and result["name"] == item_name then
 			tremove(results, i)
 		end
+	end
+	return prototype
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param item string|table
+---@return table prototype
+lazyAPI.recipe.remove_item_from_result_everywhere = function(prototype, item)
+	local prot = prototype.prototype or prototype
+	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
+	if prot.normal then
+		lazyAPI.recipe.remove_item_from_result(prototype, item_name, "normal")
+	end
+	if prot.expensive then
+		lazyAPI.recipe.remove_item_from_result(prototype, item_name, "expensive")
+	end
+	if prot.ingredients then
+		lazyAPI.recipe.remove_item_from_result(prototype, item_name)
 	end
 	return prototype
 end
@@ -1920,7 +2176,7 @@ lazyAPI.character.remove_armor = function(prototype, armor)
 	local prot = prototype.prototype or prototype
 	local armor_name = (type(armor) == "string" and armor) or lazyAPI.base.get_name(armor)
 
-	for _, corpse in pairs(data.raw["character-corpse"]) do
+	for _, corpse in pairs(data_raw["character-corpse"]) do
 		for _armor_name in pairs(corpse.armor_picture_mapping) do
 			if _armor_name == armor_name then
 				corpse.armor_picture_mapping[_armor_name] = nil
@@ -1960,11 +2216,11 @@ lazyAPI.wrap_prototype = function(prototype)
 		wrapped_prot[k] = _f
 	end
 
-	-- Sets resistance functions
-	-- I should check prototypes though
-	wrapped_prot.find_resistance = lazyAPI.resistance.find
-	wrapped_prot.set_resistance = lazyAPI.resistance.set
-	wrapped_prot.remove_resistance = lazyAPI.resistance.remove
+	if lazyAPI.entities_with_health[type] then
+		for k, _f in pairs(lazyAPI.EntityWithHealth) do
+			wrapped_prot[k] = _f
+		end
+	end
 
 	-- Sets base functions
 	for k, _f in pairs(lazyAPI.base) do
