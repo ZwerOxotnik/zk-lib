@@ -7,8 +7,8 @@ local lazyAPI = {}
 lazyAPI.base = {}
 lazyAPI.resistance = {}
 lazyAPI.loot = {}
-lazyAPI.EntityWithHealth = {}
 lazyAPI.flags = {}
+lazyAPI.EntityWithHealth = {}
 lazyAPI.recipe = {}
 lazyAPI.module = {}
 lazyAPI.tech = {}
@@ -17,6 +17,14 @@ lazyAPI.mining_drill = {}
 lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
+lazyAPI.all_vehciles = {
+	["car"] = true,
+	["artillery-wagon"] = true,
+	["cargo-wagon"] = true,
+	["fluid-wagon"] = true,
+	["locomotive"] = true,
+	["spider-vehicle"] = true
+}
 lazyAPI.entities_with_health = {
 	["accumulator"] = true,
 	["artillery-turret"] = true,
@@ -27,6 +35,7 @@ lazyAPI.entities_with_health = {
 	["arithmetic-combinator"] = true,
 	["decider-combinator"] = true,
 	["constant-combinator"] = true,
+	["container"] = true,
 	["logistic-container"] = true,
 	["infinity-container"] = true,
 	["assembling-machine"] = true,
@@ -92,6 +101,39 @@ lazyAPI.entities_with_health = {
 	["spider-leg"] = true,
 	["tree"] = true
 }
+lazyAPI.all_entities = {
+	["arrow"] = true,
+	["artillery-flare"] = true,
+	["artillery-projectile"] = true,
+	["beam"] = true,
+	["character-corpse"] = true,
+	["cliff"] = true,
+	["corpse"] = true,
+	["deconstructible-tile-proxy"] = true,
+	["particle"] = true, --TODO: Recheck
+	["leaf-particle"] = true, --TODO: Recheck
+	["explosion"] = true,
+	["flame-thrower-explosion"] = true,
+	["fire"] = true,
+	["flying-text"] = true,
+	["highlight-box"] = true,
+	["item-entity"] = true,
+	["item-request-proxy"] = true,
+	["particle-source"] = true,
+	["projectile"] = true,
+	["resource"] = true,
+	["rocket-silo-rocket"] = true,
+	["rocket-silo-rocket-shadow"] = true,
+	["smoke"] = true, --TODO: Recheck
+	["smoke-with-trigger"] = true,
+	["speech-bubble"] = true,
+	["sticker"] = true,
+	["tile-ghost"] = true
+}
+for type in pairs(lazyAPI.entities_with_health) do
+	lazyAPI.all_entities[type] = true
+end
+
 lazyAPI.all_items = {
 	["item"] = true,
 	["ammo"] = true,
@@ -151,6 +193,11 @@ local subscriptions = {
 -- lazyAPI.make_empty_sprites()
 -- lazyAPI.remove_item_ingredient_everywhere(item_name)
 -- lazyAPI.remove_items_by_entity(entity)
+-- lazyAPI.replace_items_by_entity(entity, new_entity)
+-- lazyAPI.remove_items_by_tile(tile)
+-- lazyAPI.replace_items_by_tile(tile, new_tile)
+-- lazyAPI.remove_items_by_equipment(battery_equipment)
+-- lazyAPI.replace_items_by_equipment(battery_equipment, new_battery_equipment)
 -- lazyAPI.remove_recipes_by_item(item)
 -- lazyAPI.remove_loot_everywhere(item)
 -- lazyAPI.replace_loot_everywhere(item, new_item)
@@ -210,9 +257,10 @@ local subscriptions = {
 -- lazyAPI.recipe.find_ingredient_by_name(prototype, ingredient_name, difficulty)
 -- lazyAPI.recipe.has_result(prototype)
 -- lazyAPI.recipe.remove_if_empty_result(prototype)
--- lazyAPI.recipe.remove_item_from_result_everywhere(prototype, item)
 -- lazyAPI.recipe.remove_item_from_result(prototype, item_name, difficulty)
+-- lazyAPI.recipe.remove_item_from_result_everywhere(prototype, item)
 -- lazyAPI.recipe.remove_fluid_from_result(prototype, fluid_name, difficulty)
+-- lazyAPI.recipe.remove_fluid_from_result_everywhere(prototype, fluid)
 -- lazyAPI.recipe.find_item_in_result(prototype, item_name, difficulty)
 -- lazyAPI.recipe.count_item_in_result(prototype, item_name, difficulty)
 -- lazyAPI.recipe.find_fluid_in_result(prototype, fluid_name, difficulty)
@@ -326,11 +374,10 @@ local fix_array = lazyAPI.fix_array
 ---@param data any
 ---@return number? #index
 lazyAPI.base.find_in_array = function(prototype, field, data)
+	if data == nil then error("data is nil") end
+	if field == nil then error("field is nil") end
 	local array = (prototype.prototype or prototype)[field]
-	if array == nil then
-		log("There are no " .. field .. " in the prototype")
-		return
-	end
+	if array == nil then return end
 
 	fix_array(array)
 	for i=1, #array do
@@ -347,11 +394,10 @@ local find_in_array = lazyAPI.base.find_in_array
 ---@param data any
 ---@return boolean
 lazyAPI.base.has_in_array = function(prototype, field, data)
+	if data == nil then error("data is nil") end
+	if field == nil then error("field is nil") end
 	local array = (prototype.prototype or prototype)[field]
-	if array == nil then
-		log("There are no " .. field .. " in the prototype")
-		return false
-	end
+	if array == nil then return false end
 
 	fix_array(array)
 	for i=1, #array do
@@ -369,11 +415,11 @@ local has_in_array = lazyAPI.base.has_in_array
 ---@param data any
 ---@return table prototype
 lazyAPI.base.remove_from_array = function(prototype, field, data)
+	if prototype == nil then return end
+	if data == nil then error("data is nil") end
+	if field == nil then error("field is nil") end
 	local array = (prototype.prototype or prototype)[field]
-	if array == nil then
-		log("There are no " .. field .. " in the prototype")
-		return prototype
-	end
+	if array == nil then return prototype end
 
 	fix_array(array)
 	for i=#array, 1, -1 do
@@ -391,6 +437,8 @@ local remove_from_array = lazyAPI.base.remove_from_array
 ---@param data any
 ---@return table prototype
 lazyAPI.base.add_to_array = function(prototype, field, data)
+	if data == nil then error("data is nil") end
+	if field == nil then error("field is nil") end
 	local prot = prototype.prototype or prototype
 	local array = prot[field]
 	if array == nil then
@@ -493,15 +541,87 @@ lazyAPI.add_listener("remove_prototype", {"technology"}, "lazyAPI_remove_technol
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", function(prototype, recipe_name, type)
+	lazyAPI.remove_recipe_from_modules(recipe_name)
+
 	for _, technology in pairs(technologies) do
 		lazyAPI.tech.remove_unlock_recipe_effect_everywhere(technology, recipe_name)
 		-- lazyAPI.tech.remove_if_no_effects(technology) -- WARNING: this is not safe
 	end
-	lazyAPI.remove_recipe_from_modules(recipe_name)
+
+	for _, silo in pairs(data.raw["rocket-silo"]) do
+		if silo.fixed_recipe == recipe_name then
+			silo.fixed_recipe = nil
+		end
+	end
 end)
 lazyAPI.add_listener("remove_prototype", {"fluid"}, "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
 	for _, recipe in pairs(recipes) do
 		lazyAPI.recipe.remove_ingredient_everywhere(recipe, fluid_name, "fluid")
+		lazyAPI.recipe.remove_fluid_from_result_everywhere(recipe, fluid_name)
+		lazyAPI.recipe.remove_if_empty_result(recipe)
+	end
+
+	for _, tile in pairs(data_raw.resource) do
+		if tile.minable and tile.minable.required_fluid == fluid_name then
+			tile.minable.required_fluid = nil
+		end
+	end
+
+	for _, boiler in pairs(data_raw.boiler) do
+		if boiler.fluid_box and boiler.fluid_box.filter == fluid_name then
+			boiler.fluid_box.filter = nil
+		end
+		if boiler.output_fluid_box and boiler.output_fluid_box.filter == fluid_name then
+			boiler.output_fluid_box.filter = nil
+		end
+	end
+
+	for _, pump in pairs(data_raw["offshore-pump"]) do
+		if pump.fluid == fluid_name then
+			lazyAPI.base.remove_prototype(pump)
+		else
+			if pump.fluid_box and pump.fluid_box.filter == fluid_name then
+				pump.fluid_box.filter = nil
+			end
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"transport-belt"}, "lazyAPI_remove_transport-belt", function(prototype, belt_name, type)
+	for _, belt in pairs(data_raw["transport-belt"]) do
+		if belt.next_upgrade == belt_name then
+			belt.next_upgrade = nil
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"inserter"}, "lazyAPI_remove_inserter", function(prototype, inserter_name, type)
+	for _, inserter in pairs(data_raw["inserter"]) do
+		if inserter.next_upgrade == inserter_name then
+			inserter.next_upgrade = nil
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"splitter"}, "lazyAPI_remove_splitter", function(prototype, splitter_name, type)
+	for _, splitter in pairs(data_raw["splitter"]) do
+		if splitter.next_upgrade == splitter_name then
+			splitter.next_upgrade = nil
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"tool"}, "lazyAPI_remove_tool", function(prototype, tool_name, type)
+	for _, lab in pairs(data_raw["lab"]) do
+		remove_from_array(lab, "inputs", tool_name)
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"underground-belt"}, "lazyAPI_remove_underground-belt", function(prototype, underground_belt_name, type)
+	for _, belt in pairs(data_raw["transport-belt"]) do
+		if belt.related_underground_belt == underground_belt_name then
+			belt.related_underground_belt = nil
+		end
+	end
+	for _, underground_belt in pairs(data_raw["underground-belt"]) do
+		if underground_belt.next_upgrade == underground_belt_name then
+			underground_belt.next_upgrade = nil
+		end
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"assembling-machine"}, "lazyAPI_remove_assembling-machine", function(prototype, machine_name, type)
@@ -530,6 +650,85 @@ lazyAPI.add_listener("remove_prototype", {"armor"}, "lazyAPI_remove_armor", func
 		lazyAPI.character.remove_armor(character, armor_name)
 	end
 end)
+lazyAPI.add_listener("remove_prototype", {"tile"}, "lazyAPI_remove_tile", function(prototype, tile_name, type)
+	lazyAPI.remove_items_by_tile(tile_name)
+
+	for _, fire in pairs(data_raw.fire) do
+		local burnt_patch_alpha_variations = fire.burnt_patch_alpha_variations
+		if burnt_patch_alpha_variations then
+			fix_array(burnt_patch_alpha_variations)
+			for i=#burnt_patch_alpha_variations, 1, -1 do
+				if burnt_patch_alpha_variations[i].tile == tile_name then
+					tremove(burnt_patch_alpha_variations, i)
+				end
+			end
+			if #burnt_patch_alpha_variations <= 0 then
+				fire.burnt_patch_alpha_variations = nil
+			end
+		end
+	end
+
+	for _, tile in pairs(data_raw.tile) do
+		remove_from_array(transition, "allowed_neighbors", tile_name)
+		if tile.transition_merges_with_tile == tile_name then
+			tile.transition_merges_with_tile = nil
+		end
+		if tile.next_direction == tile_name then
+			tile.next_direction = nil
+		end
+		local transitions = tile.transitions
+		if transitions then
+			for _, transition in pairs(transitions) do
+				remove_from_array(transition, "to_tiles", tile_name)
+			end
+		end
+	end
+
+	for _, character in pairs(data_raw.character) do
+		local footprint_particles = character.footprint_particles
+		if footprint_particles then
+			fix_array(footprint_particles)
+			for i=#footprint_particles, 1, -1 do
+				remove_from_array(footprint_particles[i], "tiles", tile_name)
+			end
+		end
+		local synced_footstep_particle_triggers = character.synced_footstep_particle_triggers
+		if synced_footstep_particle_triggers then
+			fix_array(synced_footstep_particle_triggers)
+			for i=#synced_footstep_particle_triggers, 1, -1 do
+				remove_from_array(synced_footstep_particle_triggers[i], "tiles", tile_name)
+			end
+		end
+	end
+
+	for _, car in pairs(data_raw.car) do
+		local track_particle_triggers = car.track_particle_triggers
+		if track_particle_triggers then
+			fix_array(track_particle_triggers)
+			for i=#track_particle_triggers, 1, -1 do
+				remove_from_array(track_particle_triggers[i], "tiles", tile_name)
+			end
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"battery-equipment"}, "lazyAPI_remove_battery-equipment", function(prototype, be_name, type)
+	lazyAPI.remove_items_by_equipment(be_name)
+end)
+lazyAPI.add_listener("remove_prototype", {"energy-shield-equipment"}, "lazyAPI_remove_energy-shield-equipment", function(prototype, ese_name, type)
+	lazyAPI.remove_items_by_equipment(ese_name)
+end)
+lazyAPI.add_listener("remove_prototype", {"active-defense-equipment"}, "lazyAPI_remove_active-defense-equipment", function(prototype, ade_name, type)
+	lazyAPI.remove_items_by_equipment(ade_name)
+end)
+lazyAPI.add_listener("remove_prototype", {"equipment-grid"}, "lazyAPI_remove_equipment-grid", function(prototype, EGrid_name, type)
+	for _type in pairs(lazyAPI.all_vehciles) do
+		for _, vehicle in pairs(data_raw[_type]) do
+			if vehicle.equipment_grid == EGrid_name then
+				vehicle.equipment_grid = nil
+			end
+		end
+	end
+end)
 lazyAPI.add_listener("remove_prototype", {"virtual-signal"}, "lazyAPI_remove_virtual-signal", function(prototype, vSignal_name, type)
 	for _, lamp in pairs(data_raw.lamp) do
 		local signal_to_color_mapping = lamp.signal_to_color_mapping
@@ -544,15 +743,60 @@ lazyAPI.add_listener("remove_prototype", {"virtual-signal"}, "lazyAPI_remove_vir
 	end
 
 	-- Perhaps, I should add a default replacement.
-	for _, RCS in pairs(data_raw["rail-chain-signal"]) do
-		if RCS.default_red_output_signal and RCS.default_red_output_signal.name == vSignal_name then
-			RCS.default_red_output_signal = nil
-		elseif RCS.default_orange_output_signal and RCS.default_orange_output_signal.name == vSignal_name then
-			RCS.default_orange_output_signal = nil
-		elseif RCS.default_green_output_signal and RCS.default_green_output_signal.name == vSignal_name then
-			RCS.default_green_output_signal = nil
-		elseif RCS.default_blue_output_signal and RCS.default_blue_output_signal.name == vSignal_name then
-			RCS.default_blue_output_signal = nil
+	for _, RCSignal in pairs(data_raw["rail-chain-signal"]) do
+		if RCSignal.default_red_output_signal and RCSignal.default_red_output_signal.name == vSignal_name then
+			RCSignal.default_red_output_signal = nil
+		end
+		if RCSignal.default_orange_output_signal and RCSignal.default_orange_output_signal.name == vSignal_name then
+			RCSignal.default_orange_output_signal = nil
+		end
+		if RCSignal.default_green_output_signal and RCSignal.default_green_output_signal.name == vSignal_name then
+			RCSignal.default_green_output_signal = nil
+		end
+		if RCSignal.default_blue_output_signal and RCSignal.default_blue_output_signal.name == vSignal_name then
+			RCSignal.default_blue_output_signal = nil
+		end
+	end
+
+	-- Perhaps, I should add a default replacement.
+	for _, train_stop in pairs(data_raw["train-stop"]) do
+		if train_stop.default_train_stopped_signal and train_stop.default_train_stopped_signal.name == vSignal_name then
+			train_stop.default_train_stopped_signal = nil
+		end
+		if train_stop.default_trains_count_signal and train_stop.default_trains_count_signal.name == vSignal_name then
+			train_stop.default_trains_count_signal = nil
+		end
+		if train_stop.default_trains_limit_signal and train_stop.default_trains_limit_signal.name == vSignal_name then
+			train_stop.default_trains_limit_signal = nil
+		end
+	end
+
+	-- Perhaps, I should add a default replacement.
+	for _, rail_signal in pairs(data_raw["rail-signal"]) do
+		if rail_signal.default_red_output_signal and rail_signal.default_red_output_signal.name == vSignal_name then
+			rail_signal.default_red_output_signal = nil
+		end
+		if rail_signal.default_orange_output_signal and rail_signal.default_orange_output_signal.name == vSignal_name then
+			rail_signal.default_orange_output_signal = nil
+		end
+		if rail_signal.default_green_output_signal and rail_signal.default_green_output_signal.name == vSignal_name then
+			rail_signal.default_green_output_signal = nil
+		end
+	end
+
+	-- Perhaps, I should add a default replacement.
+	for _, roboport in pairs(data_raw["roboport"]) do
+		if roboport.default_available_logistic_output_signal and roboport.default_available_logistic_output_signal.name == vSignal_name then
+			roboport.default_available_logistic_output_signal = nil
+		end
+		if roboport.default_total_logistic_output_signal and roboport.default_total_logistic_output_signal.name == vSignal_name then
+			roboport.default_total_logistic_output_signal = nil
+		end
+		if roboport.default_available_construction_output_signal and roboport.default_available_construction_output_signal.name == vSignal_name then
+			roboport.default_available_construction_output_signal = nil
+		end
+		if roboport.default_total_construction_output_signal and roboport.default_total_construction_output_signal.name == vSignal_name then
+			roboport.default_total_construction_output_signal = nil
 		end
 	end
 end)
@@ -571,7 +815,7 @@ lazyAPI.add_listener("remove_prototype", {"unit"}, "lazyAPI_remove_unit", functi
 end)
 lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource", function(prototype, resource_name, type)
 	local autoplace = data_raw["autoplace-control"][resource_name]
-	if autoplace.category == "resource" then
+	if autoplace and autoplace.category == "resource" then
 		data_raw["autoplace-control"][resource_name] = nil
 	end
 
@@ -584,8 +828,8 @@ lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource"
 		end
 	end
 end)
-lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities_with_health", function(prototype, entity_name, type)
-	if not lazyAPI.entities_with_health[type] then return end
+lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", function(prototype, entity_name, type)
+	if not lazyAPI.all_entities[type] then return end
 
 	lazyAPI.remove_items_by_entity(entity_name)
 	for _, tt in pairs(data_raw["tips-and-tricks-item"]) do
@@ -609,10 +853,45 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_item", functio
 	lazyAPI.remove_recipes_by_item(item_name)
 	lazyAPI.remove_loot_everywhere(item_name)
 
+	for _type in pairs(lazyAPI.all_vehciles) do
+		for _, vehicle in pairs(data_raw[_type]) do
+			remove_from_array(vehicle, "guns", item_name)
+		end
+	end
+
+	for _, tile in pairs(data_raw.tile) do
+		if tile.minable and tile.minable.result == item_name then
+			tile.minable = nil
+		end
+	end
+
 	local achievements = data_raw["produce-per-hour-achievement"]
 	for k, achievement in pairs(achievements) do
 		if achievement.item_product == item_name then
 			achievements[k] = nil
+		end
+	end
+
+	for _type in pairs(lazyAPI.all_entities) do
+		for _, entity in pairs(data_raw[_type]) do
+			local minable = entity.minable
+			if minable then
+				if minable.result == item_name then
+					minable.result = nil
+				end
+				local results = minable.results
+				if results and #results > 0 then
+					fix_array(results)
+					if #results > 0 then
+						for i=#results, 1, -1 do
+							local result = results[i]
+							if result.name == item_name and result.type ~= "fluid" then
+								tremove(results, i)
+							end
+						end
+					end
+				end
+			end
 		end
 	end
 end)
@@ -651,7 +930,7 @@ end
 
 ---@param name string
 lazyAPI.remove_entities_by_name = function(name)
-	for type in pairs(lazyAPI.entities_with_health) do --TODO: Recheck
+	for type in pairs(lazyAPI.all_entities) do
 		for _name, prototype in pairs(data_raw[type]) do
 			if _name == name then
 				lazyAPI.base.remove_prototype(prototype)
@@ -664,7 +943,7 @@ end
 ---@param name string
 ---@return boolean
 lazyAPI.has_entities_by_name = function(name)
-	for type in pairs(lazyAPI.entities_with_health) do --TODO: Recheck
+	for type in pairs(lazyAPI.all_entities) do
 		for _name in pairs(data_raw[type]) do
 			if _name == name then
 				return true
@@ -679,7 +958,7 @@ end
 ---@return table[]
 lazyAPI.find_entities_by_name = function(name)
 	local result = {}
-	for type in pairs(lazyAPI.entities_with_health) do --TODO: Recheck
+	for type in pairs(lazyAPI.all_entities) do
 		for _name, prototype in pairs(data_raw[type]) do
 			if _name == name then
 				result[#result+1] = prototype
@@ -873,7 +1152,7 @@ lazyAPI.remove_item_ingredient_everywhere = function(item_name)
 end
 
 
----@param entity string|table
+---@param entity string|table #https://wiki.factorio.com/Prototype/Entity or its name
 ---@return table? prototype
 lazyAPI.remove_items_by_entity = function(entity)
 	local entity_name = (type(entity) == "string" and entity) or lazyAPI.base.get_name(entity)
@@ -887,14 +1166,96 @@ lazyAPI.remove_items_by_entity = function(entity)
 end
 
 
+---@param entity string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@param new_entity string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@return table? prototype
+lazyAPI.replace_items_by_entity = function(entity, new_entity)
+	local entity_name = (type(entity) == "string" and entity) or lazyAPI.base.get_name(entity)
+	local new_entity_name = (type(new_entity) == "string" and new_entity) or lazyAPI.base.get_name(new_entity)
+	for type in pairs(lazyAPI.all_items) do
+		for _, item in pairs(data_raw[type]) do
+			if item.place_result == entity_name then
+				item.place_result = new_entity_name
+			end
+		end
+	end
+end
+
+
+---@param tile string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@return table? prototype
+lazyAPI.remove_items_by_tile = function(tile)
+	local tile_name = (type(tile) == "string" and tile) or lazyAPI.base.get_name(tile)
+	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(data_raw[type]) do
+			local place_as_tile = item.place_as_tile
+			if place_as_tile and place_as_tile.result == tile_name then
+				lazyAPI.base.remove_prototype(item)
+			end
+		end
+	end
+end
+
+
+---@param tile string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@param new_tile string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@return table? prototype
+lazyAPI.replace_items_by_tile = function(tile, new_tile)
+	local tile_name = (type(tile) == "string" and tile) or lazyAPI.base.get_name(tile)
+	local new_tile_name = (type(new_tile) == "string" and new_tile) or lazyAPI.base.get_name(new_tile)
+	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(data_raw[type]) do
+			local place_as_tile = item.place_as_tile
+			if place_as_tile and place_as_tile.result == tile_name then
+				place_as_tile.result = new_tile_name
+			end
+		end
+	end
+end
+
+
+---@param equipment string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@return table? prototype
+lazyAPI.remove_items_by_equipment = function(equipment)
+	local equipment_name = (type(equipment) == "string" and equipment) or lazyAPI.base.get_name(equipment)
+	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(data_raw[type]) do
+			if item.placed_as_equipment_result == equipment_name then
+				lazyAPI.base.remove_prototype(item)
+			end
+		end
+	end
+end
+
+
+---@param equipment string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@param new_equipment string|table #https://wiki.factorio.com/Prototype/Entity or its name
+---@return table? prototype
+lazyAPI.replace_items_by_equipment = function(equipment, new_equipment)
+	local equipment_name = (type(equipment) == "string" and equipment) or lazyAPI.base.get_name(equipment)
+	local new_equipment_name = (type(new_equipment) == "string" and new_equipment) or lazyAPI.base.get_name(new_equipment)
+	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(data_raw[type]) do
+			if item.placed_as_equipment_result == equipment_name then
+				item.placed_as_equipment_result = new_equipment_name
+			end
+		end
+	end
+end
+
+
 ---@param item string|table
 ---@return table? prototype
 lazyAPI.remove_recipes_by_item = function(item)
 	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
 	for _, recipe in pairs(recipes) do
-		lazyAPI.recipe.remove_item_from_result_everywhere(recipe, item_name)
-		lazyAPI.recipe.remove_ingredient_everywhere(recipe, item_name, "item")
-		lazyAPI.recipe.remove_if_empty_result(recipe)
+		if recipe.main_product == item_name then
+			lazyAPI.base.remove_prototype(recipe)
+		else
+			lazyAPI.recipe.remove_ingredient_everywhere(recipe, item_name, "item")
+			lazyAPI.recipe.remove_item_from_result_everywhere(recipe, item_name)
+			lazyAPI.recipe.remove_if_empty_result(recipe)
+		end
 	end
 end
 
@@ -1453,14 +1814,12 @@ lazyAPI.recipe.remove_ingredient_everywhere = function(prototype, ingredient, _t
 	_type = _type or "item"
 	local ingredient_name = (type(ingredient) == "string" and ingredient) or lazyAPI.base.get_name(ingredient)
 	local prot = prototype.prototype or prototype
+	remove_ingredient(prot, ingredient_name, _type)
 	if prot.normal then
 		remove_ingredient(prot, ingredient_name, _type, "normal")
 	end
 	if prot.expensive then
 		remove_ingredient(prot, ingredient_name, _type, "expensive")
-	end
-	if prot.ingredients then
-		remove_ingredient(prot, ingredient_name, _type)
 	end
 	return prototype
 end
@@ -1480,7 +1839,6 @@ lazyAPI.recipe.find_ingredient_by_name = function(prototype, ingredient_name, di
 		ingredients = prot.ingredients
 	end
 	if ingredients == nil then
-		log("There are no ingredients")
 		return
 	end
 
@@ -1532,6 +1890,7 @@ end
 ---@param difficulty? difficulty
 ---@return table prototype
 lazyAPI.recipe.remove_item_from_result = function(prototype, item_name, difficulty)
+	if item_name == nil then error("item_name is nil") end
 	local results
 	local prot = prototype.prototype or prototype
 	if difficulty then
@@ -1559,7 +1918,7 @@ lazyAPI.recipe.remove_item_from_result = function(prototype, item_name, difficul
 		local result = results[i]
 		if result[1] == item_name then
 			tremove(results, i)
-		elseif result["type"] == "item" and result["name"] == item_name then
+		elseif (result["type"] == "item" or result["type"] == nil) and result["name"] == item_name then
 			tremove(results, i)
 		end
 	end
@@ -1574,14 +1933,30 @@ end
 lazyAPI.recipe.remove_item_from_result_everywhere = function(prototype, item)
 	local prot = prototype.prototype or prototype
 	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
+	lazyAPI.recipe.remove_item_from_result(prototype, item_name)
 	if prot.normal then
 		lazyAPI.recipe.remove_item_from_result(prototype, item_name, "normal")
 	end
 	if prot.expensive then
 		lazyAPI.recipe.remove_item_from_result(prototype, item_name, "expensive")
 	end
-	if prot.ingredients then
-		lazyAPI.recipe.remove_item_from_result(prototype, item_name)
+	return prototype
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param fluid string|table
+---@return table prototype
+lazyAPI.recipe.remove_fluid_from_result_everywhere = function(prototype, fluid)
+	local prot = prototype.prototype or prototype
+	local fluid_name = (type(fluid) == "string" and fluid) or lazyAPI.base.get_name(fluid)
+	lazyAPI.recipe.remove_fluid_from_result(prototype, fluid_name)
+	if prot.normal then
+		lazyAPI.recipe.remove_fluid_from_result(prototype, fluid_name, "normal")
+	end
+	if prot.expensive then
+		lazyAPI.recipe.remove_fluid_from_result(prototype, fluid_name, "expensive")
 	end
 	return prototype
 end
@@ -1602,16 +1977,13 @@ lazyAPI.recipe.remove_fluid_from_result = function(prototype, fluid_name, diffic
 		results = prot.results
 	end
 	if results == nil then
-		log("There are no results in the prototype")
 		return prototype
 	end
 
 	fix_array(results)
 	for i=#results, 1, -1 do
 		local result = results[i]
-		if result[1] == fluid_name then
-			tremove(results, i)
-		elseif result["type"] == "item" and result["name"] == fluid_name then
+		if result["type"] == "fluid" and result["name"] == fluid_name then
 			tremove(results, i)
 		end
 	end
@@ -1651,7 +2023,7 @@ lazyAPI.recipe.find_item_in_result = function(prototype, item_name, difficulty)
 		local result = results[i]
 		if result[1] == item_name then
 			return result
-		elseif result["type"] == "item" and result["name"] == item_name then
+		elseif (result["type"] == "item" or result["type"] == nil) and result["name"] == item_name then
 			return result
 		end
 	end
@@ -1691,7 +2063,7 @@ lazyAPI.recipe.count_item_in_result = function(prototype, item_name, difficulty)
 		local result = results[i]
 		if result[1] == item_name then
 			amount = amount + result[2]
-		elseif result["type"] == "item" and result["name"] == item_name then
+		elseif (result["type"] == "item" or result["type"] == nil) and result["name"] == item_name then
 			amount = amount + result["amount"]
 		end
 	end
@@ -1715,7 +2087,6 @@ lazyAPI.recipe.find_fluid_in_result = function(prototype, fluid_name, difficulty
 		results = prot.results
 	end
 	if results == nil then
-		log("There are no results in the prototype")
 		return
 	end
 
@@ -1745,7 +2116,6 @@ lazyAPI.recipe.count_fluid_in_result = function(prototype, fluid_name, difficult
 		results = prot.results
 	end
 	if results == nil then
-		log("There are no results in the prototype")
 		return
 	end
 
@@ -2105,7 +2475,6 @@ end
 lazyAPI.tech.find_effect = function(prototype, type, recipe_name)
 	local effects = (prototype.prototype or prototype).effects
 	if effects == nil then
-		log("There are no effects in the prototype")
 		return
 	end
 
@@ -2156,7 +2525,6 @@ end
 lazyAPI.tech.add_tool = function(prototype, tool_name, amount)
 	local unit = (prototype.prototype or prototype).unit
 	if unit == nil then
-		log("There are no unit in the prototype")
 		return
 	end
 
@@ -2189,7 +2557,6 @@ end
 lazyAPI.tech.set_tool = function(prototype, tool_name, amount)
 	local unit = (prototype.prototype or prototype).unit
 	if unit == nil then
-		log("There are no unit in the prototype")
 		return prototype
 	end
 
@@ -2228,7 +2595,6 @@ function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
 	if type(prototype) == "string" then
 		local technology = technologies[prototype]
 		if technology == nil then
-			log("there's no \"" .. prototype .. "\" prerequisites")
 			return
 		end
 		replace_in_prototype(technology, "prerequisites", old_tech, new_tech)
