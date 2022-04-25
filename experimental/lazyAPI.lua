@@ -30,126 +30,128 @@ lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 lazyAPI.all_vehicles = {
-	["car"] = true,
-	["artillery-wagon"] = true,
-	["cargo-wagon"] = true,
-	["fluid-wagon"] = true,
-	["locomotive"] = true,
-	["spider-vehicle"] = true
+	["car"] = data_raw["car"],
+	["artillery-wagon"] = data_raw["artillery"],
+	["cargo-wagon"] = data_raw["cargo-wagon"],
+	["fluid-wagon"] = data_raw["fluid-wagon"],
+	["locomotive"] = data_raw["locomotive"],
+	["spider-vehicle"] = data_raw["spider-vehicle"]
 }
 lazyAPI.all_surrets = {
-	["turret"] = true,
-	["ammo-turret"] = true,
-	["electric-turret"] = true,
-	["fluid-turret"] = true,
+	["turret"] = data_raw["turret"],
+	["ammo-turret"] = data_raw["ammo-turret"],
+	["electric-turret"] = data_raw["electric-turret"],
+	["fluid-turret"] = data_raw["fluid-turret"],
 }
 lazyAPI.entities_with_health = {
-	["accumulator"] = true,
-	["artillery-turret"] = true,
-	["beacon"] = true,
-	["boiler"] = true,
-	["burner-generator"] = true,
-	["character"] = true,
-	["arithmetic-combinator"] = true,
-	["decider-combinator"] = true,
-	["constant-combinator"] = true,
-	["container"] = true,
-	["logistic-container"] = true,
-	["infinity-container"] = true,
-	["assembling-machine"] = true,
-	["rocket-silo"] = true,
-	["furnace"] = true,
-	["electric-energy-interface"] = true,
-	["electric-pole"] = true,
-	["unit-spawner"] = true,
-	["combat-robot"] = true,
-	["construction-robot"] = true,
-	["logistic-robot"] = true,
-	["gate"] = true,
-	["generator"] = true,
-	["heat-interface"] = true,
-	["heat-pipe"] = true,
-	["inserter"] = true,
-	["lab"] = true,
-	["lamp"] = true,
-	["land-mine"] = true,
-	["linked-container"] = true,
-	["market"] = true,
-	["mining-drill"] = true,
-	["offshore-pump"] = true,
-	["pipe"] = true,
-	["infinity-pipe"] = true,
-	["pipe-to-ground"] = true,
-	["player-port"] = true,
-	["power-switch"] = true,
-	["programmable-speaker"] = true,
-	["pump"] = true,
-	["radar"] = true,
-	["curved-rail"] = true,
-	["straight-rail"] = true,
-	["rail-chain-signal"] = true,
-	["rail-signal"] = true,
-	["reactor"] = true,
-	["roboport"] = true,
-	["simple-entity-with-owner"] = true,
-	["simple-entity-with-force"] = true,
-	["solar-panel"] = true,
-	["storage-tank"] = true,
-	["train-stop"] = true,
-	["linked-belt"] = true,
-	["loader-1x1"] = true,
-	["loader"] = true,
-	["splitter"] = true,
-	["transport-belt"] = true,
-	["underground-belt"] = true,
-	["unit"] = true,
-	["car"] = true,
-	["artillery-wagon"] = true,
-	["cargo-wagon"] = true,
-	["fluid-wagon"] = true,
-	["locomotive"] = true,
-	["spider-vehicle"] = true,
-	["wall"] = true,
-	["fish"] = true,
-	["simple-entity"] = true,
-	["spider-leg"] = true,
-	["tree"] = true
+	["accumulator"] = data_raw["accumulator"],
+	["artillery-turret"] = data_raw["artillery-turret"],
+	["beacon"] = data_raw["beacon"],
+	["boiler"] = data_raw["boiler"],
+	["burner-generator"] = data_raw["burner-generator"],
+	["character"] = data_raw["character"],
+	["arithmetic-combinator"] = data_raw["arithmetic-combinator"],
+	["decider-combinator"] = data_raw["decider-combinator"],
+	["constant-combinator"] = data_raw["constant-combinator"],
+	["container"] = data_raw["container"],
+	["logistic-container"] = data_raw["logistic-container"],
+	["infinity-container"] = data_raw["infinity-container"],
+	["assembling-machine"] = data_raw["assembling-machine"],
+	["rocket-silo"] = data_raw["rocket-silo"],
+	["furnace"] = data_raw["furnace"],
+	["electric-energy-interface"] = data_raw["electric-energy-interface"],
+	["electric-pole"] = data_raw["electric-pole"],
+	["unit-spawner"] = data_raw["unit-spawner"],
+	["combat-robot"] = data_raw["combat-robot"],
+	["construction-robot"] = data_raw["construction-robot"],
+	["logistic-robot"] = data_raw["logistic-robot"],
+	["gate"] = data_raw["gate"],
+	["generator"] = data_raw["generator"],
+	["heat-interface"] = data_raw["heat-interface"],
+	["heat-pipe"] = data_raw["heat-pipe"],
+	["inserter"] = data_raw["inserter"],
+	["lab"] = data_raw["lab"],
+	["lamp"] = data_raw["lamp"],
+	["land-mine"] = data_raw["land-mine"],
+	["linked-container"] = data_raw["linked-container"],
+	["market"] = data_raw["market"],
+	["mining-drill"] = data_raw["mining-drill"],
+	["offshore-pump"] = data_raw["offshore-pump"],
+	["pipe"] = data_raw["pipe"],
+	["infinity-pipe"] = data_raw["infinity-pipe"],
+	["pipe-to-ground"] = data_raw["pipe-to-ground"],
+	["player-port"] = data_raw["player-port"],
+	["power-switch"] = data_raw["power-switch"],
+	["programmable-speaker"] = data_raw["programmable-speaker"],
+	["pump"] = data_raw["pump"],
+	["radar"] = data_raw["radar"],
+	["curved-rail"] = data_raw["curved-rail"],
+	["straight-rail"] = data_raw["straight-rail"],
+	["rail-chain-signal"] = data_raw["rail-chain-signal"],
+	["rail-signal"] = data_raw["rail-signal"],
+	["reactor"] = data_raw["reactor"],
+	["roboport"] = data_raw["roboport"],
+	["simple-entity-with-owner"] = data_raw["simple-entity-with-owner"],
+	["simple-entity-with-force"] = data_raw["simple-entity-with-force"],
+	["solar-panel"] = data_raw["solar-panel"],
+	["storage-tank"] = data_raw["storage-tank"],
+	["train-stop"] = data_raw["train-stop"],
+	["linked-belt"] = data_raw["linked-belt"],
+	["loader-1x1"] = data_raw["loader-1x1"],
+	["loader"] = data_raw["loader"],
+	["splitter"] = data_raw["splitter"],
+	["transport-belt"] = data_raw["transport-belt"],
+	["underground-belt"] = data_raw["underground-belt"],
+	["unit"] = data_raw["unit"],
+	["wall"] = data_raw["wall"],
+	["fish"] = data_raw["fish"],
+	["simple-entity"] = data_raw["simple-entity"],
+	["spider-leg"] = data_raw["spider-leg"],
+	["tree"] = data_raw["tree"]
 }
-for type in pairs(lazyAPI.all_surrets) do
-	lazyAPI.entities_with_health[type] = true
+for turret_type, prototypes in pairs(lazyAPI.all_surrets) do
+	lazyAPI.entities_with_health[turret_type] = prototypes
+end
+for vehicle_type, prototypes in pairs(lazyAPI.all_vehicles) do
+	lazyAPI.entities_with_health[vehicle_type] = prototypes
 end
 
-lazyAPI.all_entities = {
-	["arrow"] = true,
-	["artillery-flare"] = true,
-	["artillery-projectile"] = true,
-	["beam"] = true,
-	["character-corpse"] = true,
-	["cliff"] = true,
-	["corpse"] = true,
-	["deconstructible-tile-proxy"] = true,
-	["particle"] = true, --TODO: Recheck
-	["leaf-particle"] = true, --TODO: Recheck
-	["explosion"] = true,
-	["flame-thrower-explosion"] = true,
-	["fire"] = true,
-	["flying-text"] = true,
-	["highlight-box"] = true,
-	["item-entity"] = true,
-	["item-request-proxy"] = true,
-	["particle-source"] = true,
-	["projectile"] = true,
-	["resource"] = true,
-	["rocket-silo-rocket"] = true,
-	["rocket-silo-rocket-shadow"] = true,
-	["smoke"] = true, --TODO: Recheck
-	["smoke-with-trigger"] = true,
-	["speech-bubble"] = true,
-	["sticker"] = true,
-	["tile-ghost"] = true
+lazyAPI.all_explosions = {
+	["explosion"] = data_raw["explosion"],
+	["flame-thrower-explosion"] = data_raw["flame-thrower-explosion"]
 }
-for type in pairs(lazyAPI.entities_with_health) do
-	lazyAPI.all_entities[type] = true
+lazyAPI.all_entities = {
+	["arrow"] = data_raw["arrow"],
+	["artillery-flare"] = data_raw["artillery-flare"],
+	["artillery-projectile"] = data_raw["artillery-projectile"],
+	["beam"] = data_raw["beam"],
+	["character-corpse"] = data_raw["character-corpse"],
+	["cliff"] = data_raw["cliff"],
+	["corpse"] = data_raw["corpse"],
+	["deconstructible-tile-proxy"] = data_raw["deconstructible-tile-proxy"],
+	["particle"] = data_raw["particle"], --TODO: Recheck
+	["leaf-particle"] = data_raw["leaf-particle"], --TODO: Recheck
+	["fire"] = data_raw["fire"],
+	["flying-text"] = data_raw["flying-text"],
+	["highlight-box"] = data_raw["highlight-box"],
+	["item-entity"] = data_raw["item-entity"],
+	["item-request-proxy"] = data_raw["item-request-proxy"],
+	["particle-source"] = data_raw["particle-source"],
+	["projectile"] = data_raw["projectile"],
+	["resource"] = data_raw["resource"],
+	["rocket-silo-rocket"] = data_raw["rocket-silo-rocket"],
+	["rocket-silo-rocket-shadow"] = data_raw["rocket-silo-rocket-shadow"],
+	["smoke"] = data_raw["smoke"], --TODO: Recheck
+	["smoke-with-trigger"] = data_raw["smoke-with-trigger"],
+	["speech-bubble"] = data_raw["speech-bubble"],
+	["sticker"] = data_raw["sticker"],
+	["tile-ghost"] = data_raw["tile-ghost"]
+}
+for _type, prototypes in pairs(lazyAPI.entities_with_health) do
+	lazyAPI.all_entities[_type] = prototypes
+end
+for explosion_type, prototypes in pairs(lazyAPI.all_explosions) do
+	lazyAPI.all_entities[explosion_type] = prototypes
 end
 
 lazyAPI.all_equipments = {
@@ -185,27 +187,27 @@ lazyAPI.all_achievements = {
 }
 
 lazyAPI.all_items = {
-	["item"] = true,
-	["ammo"] = true,
-	["capsule"] = true,
-	["gun"] = true,
-	["item-with-entity-data"] = true,
-	["item-with-label"] = true,
-	["item-with-inventory"] = true,
-	["blueprint-book"] = true,
-	["item-with-tags"] = true,
-	["selection-tool"] = true,
-	["blueprint"] = true,
-	["copy-paste-tool"] = true,
-	["deconstruction-item"] = true,
-	["upgrade-item"] = true,
-	["module"] = true,
-	["rail-planner"] = true,
-	["spidertron-remote"] = true,
-	["tool"] = true,
-	["armor"] = true,
-	["mining-tool"] = true, -- TODO: recheck
-	["repair-tool"] = true
+	["item"] = data_raw["item"],
+	["ammo"] = data_raw["ammo"],
+	["capsule"] = data_raw["capsule"],
+	["gun"] = data_raw["gun"],
+	["item-with-entity-data"] = data_raw["item-with-entity-data"],
+	["item-with-label"] = data_raw["item-with-label"],
+	["item-with-inventory"] = data_raw["item-with-inventory"],
+	["blueprint-book"] = data_raw["blueprint-book"],
+	["item-with-tags"] = data_raw["item-with-tags"],
+	["selection-tool"] = data_raw["selection-tool"],
+	["blueprint"] = data_raw["blueprint"],
+	["copy-paste-tool"] = data_raw["copy-paste-tool"],
+	["deconstruction-item"] = data_raw["deconstruction-item"],
+	["upgrade-item"] = data_raw["upgrade-item"],
+	["module"] = data_raw["module"],
+	["rail-planner"] = data_raw["rail-planner"],
+	["spidertron-remote"] = data_raw["spidertron-remote"],
+	["tool"] = data_raw["tool"],
+	["armor"] = data_raw["armor"],
+	["mining-tool"] = data_raw["mining-tool"], -- TODO: recheck
+	["repair-tool"] = data_raw["repair-tool"]
 }
 
 
@@ -730,6 +732,33 @@ lazyAPI.add_listener("remove_prototype", {"tips-and-tricks-item"}, "lazyAPI_remo
 		end
 	end
 end)
+
+--TODO: Refactor!
+local function remove_tile_from_action(action, tile_name)
+	local action_delivery = action.action_delivery
+	if action_delivery then
+		local target_effects = action_delivery.target_effects
+		if target_effects then
+			local _tile_name = target_effects.tile_name
+			if _tile_name then
+				if _tile_name == tile_name then
+					action_delivery.target_effects = nil
+				end
+			elseif type(next(target_effects)) == "number" then
+				fix_array(target_effects)
+				for i=#target_effects, 1, -1 do
+					local effect = target_effects[i]
+					if effect.tile_name == tile_name then
+						tremove(target_effects, i)
+					end
+				end
+				if #target_effects <= 0 then
+					action_delivery.target_effects = nil
+				end
+			end
+		end
+	end
+end
 lazyAPI.add_listener("remove_prototype", {"tile"}, "lazyAPI_remove_tile", function(prototype, tile_name, tile_type)
 	lazyAPI.remove_items_by_tile(tile_name)
 
@@ -793,39 +822,59 @@ lazyAPI.add_listener("remove_prototype", {"tile"}, "lazyAPI_remove_tile", functi
 	end
 
 	for _, projectile in pairs(data_raw.projectile) do
-		local action = projectile.action
-		if action then
-			local action_delivery = action.action_delivery
-			if action_delivery then
-				local target_effects = action_delivery.target_effects
-				if target_effects then
-					local _tile_name = target_effects.tile_name
-					if _tile_name then
-						if _tile_name == tile_name then
-							action_delivery.target_effects = nil
-						end
-					elseif type(next(target_effects)) == "number" then
-						fix_array(target_effects)
-						for i=#target_effects, 1, -1 do
-							local effect = target_effects[i]
-							if effect.tile_name == tile_name then
-								tremove(target_effects, i)
-							end
-						end
-						if #target_effects <= 0 then
-							action_delivery.target_effects = nil
-						end
-					end
+		local actions = projectile.action
+		if actions then
+			if type(next(actions)) == "number" then
+				for i=#actions, 1, -1 do
+					remove_tile_from_action(actions[i], tile_name)
 				end
+			else
+				remove_tile_from_action(actions, tile_name)
+			end
+		end
+		local final_actions = projectile.final_action
+		if final_actions then
+			if type(next(final_actions)) == "number" then
+				for i=#final_actions, 1, -1 do
+					remove_tile_from_action(final_actions[i], tile_name)
+				end
+			else
+				remove_tile_from_action(final_actions, tile_name)
 			end
 		end
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"equipment-grid"}, "lazyAPI_remove_equipment-grid", function(prototype, EGrid_name, grid_type)
-	for _type in pairs(lazyAPI.all_vehicles) do
-		for _, vehicle in pairs(data_raw[_type]) do
+	for _, prototypes in pairs(lazyAPI.all_vehicles) do
+		for _, vehicle in pairs(prototypes) do
 			if vehicle.equipment_grid == EGrid_name then
 				vehicle.equipment_grid = nil
+			end
+		end
+	end
+end)
+lazyAPI.add_listener("remove_prototype", {"optimized-decorative"}, "lazyAPI_remove_optimized-decorative", function(prototype, decorative_name, decorative_type)
+	for _, prototypes in pairs(lazyAPI.all_surrets) do
+		for _, entity in pairs(prototypes) do
+			local spawn_decoration = entity.spawn_decoration
+			if spawn_decoration then
+				fix_array(spawn_decoration)
+				for i=#spawn_decoration, 1, -1 do
+					if spawn_decoration[i].decorative == decorative_name then
+						tremove(spawn_decoration, i)
+					end
+				end
+			end
+		end
+	end
+	for _, entity in pairs(data_raw["unit-spawner"]) do
+		local spawn_decoration = entity.spawn_decoration
+		if spawn_decoration then
+			fix_array(spawn_decoration)
+			for i=#spawn_decoration, 1, -1 do
+				if spawn_decoration[i].decorative == decorative_name then
+					tremove(spawn_decoration, i)
+				end
 			end
 		end
 	end
@@ -950,6 +999,61 @@ lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource"
 		end
 	end
 end)
+
+--TODO: Refactor!
+local function remove_entity_from_action(action, entity_name)
+	local action_delivery = action.action_delivery
+	if action_delivery then
+		local source_effects = action_delivery.source_effects
+		if source_effects then
+			if source_effects.entity_name == entity_name then
+				action_delivery.source_effects = nil
+			else
+				if type(next(source_effects)) == "number" then
+					fix_array(source_effects)
+					for j=#source_effects, 1, -1 do
+						if source_effects[j].entity_name == entity_name then
+							tremove(source_effects, j)
+						end
+					end
+					if #source_effects <= 0 then
+						action_delivery.source_effects = nil
+					end
+				end
+			end
+		end
+		local target_effects = action_delivery.target_effects
+		if target_effects then
+			local _entity_name = target_effects.entity_name
+			if _entity_name then
+				if _entity_name == entity_name then
+					action_delivery.target_effects = nil
+				end
+			elseif type(next(target_effects)) == "number" then
+				fix_array(target_effects)
+				for i=#target_effects, 1, -1 do
+					if target_effects[i].entity_name == entity_name then
+						tremove(target_effects, i)
+					end
+				end
+				if #target_effects <= 0 then
+					action_delivery.target_effects = nil
+				end
+			end
+		end
+	end
+end
+lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_explosions", function(prototype, explosion_name, explosion_type)
+	if not lazyAPI.all_explosions[explosion_type] then return end
+
+	for _, prototypes in pairs(lazyAPI.all_entities) do
+		for _, entity in pairs(prototypes) do
+			if entity.dying_explosion == explosion_name then
+				entity.dying_explosion = nil
+			end
+		end
+	end
+end)
 lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", function(prototype, entity_name, entity_type)
 	if not lazyAPI.all_entities[entity_type] then return end
 
@@ -1000,13 +1104,72 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 		end
 	end
 
-	for _type in pairs(lazyAPI.all_entities) do
-		for _, entity in pairs(data_raw[_type]) do
+	for _, entity in pairs(data_raw.ammo) do
+		local ammo_type = entity.ammo_type
+		if ammo_type then
+			local actions = ammo_type.action
+			if actions then
+				if type(next(actions)) == "number" then
+					for i=#actions, 1, -1 do
+						remove_entity_from_action(actions[i], entity_name)
+					end
+				else
+					remove_entity_from_action(actions, entity_name)
+				end
+			end
+		end
+	end
+
+	for _, prototypes in pairs(lazyAPI.all_entities) do
+		for _, entity in pairs(prototypes) do
 			if entity.corpse == entity_name then
 				entity.corpse = nil
 			end
 			if entity.remains_when_mined == entity_name then
 				entity.remains_when_mined = nil
+			end
+			if entity.damaged_trigger_effect and entity.damaged_trigger_effect.entity_name == entity_name then
+				entity.damaged_trigger_effect = nil
+			end
+			if entity.dying_trigger_effect and entity.dying_trigger_effect.entity_name == entity_name then
+				entity.dying_trigger_effect = nil
+			end
+			local actions = entity.action
+			if actions then
+				if type(next(actions)) == "number" then
+					for i=#actions, 1, -1 do
+						remove_entity_from_action(actions[i], entity_name)
+					end
+				else
+					remove_entity_from_action(actions, entity_name)
+				end
+			end
+			local final_actions = entity.final_action
+			if final_actions then
+				if type(next(final_actions)) == "number" then
+					for i=#final_actions, 1, -1 do
+						remove_entity_from_action(final_actions[i], entity_name)
+					end
+				else
+					remove_entity_from_action(final_actions, entity_name)
+				end
+			end
+			-- I'm lazy to check all prototypes
+			local attack_parameters = entity.attack_parameters
+			if attack_parameters then
+				local ammo_type = attack_parameters.ammo_type
+				if ammo_type then
+					local actions = ammo_type.action
+					if actions then
+						if type(next(actions)) == "number" then
+							for i=#actions, 1, -1 do
+								remove_entity_from_action(actions[i], entity_name)
+							end
+						else
+							remove_entity_from_action(actions, entity_name)
+						end
+					end
+				end
 			end
 		end
 	end
@@ -1102,24 +1265,13 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 			local ammo_type = attack_parameters.ammo_type
 			if ammo_type then
 				local actions = ammo_type.action
-				if type(next(actions)) == "number" then
-					fix_array(actions)
-					for i=#actions, 1, -1 do
-						local action_delivery = actions[i].action_delivery
-						if action_delivery then
-							local source_effects = action_delivery.source_effects
-							if source_effects then
-								fix_array(source_effects)
-								for j=#source_effects, 1, -1 do
-									if source_effects[j].entity_name == entity_name then
-										tremove(source_effects, j)
-									end
-								end
-								if #source_effects <= 0 then
-									action_delivery.source_effects = nil
-								end
-							end
+				if actions then
+					if type(next(actions)) == "number" then
+						for i=#actions, 1, -1 do
+							remove_entity_from_action(actions[i], entity_name)
 						end
+					else
+						remove_entity_from_action(actions, entity_name)
 					end
 				end
 			end
@@ -1217,8 +1369,8 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_items", functi
 		end
 	end
 
-	for _type in pairs(lazyAPI.all_vehicles) do
-		for _, vehicle in pairs(data_raw[_type]) do
+	for _, prototypes in pairs(lazyAPI.all_vehicles) do
+		for _, vehicle in pairs(prototypes) do
 			remove_from_array(vehicle, "guns", item_name)
 		end
 	end
@@ -1247,8 +1399,8 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_items", functi
 		end
 	end
 
-	for _type in pairs(lazyAPI.all_entities) do
-		for _, entity in pairs(data_raw[_type]) do
+	for _, prototypes in pairs(lazyAPI.all_entities) do
+		for _, entity in pairs(prototypes) do
 			if entity.name == item_name then
 				lazyAPI.base.remove_prototype(entity)
 			end
@@ -1308,8 +1460,8 @@ end
 
 ---@param name string
 lazyAPI.remove_entities_by_name = function(name)
-	for type in pairs(lazyAPI.all_entities) do
-		for _name, prototype in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.all_entities) do
+		for _name, prototype in pairs(prototypes) do
 			if _name == name then
 				lazyAPI.base.remove_prototype(prototype)
 			end
@@ -1321,11 +1473,9 @@ end
 ---@param name string
 ---@return boolean
 lazyAPI.has_entities_by_name = function(name)
-	for type in pairs(lazyAPI.all_entities) do
-		for _name in pairs(data_raw[type]) do
-			if _name == name then
-				return true
-			end
+	for _, prototypes in pairs(lazyAPI.all_entities) do
+		if prototypes[name] then
+			return true
 		end
 	end
 	return false
@@ -1336,10 +1486,10 @@ end
 ---@return table[]
 lazyAPI.find_entities_by_name = function(name)
 	local result = {}
-	for type in pairs(lazyAPI.all_entities) do
-		for _name, prototype in pairs(data_raw[type]) do
-			if _name == name then
-				result[#result+1] = prototype
+	for _, prototypes in pairs(lazyAPI.all_entities) do
+		for entity_name, entity in pairs(prototypes) do
+			if entity_name == name then
+				result[#result+1] = entity
 			end
 		end
 	end
@@ -1349,10 +1499,10 @@ end
 
 ---@param name string
 lazyAPI.remove_items_by_name = function(name)
-	for type in pairs(lazyAPI.all_items) do
-		for _name, prototype in pairs(data_raw[type]) do
-			if _name == name then
-				lazyAPI.base.remove_prototype(prototype)
+	for _, prototypes in pairs(lazyAPI.all_items) do
+		for item_name, item in pairs(prototypes) do
+			if item_name == name then
+				lazyAPI.base.remove_prototype(item)
 			end
 		end
 	end
@@ -1362,9 +1512,9 @@ end
 ---@param name string
 ---@return boolean
 lazyAPI.has_items_by_name = function(name)
-	for type in pairs(lazyAPI.all_items) do
-		for _name in pairs(data_raw[type]) do
-			if _name == name then
+	for _, prototypes in pairs(lazyAPI.all_items) do
+		for item_name in pairs(prototypes) do
+			if item_name == name then
 				return true
 			end
 		end
@@ -1377,10 +1527,10 @@ end
 ---@return table[]
 lazyAPI.find_items_by_name = function(name)
 	local result = {}
-	for type in pairs(lazyAPI.all_items) do
-		for _name, prototype in pairs(data_raw[type]) do
-			if _name == name then
-				result[#result+1] = prototype
+	for _, prototypes in pairs(lazyAPI.all_items) do
+		for item_name, item in pairs(prototypes) do
+			if item_name == name then
+				result[#result+1] = item
 			end
 		end
 	end
@@ -1429,15 +1579,12 @@ lazyAPI.create_trigger_capsule = function(tool_data)
 			name = name,
 			flags = {"not-on-map"},
 			acceleration = tool_data.acceleration or 100,
-			action =
-			{{
+			action = {{
 				-- runs the script when projectile lands:
 				type = "direct",
-				action_delivery =
-				{{
+				action_delivery = {{
 					type = "instant",
-					target_effects =
-					{
+					target_effects = {
 						type = "script",
 						effect_id = name
 					}
@@ -1471,11 +1618,9 @@ lazyAPI.create_trigger_capsule = function(tool_data)
 					{
 						category = "capsule",
 						target_type = "position",
-						action =
-						{{
+						action = {{
 							type = "direct",
-							action_delivery =
-							{{
+							action_delivery = {{
 								type = "projectile",
 								projectile = name,
 								starting_speed = tool_data.starting_speed or 100
@@ -1544,8 +1689,8 @@ end
 ---@param entity string|table #https://wiki.factorio.com/Prototype/Entity or its name
 lazyAPI.remove_items_by_entity = function(entity)
 	local entity_name = (type(entity) == "string" and entity) or lazyAPI.base.get_name(entity)
-	for type in pairs(lazyAPI.all_items) do
-		for _, item in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.all_items) do
+		for _, item in pairs(prototypes) do
 			if item.place_result == entity_name then
 				lazyAPI.base.remove_prototype(item)
 			end
@@ -1559,8 +1704,8 @@ end
 lazyAPI.replace_items_by_entity = function(entity, new_entity)
 	local entity_name = (type(entity) == "string" and entity) or lazyAPI.base.get_name(entity)
 	local new_entity_name = (type(new_entity) == "string" and new_entity) or lazyAPI.base.get_name(new_entity)
-	for type in pairs(lazyAPI.all_items) do
-		for _, item in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.all_items) do
+		for _, item in pairs(prototypes) do
 			if item.place_result == entity_name then
 				item.place_result = new_entity_name
 			end
@@ -1572,8 +1717,8 @@ end
 ---@param tile string|table #https://wiki.factorio.com/Prototype/Entity or its name
 lazyAPI.remove_items_by_tile = function(tile)
 	local tile_name = (type(tile) == "string" and tile) or lazyAPI.base.get_name(tile)
-	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
-		for _, item in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(prototypes) do
 			local place_as_tile = item.place_as_tile
 			if place_as_tile and place_as_tile.result == tile_name then
 				lazyAPI.base.remove_prototype(item)
@@ -1588,8 +1733,8 @@ end
 lazyAPI.replace_items_by_tile = function(tile, new_tile)
 	local tile_name = (type(tile) == "string" and tile) or lazyAPI.base.get_name(tile)
 	local new_tile_name = (type(new_tile) == "string" and new_tile) or lazyAPI.base.get_name(new_tile)
-	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
-		for _, item in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(prototypes) do
 			local place_as_tile = item.place_as_tile
 			if place_as_tile and place_as_tile.result == tile_name then
 				place_as_tile.result = new_tile_name
@@ -1602,8 +1747,8 @@ end
 ---@param equipment string|table #https://wiki.factorio.com/Prototype/Equipment or its name
 lazyAPI.remove_items_by_equipment = function(equipment)
 	local equipment_name = (type(equipment) == "string" and equipment) or lazyAPI.base.get_name(equipment)
-	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
-		for _, item in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(prototypes) do
 			if item.placed_as_equipment_result == equipment_name then
 				lazyAPI.base.remove_prototype(item)
 			end
@@ -1632,8 +1777,8 @@ end
 lazyAPI.replace_items_by_equipment = function(equipment, new_equipment)
 	local equipment_name = (type(equipment) == "string" and equipment) or lazyAPI.base.get_name(equipment)
 	local new_equipment_name = (type(new_equipment) == "string" and new_equipment) or lazyAPI.base.get_name(new_equipment)
-	for type in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
-		for _, item in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
+		for _, item in pairs(prototypes) do
 			if item.placed_as_equipment_result == equipment_name then
 				item.placed_as_equipment_result = new_equipment_name
 			end
@@ -1674,8 +1819,8 @@ end
 
 ---@param item string|table
 lazyAPI.remove_loot_everywhere = function(item)
-	for type in pairs(lazyAPI.entities_with_health) do
-		for _, prototype in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.entities_with_health) do
+		for _, prototype in pairs(prototypes) do
 			lazyAPI.loot.remove(prototype, item)
 		end
 	end
@@ -1683,8 +1828,8 @@ end
 
 ---@param item string|table
 lazyAPI.replace_loot_everywhere = function(item, new_item)
-	for type in pairs(lazyAPI.entities_with_health) do
-		for _, prototype in pairs(data_raw[type]) do
+	for _, prototypes in pairs(lazyAPI.entities_with_health) do
+		for _, prototype in pairs(prototypes) do
 			lazyAPI.loot.replace(prototype, item, new_item)
 		end
 	end
@@ -1722,23 +1867,14 @@ function lazyAPI.can_i_create(_type, name)
 
 	local is_entity = lazyAPI.all_entities[_type]
 	if is_entity then
-		for entity_type in pairs(lazyAPI.all_entities) do
-			for _, prototypes in pairs(data_raw[entity_type]) do
-				if prototypes[name] then
-					return false
-				end
-			end
-		end
-		return true
+		return not lazyAPI.has_entities_by_name(name)
 	end
 
 	local is_item = lazyAPI.all_items[_type]
 	if is_item then
-		for item_type in pairs(lazyAPI.all_items) do
-			for _, prototypes in pairs(data_raw[item_type]) do
-				if prototypes[name] then
-					return false
-				end
+		for _, prototypes in pairs(lazyAPI.all_items) do
+			if prototypes[name] then
+				return false
 			end
 		end
 		return true
