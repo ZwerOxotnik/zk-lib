@@ -37,6 +37,12 @@ lazyAPI.all_vehicles = {
 	["locomotive"] = true,
 	["spider-vehicle"] = true
 }
+lazyAPI.all_surrets = {
+	["turret"] = true,
+	["ammo-turret"] = true,
+	["electric-turret"] = true,
+	["fluid-turret"] = true,
+}
 lazyAPI.entities_with_health = {
 	["accumulator"] = true,
 	["artillery-turret"] = true,
@@ -96,10 +102,6 @@ lazyAPI.entities_with_health = {
 	["splitter"] = true,
 	["transport-belt"] = true,
 	["underground-belt"] = true,
-	["turret"] = true,
-	["ammo-turret"] = true,
-	["electric-turret"] = true,
-	["fluid-turret"] = true,
 	["unit"] = true,
 	["car"] = true,
 	["artillery-wagon"] = true,
@@ -113,6 +115,10 @@ lazyAPI.entities_with_health = {
 	["spider-leg"] = true,
 	["tree"] = true
 }
+for type in pairs(lazyAPI.all_surrets) do
+	lazyAPI.entities_with_health[type] = true
+end
+
 lazyAPI.all_entities = {
 	["arrow"] = true,
 	["artillery-flare"] = true,
@@ -248,6 +254,7 @@ local subscriptions = {
 -- lazyAPI.remove_items_by_equipment(equipment)
 -- lazyAPI.replace_items_by_equipment(battery_equipment, new_battery_equipment)
 -- lazyAPI.remove_equipment_by_item(item): boolean
+-- lazyAPI.remove_recipes_by_fluid(fluid)
 -- lazyAPI.remove_recipes_by_item(item)
 -- lazyAPI.remove_loot_everywhere(item)
 -- lazyAPI.replace_loot_everywhere(item, new_item)
@@ -575,7 +582,7 @@ lazyAPI.add_listener = function(action_name, types, name, func)
 end
 
 
-lazyAPI.add_listener("remove_prototype", {"technology"}, "lazyAPI_remove_technology", function(prototype, tech_name, type)
+lazyAPI.add_listener("remove_prototype", {"technology"}, "lazyAPI_remove_technology", function(prototype, tech_name, tech_type)
 	for _, technology in pairs(technologies) do
 		lazyAPI.tech.remove_prerequisite(technology, tech_name)
 	end
@@ -597,7 +604,6 @@ lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", fu
 
 	for _, technology in pairs(technologies) do
 		lazyAPI.tech.remove_unlock_recipe_effect_everywhere(technology, recipe_name)
-		-- lazyAPI.tech.remove_if_no_effects(technology) -- WARNING: this is not safe
 	end
 
 	for _, silo in pairs(data_raw["rocket-silo"]) do
@@ -607,11 +613,7 @@ lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", fu
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"fluid"}, "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
-	for _, recipe in pairs(recipes) do
-		lazyAPI.recipe.remove_ingredient_everywhere(recipe, fluid_name, "fluid")
-		lazyAPI.recipe.remove_fluid_from_result_everywhere(recipe, fluid_name)
-		lazyAPI.recipe.remove_if_empty_result(recipe)
-	end
+	lazyAPI.remove_recipes_by_fluid(fluid_name)
 
 	for _, resource in pairs(data_raw.resource) do
 		local minable = resource.minable
@@ -963,12 +965,18 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 		local dont_build = achievement.dont_build
 		if dont_build then
 			if type(dont_build) == "string" then
-				if achievement.dont_build == entity_name then
+				if dont_build == entity_name then
 					achievement.dont_build = nil
 				end
 			else
 				remove_from_array(achievement, "dont_build", entity_name)
 			end
+		end
+	end
+
+	for _, achievement in pairs(data_raw["build-entity-achievement"]) do
+		if achievement.to_build == entity_name then
+			lazyAPI.base.remove_prototype(achievement)
 		end
 	end
 
@@ -992,6 +1000,54 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 		end
 	end
 
+	for _type in pairs(lazyAPI.all_entities) do
+		for _, entity in pairs(data_raw[_type]) do
+			if entity.corpse == entity_name then
+				entity.corpse = nil
+			end
+			if entity.remains_when_mined == entity_name then
+				entity.remains_when_mined = nil
+			end
+		end
+	end
+
+	-- Is it excessive? I added it because of corpses
+	for _, entity in pairs(data_raw["optimized-particle"]) do
+		local effects = entity.ended_on_ground_trigger_effect
+		if effects then
+			if type(next(effects)) == "number" then
+				fix_array(effects)
+				for i=#effects, 1, -1 do
+					if effects[i].entity_name == entity_name then
+						tremove(effects, i)
+					end
+				end
+			end
+		end
+		effects = entity.ended_in_water_trigger_effect
+		if effects then
+			if type(next(effects)) == "number" then
+				fix_array(effects)
+				for i=#effects, 1, -1 do
+					if effects[i].entity_name == entity_name then
+						tremove(effects, i)
+					end
+				end
+			end
+		end
+		effects = entity.regular_trigger_effect
+		if effects then
+			if type(next(effects)) == "number" then
+				fix_array(effects)
+				for i=#effects, 1, -1 do
+					if effects[i].entity_name == entity_name then
+						tremove(effects, i)
+					end
+				end
+			end
+		end
+	end
+
 	for _, tt in pairs(data_raw["tips-and-tricks-item"]) do
 		local trigger = tt.trigger
 		if trigger then
@@ -1008,6 +1064,61 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 						local _trigger = triggers[i]
 						if _trigger.entity == entity_name then
 							tremove(triggers, i)
+						end
+					end
+				end
+			end
+		end
+		local skip_trigger = tt.skip_trigger
+		if skip_trigger then
+			if skip_trigger.entity == entity_name then
+				skip_trigger.entity = nil
+			end
+			if skip_trigger.target == entity_name then
+				skip_trigger.target = nil
+			end
+			if skip_trigger.source == entity_name then
+				skip_trigger.source = nil
+			end
+			local triggers = skip_trigger.triggers
+			if triggers then
+				fix_array(triggers)
+				for i=#triggers, 1, -1 do
+					local _trigger = triggers[i]
+					if _trigger.target == entity_name then
+						_trigger.target = nil
+					end
+					if _trigger.source == entity_name then
+						_trigger.source = nil
+					end
+				end
+			end
+		end
+	end
+
+	for _, equipment in pairs(data_raw["active-defense-equipment"]) do
+		local attack_parameters = equipment.attack_parameters
+		if attack_parameters then
+			local ammo_type = attack_parameters.ammo_type
+			if ammo_type then
+				local actions = ammo_type.action
+				if type(next(actions)) == "number" then
+					fix_array(actions)
+					for i=#actions, 1, -1 do
+						local action_delivery = actions[i].action_delivery
+						if action_delivery then
+							local source_effects = action_delivery.source_effects
+							if source_effects then
+								fix_array(source_effects)
+								for j=#source_effects, 1, -1 do
+									if source_effects[j].entity_name == entity_name then
+										tremove(source_effects, j)
+									end
+								end
+								if #source_effects <= 0 then
+									action_delivery.source_effects = nil
+								end
+							end
 						end
 					end
 				end
@@ -1053,6 +1164,31 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_equipments", f
 		local capsule_action = capsule.capsule_action
 		if capsule_action and capsule_action.equipment == equipment_name then
 			lazyAPI.base.remove_prototype(capsule)
+		end
+	end
+end)
+
+--TODO: refactor!
+local function remove_turret_effect(effects, turret_name)
+	if effects == nil then return end
+	fix_array(effects)
+	for i=#effects, 1, -1 do
+		local effect = effects[i]
+		if effect.turret_id == turret_name and effect.type == "turret-attack" then
+			tremove(effects, i)
+		end
+	end
+end
+lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_turrets", function(prototype, turret_name, turret_type)
+	if not lazyAPI.all_surrets[turret_type] then return end
+
+	for _, technology in pairs(technologies) do
+		remove_turret_effect(technology.effects, turret_name)
+		if technology.normal then
+			remove_turret_effect(technology.normal.effects, turret_name)
+		end
+		if technology.expensive then
+			remove_turret_effect(technology.expensive.effects, turret_name)
 		end
 	end
 end)
@@ -1113,6 +1249,9 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_items", functi
 
 	for _type in pairs(lazyAPI.all_entities) do
 		for _, entity in pairs(data_raw[_type]) do
+			if entity.name == item_name then
+				lazyAPI.base.remove_prototype(entity)
+			end
 			local minable = entity.minable
 			if minable then
 				if minable.result == item_name then
@@ -1477,11 +1616,10 @@ end
 ---@return boolean
 lazyAPI.remove_equipment_by_item = function(item)
 	local item_name = (type(item) == "string" and item) or lazyAPI.base.get_name(item)
-	for _type in pairs(lazyAPI.all_equipments) do
-		local prototype = data_raw[_type][item_name]
-		if prototype then
-			log(item_name)
-			lazyAPI.base.remove_prototype(prototype)
+	for _, prototypes in pairs(lazyAPI.all_equipments) do
+		local equipment = prototypes[item_name]
+		if equipment then
+			lazyAPI.base.remove_prototype(equipment)
 			return true
 		end
 	end
@@ -1499,6 +1637,21 @@ lazyAPI.replace_items_by_equipment = function(equipment, new_equipment)
 			if item.placed_as_equipment_result == equipment_name then
 				item.placed_as_equipment_result = new_equipment_name
 			end
+		end
+	end
+end
+
+
+---@param fluid string|table
+lazyAPI.remove_recipes_by_fluid = function(fluid)
+	local fluid_name = (type(fluid) == "string" and fluid) or lazyAPI.base.get_name(fluid)
+	for _, recipe in pairs(recipes) do
+		if recipe.main_product == fluid_name then
+			lazyAPI.base.remove_prototype(recipe)
+		else
+			lazyAPI.recipe.remove_ingredient_everywhere(recipe, fluid_name, "fluid")
+			lazyAPI.recipe.remove_fluid_from_result_everywhere(recipe, fluid_name)
+			lazyAPI.recipe.remove_if_empty_result(recipe)
 		end
 	end
 end
@@ -2916,6 +3069,7 @@ lazyAPI.tech.add_prerequisite = function(prototype, tech)
 end
 
 
+-- Perhaps, unstable
 ---https://wiki.factorio.com/Prototype/Technology#prerequisites
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param tech string|table
@@ -2923,6 +3077,20 @@ end
 lazyAPI.tech.remove_prerequisite = function(prototype, tech)
 	local tech_name = (type(tech) == "string" and tech) or lazyAPI.base.get_name(tech)
 	return remove_from_array(prototype, "prerequisites", tech_name)
+
+	-- WIP (probably, it's wrong, I should check tecnologies)
+	-- local prerequisites = (prototype.prototype or prototype).prerequisites
+	-- if prerequisites == nil then return prototype end
+
+	-- local tech_name = (type(tech) == "string" and tech) or lazyAPI.base.get_name(tech)
+	-- fix_array(prerequisites)
+	-- -- TODO: improve!
+	-- local filter = '^' .. tech_name:gsub("%-", "%%-")
+	-- for i=#prerequisites, 1, -1 do
+	-- 	if prerequisites[i]:find(filter) then
+	-- 		tremove(prerequisites, i)
+	-- 	end
+	-- end
 end
 
 
