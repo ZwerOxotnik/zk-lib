@@ -20,6 +20,7 @@ lazyAPI.base = {}
 lazyAPI.resistance = {}
 lazyAPI.loot = {}
 lazyAPI.flags = {}
+lazyAPI.entity = {}
 lazyAPI.EntityWithHealth = {}
 lazyAPI.recipe = {}
 lazyAPI.module = {}
@@ -232,6 +233,7 @@ local subscriptions = {
 }
 
 
+-- lazyAPI.format_special_symbols(string): string
 -- lazyAPI.add_extension(function)
 -- lazyAPI.add_listener(action_name, name, types, func): boolean
 -- lazyAPI.remove_listener(action_name, name)
@@ -270,7 +272,7 @@ local subscriptions = {
 -- lazyAPI.replace_recipe_in_all_modules(old_recipe, new_recipe)
 -- lazyAPI.replace_prerequisite_in_all_techs(old_tech, new_tech)
 -- lazyAPI.replace_resource_category_in_all_mining_drills(old_resource_category, new_resource_category)
--- lazyAPI.can_i_create(_type, name):boolean
+-- lazyAPI.can_i_create(_type, name): boolean
 
 -- lazyAPI.base.get_type(prototype): string
 -- lazyAPI.base.get_name(prototype): string
@@ -296,6 +298,8 @@ local subscriptions = {
 -- lazyAPI.loot.replace(prototype, item): prototype
 -- lazyAPI.loot.set(prototype, type, count_min?, count_max? percent?, decrease?): prototype
 -- lazyAPI.loot.remove(prototype, item): prototype
+
+-- lazyAPI.entity.has_item(entity): boolean
 
 -- lazyAPI.EntityWithHealth.find_resistance(prototype, type)
 -- lazyAPI.EntityWithHealth.set_resistance(prototype, type, percent, decrease)
@@ -350,6 +354,9 @@ local subscriptions = {
 -- lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech): prototype
 -- lazyAPI.tech.add_tool(prototype, tool, amount = 1): ItemIngredientPrototype?
 -- lazyAPI.tech.set_tool(prototype, tool, amount = 1): prototype
+-- lazyAPI.tech.is_contiguous_tech(tech): boolean
+-- lazyAPI.tech.get_last_tech_level(tech): number?
+-- lazyAPI.tech.get_last_valid_contiguous_tech_level(tech): number?
 
 -- lazyAPI.mining_drill.find_resource_category(prototype, resource_category): number?
 -- lazyAPI.mining_drill.add_resource_category(prototype, resource_category): prototype
@@ -359,11 +366,47 @@ local subscriptions = {
 -- lazyAPI.character.remove_armor(prototype, armor): prototype
 
 
+local function tmemoize(t, func)
+	return setmetatable(t, {
+		__index = function(self, k)
+			local v = func(k)
+			self[k] = v
+			return v
+		end
+	})
+end
+
+local strings_for_patterns = {[''] = ''}
+tmemoize(strings_for_patterns, function(str)
+	return (
+		str:gsub('%%', '%%%%')
+		:gsub('^%^', '%%^')
+		:gsub('%$$', '%%$')
+		:gsub('%(', '%%(')
+		:gsub('%)', '%%)')
+		:gsub('%.', '%%.')
+		:gsub('%[', '%%[')
+		:gsub('%]', '%%]')
+		:gsub('%*', '%%*')
+		:gsub('%+', '%%+')
+		:gsub('%-', '%%-')
+		:gsub('%?', '%%?')
+	)
+end)
+
+
 lazyAPI.array_to_locale = Locale.array_to_locale
 lazyAPI.array_to_locale_as_new = Locale.array_to_locale_as_new
 lazyAPI.locale_to_array = Locale.locale_to_array
 lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
+
+
+---@param str string
+---@return string
+lazyAPI.format_special_symbols = function(str)
+	return strings_for_patterns[str]
+end
 
 
 ---@param func function #your function
@@ -2178,6 +2221,19 @@ lazyAPI.loot.remove = function(prototype, item)
 end
 
 
+---@param entity string|table
+---@return boolean
+lazyAPI.entity.has_item = function(entity)
+	local item_name = (type(entity) == "string" and entity) or lazyAPI.base.get_name(entity)
+	for _, prototypes in pairs(data_raw.item) do
+		if prototypes[item_name] then
+			return true
+		end
+	end
+	return false
+end
+
+
 lazyAPI.EntityWithHealth.find_resistance = lazyAPI.resistance.find
 lazyAPI.EntityWithHealth.set_resistance = lazyAPI.resistance.set
 lazyAPI.EntityWithHealth.remove_resistance = lazyAPI.resistance.find
@@ -3205,7 +3261,6 @@ lazyAPI.tech.add_prerequisite = function(prototype, tech)
 end
 
 
--- Perhaps, unstable
 ---https://wiki.factorio.com/Prototype/Technology#prerequisites
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param tech string|table
@@ -3213,20 +3268,6 @@ end
 lazyAPI.tech.remove_prerequisite = function(prototype, tech)
 	local tech_name = (type(tech) == "string" and tech) or lazyAPI.base.get_name(tech)
 	return remove_from_array(prototype, "prerequisites", tech_name)
-
-	-- WIP (probably, it's wrong, I should check tecnologies)
-	-- local prerequisites = (prototype.prototype or prototype).prerequisites
-	-- if prerequisites == nil then return prototype end
-
-	-- local tech_name = (type(tech) == "string" and tech) or lazyAPI.base.get_name(tech)
-	-- fix_array(prerequisites)
-	-- -- TODO: improve!
-	-- local filter = '^' .. tech_name:gsub("%-", "%%-")
-	-- for i=#prerequisites, 1, -1 do
-	-- 	if prerequisites[i]:find(filter) then
-	-- 		tremove(prerequisites, i)
-	-- 	end
-	-- end
 end
 
 
@@ -3296,6 +3337,59 @@ lazyAPI.tech.set_tool = function(prototype, tool, amount)
 end
 
 
+---@param tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
+---@return boolean
+lazyAPI.tech.is_contiguous_tech = function(tech)
+	local tech_name = (type(tech) == "string" and tech) or lazyAPI.base.get_name(tech)
+	local pattern = strings_for_patterns[tech_name] .. "%-(%d+)$"
+	if tonumber(tech_name:match(pattern)) then
+		return true
+	else
+		return false
+	end
+end
+
+
+---@param tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
+---@return number?
+lazyAPI.tech.get_last_tech_level = function(tech)
+	local tech_name = (type(tech) == "string" and tech) or lazyAPI.base.get_name(tech)
+	local pattern = strings_for_patterns[tech_name] .. "%-(%d+)$"
+	local last_tech_level = 0
+	local level
+	for _, technology in pairs(technologies) do
+		level = tonumber(technology.name:match(pattern))
+		if level and level > last_tech_level then
+			last_tech_level = level
+		end
+	end
+	if last_tech_level > 0 then
+		return last_tech_level
+	end
+end
+
+
+-- Doesn't work with a contiguous technology.
+---@param tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
+---@return number?
+lazyAPI.tech.get_last_valid_contiguous_tech_level = function(tech)
+	local tech_name = (type(tech) == "string" and tech) or lazyAPI.base.get_name(tech)
+	local last_tech_level = lazyAPI.tech.get_last_tech_level(tech_name)
+	if not last_tech_level then return end
+
+	tech_name = tech_name .. '-'
+	for i=1, last_tech_level do
+		if technologies[tech_name .. i] == nil then
+			if i > 1 then
+				return i - 1
+			end
+			return
+		end
+	end
+	return last_tech_level
+end
+
+
 -- https://wiki.factorio.com/Prototype/Technology#prerequisites
 ---@param prototype string|table #https://wiki.factorio.com/Prototype/Technology or its name
 ---@param old_tech  string|table #https://wiki.factorio.com/Prototype/Technology or its name
@@ -3312,7 +3406,7 @@ function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
 		end
 		replace_in_prototype(technology, "prerequisites", old_tech_name, new_tech_name)
 	else
-		---@diagnostic disable-next-line: undefined-field
+		---@cast prototype table
 		local prot = prototype.prototype or prototype
 		replace_in_prototype(prot, "prerequisites", old_tech_name, new_tech_name)
 	end
@@ -3420,9 +3514,14 @@ lazyAPI.wrap_prototype = function(prototype)
 		wrapped_prot[k] = _f
 	end
 
-	if lazyAPI.entities_with_health[type] then
-		for k, _f in pairs(lazyAPI.EntityWithHealth) do
+	if lazyAPI.all_entities[type] then
+		for k, _f in pairs(lazyAPI.entity) do
 			wrapped_prot[k] = _f
+		end
+		if lazyAPI.entities_with_health[type] then
+			for k, _f in pairs(lazyAPI.EntityWithHealth) do
+				wrapped_prot[k] = _f
+			end
 		end
 	end
 
