@@ -71,7 +71,8 @@
 		"lowercase-global",
 		"undefined-doc-name",
 		"undefined-doc-class",
-		"undefined-global"
+		"undefined-global",
+		"need-check-nil"
 	],
 	"triggerTaskOnSave.tasks": {
 		"Luacheck": ["*.lua"]
