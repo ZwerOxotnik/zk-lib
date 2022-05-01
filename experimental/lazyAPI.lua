@@ -245,12 +245,14 @@ local extensions = {}
 local listeners = {
 	pre_remove_prototype = {},
 	remove_prototype = {},
-	rename_prototype = {}
+	rename_prototype = {},
+	add_prototype = {}
 }
 local subscriptions = {
 	pre_remove_prototype = {},
 	remove_prototype = {},
-	rename_prototype = {}
+	rename_prototype = {},
+	add_prototype = {}
 }
 
 
@@ -311,6 +313,7 @@ local subscriptions = {
 -- lazyAPI.base.remove_from_array(prototype, field, data): prototype
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
 -- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
+-- lazyAPI.base.is_cheat_prototype(prototype): boolean
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -336,6 +339,7 @@ local subscriptions = {
 -- lazyAPI.EntityWithHealth.remove_loot(prototype, item): prototype
 
 --# There are several issues still
+-- lazyAPI.recipe.have_ingredients(recipe): boolean
 -- lazyAPI.recipe.set_subgroup(prototype, subgroup, order?): prototype
 -- lazyAPI.recipe.add_item_ingredient(prototype, item_name, amount = 1, difficulty?): ItemIngredientPrototype
 -- lazyAPI.recipe.set_item_ingredient(prototype, item_name, amount = 1, difficulty?): prototype
@@ -698,6 +702,28 @@ lazyAPI.base.replace_in_prototypes = function(prototypes, field, old_data, new_d
 	return prototypes
 end
 local replace_in_prototypes = lazyAPI.base.replace_in_prototypes
+
+
+-- TODO: improve (there are many ways to change it)
+---@type table<table, boolean>
+local cheat_prototypes = {}
+tmemoize(cheat_prototypes, function(prototype)
+	local name = prototype.name
+	return (not (
+		name:find("creative") -- for https://mods.factorio.com/mod/creative-mode etc
+		and name:find("hidden")
+		and name:find("infinity")
+		and name:find("cheat")
+		and name:find("[xX]%d+_") -- for https://mods.factorio.com/mod/X100_assembler etc
+		and name:find("^osp_") -- for mods.factorio.com/mod/m-spell-pack
+		and name:find("^ee%-") -- for https://mods.factorio.com/mod/EditorExtensions
+	))
+end)
+---@param prototype table
+---@return boolean
+lazyAPI.base.is_cheat_prototype = function(prototype)
+	return cheat_prototypes[prototype]
+end
 
 
 ---@param action_name function #name of your
@@ -2531,6 +2557,27 @@ lazyAPI.recipe.add_fluid_ingredient = function(prototype, fluid_name, amount, di
 	return ingredient
 end
 
+
+---@param recipe string|table
+---@preturn
+lazyAPI.recipe.have_ingredients = function(recipe)
+	if type(recipe) == "string" then
+		recipe = data_raw.recipe[recipe]
+		if recipe == nil then
+			error("It's not a recipe")
+		end
+	end
+
+	if recipe.ingredients then return true end
+	local normal = recipe.normal
+	if normal and normal.ingredients then return true end
+	local normal = recipe.expensive
+	if expensive and expensive.ingredients then return true end
+
+	return false
+end
+
+
 ---@param prototype table
 ---@param subgroup string
 ---@param order? string
@@ -3576,15 +3623,26 @@ lazyAPI.tech.get_last_valid_contiguous_tech_level = function(tech)
 end
 
 
--- Doesn't work with a contiguous technology.
 ---@param tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
 ---@return table tech
 lazyAPI.tech.remove_contiguous_techs = function(tech)
 	-- TODO: improve
 	local tech_name = (type(tech) == "string" and tech) or tech.name
 	local pattern = strings_for_patterns[tech_name] .. "%-(%d+)$"
+	local tech_level = tech_name:match(".+%-(%d+)$")
+	if tech_level == nil then
+		for _, technology in pairs(technologies) do
+			if technology.name:match(pattern) then
+				lazyAPI.base.remove_prototype(technology)
+			end
+		end
+		return tech
+	end
+
+	tech_level = tonumber(tech_level)
 	for _, technology in pairs(technologies) do
-		if technology.name:match(pattern) then
+		local level = technology.name:match(pattern)
+		if level and tonumber(level) > tech_level then
 			lazyAPI.base.remove_prototype(technology)
 		end
 	end
@@ -3764,7 +3822,20 @@ function lazyAPI.add_prototype(type, name, prototype_data)
 	prototype_data = prototype_data or {}
 	prototype_data.type = type or prototype_data.type
 	prototype_data.name = name or prototype_data.name
-	return data:extend({prototype_data}), lazyAPI.wrap_prototype(prototype_data)
+
+	data:extend({prototype_data})
+	if subscriptions.add_prototype[prototype_type] then
+		for _, func in pairs(subscriptions.add_prototype[prototype_type]) do
+			func(prot, prev_name, new_name, prototype_type)
+		end
+	end
+	if subscriptions.add_prototype.all then
+		for _, func in pairs(subscriptions.add_prototype.all) do
+			func(prot, prev_name, new_name, prototype_type)
+		end
+	end
+
+	return prototype_data, lazyAPI.wrap_prototype(prototype_data)
 end
 
 
