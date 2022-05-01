@@ -9,6 +9,7 @@ local lazyAPI = {}
 local deepcopy = table.deepcopy
 local tremove = table.remove
 local data_raw = data.raw
+local add_prototypes = data.extend
 local technologies = data_raw.technology
 local recipes = data_raw.recipe
 local modules = data_raw.module
@@ -58,6 +59,11 @@ lazyAPI.all_transport_belt_connectable = {
 	["transport-belt"] = data_raw["transport-belt"],
 	["underground-belt"] = data_raw["underground-belt"]
 }
+lazyAPI.all_craftine_machines = {
+	["assembling-machine"] = data_raw["assembling-machine"],
+	["rocket-silo"] = data_raw["rocket-silo"],
+	["furnace"] = data_raw["furnace"]
+}
 lazyAPI.entities_with_health = {
 	["accumulator"] = data_raw["accumulator"],
 	["artillery-turret"] = data_raw["artillery-turret"],
@@ -71,9 +77,6 @@ lazyAPI.entities_with_health = {
 	["container"] = data_raw["container"],
 	["logistic-container"] = data_raw["logistic-container"],
 	["infinity-container"] = data_raw["infinity-container"],
-	["assembling-machine"] = data_raw["assembling-machine"],
-	["rocket-silo"] = data_raw["rocket-silo"],
-	["furnace"] = data_raw["furnace"],
 	["electric-energy-interface"] = data_raw["electric-energy-interface"],
 	["electric-pole"] = data_raw["electric-pole"],
 	["unit-spawner"] = data_raw["unit-spawner"],
@@ -126,6 +129,9 @@ for vehicle_type, prototypes in pairs(lazyAPI.all_vehicles) do
 end
 for transport_belt_type, prototypes in pairs(lazyAPI.all_transport_belt_connectable) do
 	lazyAPI.entities_with_health[transport_belt_type] = prototypes
+end
+for machine_type, prototypes in pairs(lazyAPI.all_craftine_machines) do
+	lazyAPI.entities_with_health[machine_type] = prototypes
 end
 
 lazyAPI.all_explosions = {
@@ -269,6 +275,8 @@ local subscriptions = {
 -- lazyAPI.locale_to_array(array): table
 -- lazyAPI.merge_locales(...): table
 -- lazyAPI.merge_locales_as_new(...): table
+-- lazyAPI.remove_entity_from_action_delivery(action, action_delivery, entity_name)
+-- lazyAPI.remove_entity_from_action(action, entity_name)
 -- lazyAPI.get_barrel_recipes(name): recipe, recipe
 -- lazyAPI.create_trigger_capsule(tool_data): capsule, projectile
 -- lazyAPI.create_techs(name, max_level = 1, tech_data): tech, techs
@@ -396,6 +404,27 @@ local subscriptions = {
 
 -- lazyAPI.character.remove_armor(prototype, armor): prototype
 
+
+-- It's weird and looks wrong but it should work
+data.extend = function(self, new_prototypes, ...)
+	add_prototypes(self, new_prototypes, ...) -- original data.extend
+	for _, prototype in pairs(new_prototypes) do
+		local prototype_type = prototype.type
+		local name = prototype.name
+		if data_raw[prototype_type][name] then
+			if subscriptions.add_prototype[prototype_type] then
+				for _, func in pairs(subscriptions.add_prototype[prototype_type]) do
+					func(prototype, name, prototype_type)
+				end
+			end
+			if subscriptions.add_prototype.all then
+				for _, func in pairs(subscriptions.add_prototype.all) do
+					func(prototype, name, prototype_type)
+				end
+			end
+		end
+	end
+end
 
 local function tmemoize(t, func)
 	return setmetatable(t, {
@@ -761,6 +790,7 @@ end
 
 
 lazyAPI.add_listener("remove_prototype", {"technology"}, "lazyAPI_remove_technology", function(prototype, tech_name, tech_type)
+	lazyAPI.tech.remove_contiguous_techs(prototype)
 	for _, technology in pairs(technologies) do
 		lazyAPI.tech.remove_prerequisite(technology, tech_name)
 	end
@@ -786,7 +816,14 @@ lazyAPI.add_listener("remove_prototype", {"recipe"}, "lazyAPI_remove_recipe", fu
 
 	for _, silo in pairs(data_raw["rocket-silo"]) do
 		if silo.fixed_recipe == recipe_name then
-			silo.fixed_recipe = nil
+			silo.fixed_recipe = nil -- is it right?
+			-- lazyAPI.base.remove_prototype(silo)
+		end
+	end
+		for _, machine in pairs(data_raw["assembling-machine"]) do
+		if machine.fixed_recipe == recipe_name then
+			machine.fixed_recipe = nil -- is it right?
+			-- lazyAPI.base.remove_prototype(machine)
 		end
 	end
 end)
@@ -1026,62 +1063,92 @@ lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource"
 end)
 
 --TODO: Refactor!
-local function remove_entity_from_action(action, entity_name)
-	local action_delivery = action.action_delivery
-	if action_delivery then
-		local source_effects = action_delivery.source_effects
-		if source_effects then
-			if source_effects.entity_name == entity_name then
-				action_delivery.source_effects = nil
-			else
-				if type(next(source_effects)) == "number" then
-					fix_array(source_effects)
-					for i=#source_effects, 1, -1 do
-						local effect = source_effects[i]
-						if effect.entity_name == entity_name then
-							tremove(source_effects, i)
-						elseif effect.action then
-							remove_entity_from_action(effect.action, entity_name)
-						end
-					end
-					if #source_effects <= 0 then
-						action_delivery.source_effects = nil
-					end
+---@param action table
+---@param action_delivery table
+---@param entity_name string
+lazyAPI.remove_entity_from_action_delivery = function(action, action_delivery, entity_name)
+	-- Weird. TODO: recheck
+	if action_delivery.projectile == entity_name then
+		-- very ugly
+		if action.action_delivery == action_delivery then
+			action.action_delivery = nil
+		else
+			for i=#action.action_delivery, 1, -1 do
+				if _action_del == action_delivery then
+					tremove(action.action_delivery, i)
 				end
 			end
 		end
-		local target_effects = action_delivery.target_effects
-		if target_effects then
-			-- I'm not sure how it's useful but bobwarfare has such data
-			for k, effect in pairs(target_effects) do
-				if type(k) ~= "number" and type(effect) == "table" then
+		return
+	end
+
+	local source_effects = action_delivery.source_effects
+	if source_effects then
+		if source_effects.entity_name == entity_name then
+			action_delivery.source_effects = nil
+		else
+			if type(next(source_effects)) == "number" then
+				fix_array(source_effects)
+				for i=#source_effects, 1, -1 do
+					local effect = source_effects[i]
 					if effect.entity_name == entity_name then
-						target_effects[k] = nil
+						tremove(source_effects, i)
 					elseif effect.action then
-						remove_entity_from_action(effect.action, entity_name)
+						lazyAPI.remove_entity_from_action(effect.action, entity_name)
 					end
 				end
-			end
-			local _entity_name = target_effects.entity_name
-			if _entity_name then
-				if _entity_name == entity_name then
-					action_delivery.target_effects = nil
-				end
-			elseif type(next(target_effects)) == "number" then -- TODO: Recheck!
-				fix_messy_table(target_effects)
-				for i=#target_effects, 1, -1 do
-					local effect = target_effects[i]
-					if effect.entity_name == entity_name then -- TODO: recheck, something is wrong
-						tremove(target_effects, i)
-					elseif effect.action then
-						remove_entity_from_action(effect.action, entity_name)
-					end
-				end
-				if #target_effects <= 0 then
-					action_delivery.target_effects = nil
+				if #source_effects <= 0 then
+					action_delivery.source_effects = nil
 				end
 			end
 		end
+	end
+	local target_effects = action_delivery.target_effects
+	if target_effects then
+		-- I'm not sure how it's useful but bobwarfare has such data
+		for k, effect in pairs(target_effects) do
+			if type(k) ~= "number" and type(effect) == "table" then
+				if effect.entity_name == entity_name then
+					target_effects[k] = nil
+				elseif effect.action then
+					lazyAPI.remove_entity_from_action(effect.action, entity_name)
+				end
+			end
+		end
+		local _entity_name = target_effects.entity_name
+		if _entity_name then
+			if _entity_name == entity_name then
+				action_delivery.target_effects = nil
+			end
+		elseif type(next(target_effects)) == "number" then -- TODO: Recheck!
+			fix_messy_table(target_effects)
+			for i=#target_effects, 1, -1 do
+				local effect = target_effects[i]
+				if effect.entity_name == entity_name then -- TODO: recheck, something is wrong
+					tremove(target_effects, i)
+				elseif effect.action then
+					lazyAPI.remove_entity_from_action(effect.action, entity_name)
+				end
+			end
+			if #target_effects <= 0 then
+				action_delivery.target_effects = nil
+			end
+		end
+	end
+end
+
+---@param action table
+---@param entity_name string
+lazyAPI.remove_entity_from_action = function(action, entity_name)
+	local action_delivery = action.action_delivery
+	if action_delivery == nil then return end
+	if type(next(action_delivery)) == number then
+		fix_messy_table(action_delivery)
+		for i=#action_delivery, 1, -1 do
+			lazyAPI.remove_entity_from_action_delivery(action, action_delivery[i], entity_name)
+		end
+	else
+		lazyAPI.remove_entity_from_action_delivery(action, action_delivery, entity_name)
 	end
 end
 lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_explosions", function(prototype, explosion_name, explosion_type)
@@ -1152,10 +1219,10 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 			if actions then
 				if type(next(actions)) == "number" then
 					for i=#actions, 1, -1 do
-						remove_entity_from_action(actions[i], entity_name)
+						lazyAPI.remove_entity_from_action(actions[i], entity_name)
 					end
 				else
-					remove_entity_from_action(actions, entity_name)
+					lazyAPI.remove_entity_from_action(actions, entity_name)
 				end
 			end
 		end
@@ -1179,20 +1246,20 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 			if actions then
 				if type(next(actions)) == "number" then
 					for i=#actions, 1, -1 do
-						remove_entity_from_action(actions[i], entity_name)
+						lazyAPI.remove_entity_from_action(actions[i], entity_name)
 					end
 				else
-					remove_entity_from_action(actions, entity_name)
+					lazyAPI.remove_entity_from_action(actions, entity_name)
 				end
 			end
 			local final_actions = entity.final_action
 			if final_actions then
 				if type(next(final_actions)) == "number" then
 					for i=#final_actions, 1, -1 do
-						remove_entity_from_action(final_actions[i], entity_name)
+						lazyAPI.remove_entity_from_action(final_actions[i], entity_name)
 					end
 				else
-					remove_entity_from_action(final_actions, entity_name)
+					lazyAPI.remove_entity_from_action(final_actions, entity_name)
 				end
 			end
 			-- I'm lazy to check all prototypes
@@ -1204,10 +1271,10 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 					if actions then
 						if type(next(actions)) == "number" then
 							for i=#actions, 1, -1 do
-								remove_entity_from_action(actions[i], entity_name)
+								lazyAPI.remove_entity_from_action(actions[i], entity_name)
 							end
 						else
-							remove_entity_from_action(actions, entity_name)
+							lazyAPI.remove_entity_from_action(actions, entity_name)
 						end
 					end
 				end
@@ -1309,10 +1376,10 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_entities", fun
 				if actions then
 					if type(next(actions)) == "number" then
 						for i=#actions, 1, -1 do
-							remove_entity_from_action(actions[i], entity_name)
+							lazyAPI.remove_entity_from_action(actions[i], entity_name)
 						end
 					else
-						remove_entity_from_action(actions, entity_name)
+						lazyAPI.remove_entity_from_action(actions, entity_name)
 					end
 				end
 			end
@@ -1416,6 +1483,12 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_items", functi
 			if entity.name == item_name then
 				lazyAPI.base.remove_prototype(entity)
 			end
+
+			local placeable_by = entity.placeable_by
+			if placeable_by and placeable_by.item == item_name then
+				entity.placeable_by = nil -- is it right?
+			end
+
 			local minable = entity.minable
 			if minable then
 				if minable.result == item_name then
@@ -2186,7 +2259,7 @@ lazyAPI.base.rename = function(prototype, new_name)
 	local prev_name = prot.name
 
 	data_raw[prototype_type][prev_name] = nil
-	data:extend({prot})
+	add_prototypes(data, {prot})
 
 	prot.name = new_name
 	if subscriptions.rename_prototype[prototype_type] then
@@ -3626,23 +3699,23 @@ end
 ---@param tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
 ---@return table tech
 lazyAPI.tech.remove_contiguous_techs = function(tech)
-	-- TODO: improve
 	local tech_name = (type(tech) == "string" and tech) or tech.name
-	local pattern = strings_for_patterns[tech_name] .. "%-(%d+)$"
-	local tech_level = tech_name:match(".+%-(%d+)$")
-	if tech_level == nil then
+	local main_name, tech_level = tech_name:match("^(.+)%-(%d+)$")
+	if tech_level then
+		tech_level = tonumber(tech_level)
+		local pattern = strings_for_patterns[main_name] .. "%-(%d+)$"
 		for _, technology in pairs(technologies) do
-			if technology.name:match(pattern) then
+			local level = technology.name:match(pattern)
+			if level and tonumber(level) > tech_level then
 				lazyAPI.base.remove_prototype(technology)
 			end
 		end
 		return tech
 	end
 
-	tech_level = tonumber(tech_level)
+	local pattern = strings_for_patterns[tech_name] .. "%-(%d+)$"
 	for _, technology in pairs(technologies) do
-		local level = technology.name:match(pattern)
-		if level and tonumber(level) > tech_level then
+		if technology.name:match(pattern) then
 			lazyAPI.base.remove_prototype(technology)
 		end
 	end
@@ -3724,9 +3797,12 @@ lazyAPI.character.remove_armor = function(prototype, armor)
 	local armor_name = (type(armor) == "string" and armor) or armor.name
 
 	for _, corpse in pairs(data_raw["character-corpse"]) do
-		for _armor_name in pairs(corpse.armor_picture_mapping) do
-			if _armor_name == armor_name then
-				corpse.armor_picture_mapping[_armor_name] = nil
+		local armor_picture_mapping = corpse.armor_picture_mapping
+		if armor_picture_mapping then
+			for _armor_name in pairs(armor_picture_mapping) do
+				if _armor_name == armor_name then
+					armor_picture_mapping[_armor_name] = nil
+				end
 			end
 		end
 	end
@@ -3822,19 +3898,7 @@ function lazyAPI.add_prototype(type, name, prototype_data)
 	prototype_data = prototype_data or {}
 	prototype_data.type = type or prototype_data.type
 	prototype_data.name = name or prototype_data.name
-
 	data:extend({prototype_data})
-	if subscriptions.add_prototype[prototype_type] then
-		for _, func in pairs(subscriptions.add_prototype[prototype_type]) do
-			func(prot, prev_name, new_name, prototype_type)
-		end
-	end
-	if subscriptions.add_prototype.all then
-		for _, func in pairs(subscriptions.add_prototype.all) do
-			func(prot, prev_name, new_name, prototype_type)
-		end
-	end
-
 	return prototype_data, lazyAPI.wrap_prototype(prototype_data)
 end
 
