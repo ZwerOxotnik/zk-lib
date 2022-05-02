@@ -240,6 +240,7 @@ for tool_type, prototypes in pairs(lazyAPI.all_tools) do
 end
 
 local Locale = require("static-libs/lualibs/locale")
+local Version = require("static-libs/lualibs/version")
 
 
 -- Add your functions in lazyAPI.add_extension(function) and
@@ -275,6 +276,8 @@ local subscriptions = {
 -- lazyAPI.locale_to_array(array): table
 -- lazyAPI.merge_locales(...): table
 -- lazyAPI.merge_locales_as_new(...): table
+-- lazyAPI.string_to_version(str): number | lazyAPI.string_to_version()
+-- lazyAPI.get_mod_version(mod_name): number | lazyAPI.get_mod_version()
 -- lazyAPI.remove_entity_from_action_delivery(action, action_delivery, entity_name)
 -- lazyAPI.remove_entity_from_action(action, entity_name)
 -- lazyAPI.get_barrel_recipes(name): recipe, recipe
@@ -460,6 +463,25 @@ lazyAPI.array_to_locale_as_new = Locale.array_to_locale_as_new
 lazyAPI.locale_to_array = Locale.locale_to_array
 lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
+
+
+---@type table<string, number>
+local memorized_versions = {}
+tmemoize(memorized_versions, Version.string_to_version)
+-- Supports strings like: "5", "5.5", "5.5.5"
+---@param str string
+---@return number version
+---@overload fun()
+lazyAPI.string_to_version = function(str)
+	return memorized_versions[str]
+end
+
+---@param mod_name string
+---@return version
+---@overload fun()
+lazyAPI.get_mod_version = function(mod_name)
+	return memorized_versions(mods[mod_name])
+end
 
 
 ---@param str string
