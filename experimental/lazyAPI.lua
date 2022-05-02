@@ -310,8 +310,8 @@ local subscriptions = {
 -- lazyAPI.replace_resource_category_in_all_mining_drills(old_resource_category, new_resource_category)
 -- lazyAPI.can_i_create(_type, name): boolean
 -- lazyAPI.remove_fluid(fluid_name)
--- lazyAPI.remove_tool(tool_name)
--- lazyAPI.rename_tool(prev_name, new_name)
+-- lazyAPI.remove_tool_everywhere(tool)
+-- lazyAPI.rename_tool(prev_tool, new_tool)
 -- lazyAPI.remove_tile(tile_name)
 
 -- lazyAPI.base.does_exist(prototype): boolean
@@ -389,6 +389,8 @@ local subscriptions = {
 -- lazyAPI.tech.remove_unlock_recipe_effect_everywhere(prototype, recipe_name): prototype
 -- lazyAPI.tech.add_effect(prototype, type, recipe, difficulty?): prototype?
 -- lazyAPI.tech.find_effect(prototype, type, recipe, difficulty?): ModifierPrototype?
+-- lazyAPI.tech.remove_effect(prototype, type, recipe, difficulty?): prototype
+-- lazyAPI.tech.remove_effect_everywhere(prototype, type, recipe): prototype
 -- lazyAPI.tech.find_prerequisite(prototype, tech): number?
 -- lazyAPI.tech.add_prerequisite(prototype, tech): prototype
 -- lazyAPI.tech.remove_prerequisite(prototype, tech): prototype
@@ -480,7 +482,10 @@ end
 ---@return version
 ---@overload fun()
 lazyAPI.get_mod_version = function(mod_name)
-	return memorized_versions(mods[mod_name])
+	local str_version = mods[mod_name]
+	if str_version then
+		return memorized_versions(str_version)
+	end
 end
 
 
@@ -853,7 +858,7 @@ lazyAPI.add_listener("remove_prototype", {"fluid"}, "lazyAPI_remove_fluid", func
 	lazyAPI.remove_fluid(fluid_name)
 end)
 lazyAPI.add_listener("remove_prototype", {"tool"}, "lazyAPI_remove_tool", function(prototype, tool_name, type)
-	lazyAPI.remove_tool(tool_name)
+	lazyAPI.remove_tool_everywhere(tool_name)
 end)
 lazyAPI.add_listener("rename_prototype", {"tool"}, "lazyAPI_rename_tool", function(prototype, prev_name, new_name, prototype_type)
 	lazyAPI.rename_tool(prev_name, prototype.name)
@@ -933,6 +938,15 @@ lazyAPI.add_listener("remove_prototype", {"equipment-grid"}, "lazyAPI_remove_equ
 		for _, vehicle in pairs(prototypes) do
 			if vehicle.equipment_grid == EGrid_name then
 				vehicle.equipment_grid = nil
+			end
+		end
+	end
+end)
+lazyAPI.add_listener("rename_prototype", {"equipment-grid"}, "lazyAPI_rename_equipment-grid", function(prototype, prev_name, new_name, prototype_type)
+	for _, prototypes in pairs(lazyAPI.all_vehicles) do
+		for _, vehicle in pairs(prototypes) do
+			if vehicle.equipment_grid == prev_name then
+				vehicle.equipment_grid = new_name
 			end
 		end
 	end
@@ -1068,6 +1082,20 @@ lazyAPI.add_listener("remove_prototype", {"unit"}, "lazyAPI_remove_unit", functi
 		end
 	end
 end)
+lazyAPI.add_listener("rename_prototype", {"unit"}, "lazyAPI_rename_unit", function(prototype, prev_name, new_name, prototype_type)
+	for _, spawner in pairs(data_raw["unit-spawner"]) do
+		local result_units = spawner.result_units
+		if result_units then
+			fix_array(result_units)
+			for i=1, #result_units do
+				local result = result_units[i]
+			 	if result[1] == prev_name then
+					result[1] = new_name
+				end
+			end
+		end
+	end
+end)
 lazyAPI.add_listener("remove_prototype", {"resource"}, "lazyAPI_remove_resource", function(prototype, resource_name, resource_type)
 	local autoplace = data_raw["autoplace-control"][resource_name]
 	if autoplace and autoplace.category == "resource" then
@@ -1180,6 +1208,17 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_explosions", f
 		for _, entity in pairs(prototypes) do
 			if entity.dying_explosion == explosion_name then
 				entity.dying_explosion = nil
+			end
+		end
+	end
+end)
+lazyAPI.add_listener("rename_prototype", {"all"}, "lazyAPI_rename_explosions", function(prototype, prev_name, new_name, prototype_type)
+	if not lazyAPI.all_explosions[explosion_type] then return end
+
+	for _, prototypes in pairs(lazyAPI.all_entities) do
+		for _, entity in pairs(prototypes) do
+			if entity.dying_explosion == prev_name then
+				entity.dying_explosion = new_name
 			end
 		end
 	end
@@ -1421,28 +1460,12 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_equipments", f
 	end
 end)
 
---TODO: refactor!
-local function remove_turret_effect(effects, turret_name)
-	if effects == nil then return end
-	fix_array(effects)
-	for i=#effects, 1, -1 do
-		local effect = effects[i]
-		if effect.turret_id == turret_name and effect.type == "turret-attack" then
-			tremove(effects, i)
-		end
-	end
-end
+
 lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_turrets", function(prototype, turret_name, turret_type)
 	if not lazyAPI.all_surrets[turret_type] then return end
 
 	for _, technology in pairs(technologies) do
-		remove_turret_effect(technology.effects, turret_name)
-		if technology.normal then
-			remove_turret_effect(technology.normal.effects, turret_name)
-		end
-		if technology.expensive then
-			remove_turret_effect(technology.expensive.effects, turret_name)
-		end
+		lazyAPI.tech.remove_effect_everywhere(technology, "turret-attack", turret_name)
 	end
 end)
 lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_items", function(prototype, item_name, item_type)
@@ -2120,8 +2143,9 @@ lazyAPI.remove_fluid = function(fluid_name)
 end
 
 
----@param tool_name string
-lazyAPI.remove_tool = function(tool_name)
+---@param tool string|table
+lazyAPI.remove_tool_everywhere = function(tool)
+	local tool_name = (type(tool) == "string" and tool) or tool.name
 	for _, lab in pairs(data_raw["lab"]) do
 		remove_from_array(lab, "inputs", tool_name)
 	end
@@ -2143,9 +2167,11 @@ lazyAPI.remove_tool = function(tool_name)
 end
 
 
----@param prev_name string
----@param new_name string
-lazyAPI.rename_tool = function(prev_name, new_name)
+---@param prev_tool string|table
+---@param new_tool string|table
+lazyAPI.rename_tool = function(prev_tool, new_tool)
+	local prev_name = (type(prev_tool) == "string" and prev_tool) or prev_tool.name
+	local new_name = (type(new_tool) == "string" and new_tool) or new_tool.name
 	for _, lab in pairs(data_raw["lab"]) do
 		rename_in_array(lab, "inputs", prev_name, new_name)
 	end
@@ -3444,14 +3470,15 @@ end
 ---@return table prototype
 lazyAPI.tech.remove_unlock_recipe_effect = function(prototype, recipe, difficulty)
 	local effects
-	local recipe_name = (type(recipe) == "string" and recipe) or recipe.name
 	local prot = prototype.prototype or prototype
 	if difficulty then
 		effects = prot[difficulty] and prot[difficulty].effects
 	else
 		effects = prot.effects
 	end
+	if effects == nil then return end
 
+	local recipe_name = (type(recipe) == "string" and recipe) or recipe.name
 	remove_unlock_recipe_effect(effects, recipe_name)
 	return prototype
 end
@@ -3542,8 +3569,9 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param type string #https://wiki.factorio.com/Types/ModifierPrototype
 ---@param recipe string|table
+---@param difficulty? difficulty
 ---@return table? ModifierPrototype #https://wiki.factorio.com/Types/ModifierPrototype
-lazyAPI.tech.find_effect = function(prototype, type, recipe)
+lazyAPI.tech.find_effect = function(prototype, type, recipe, difficulty)
 	local prot = prototype.prototype or prototype
 	local effects
 	if difficulty then
@@ -3555,9 +3583,7 @@ lazyAPI.tech.find_effect = function(prototype, type, recipe)
 	else
 		effects = prot.effects
 	end
-	if effects == nil then
-		return
-	end
+	if effects == nil then return end
 
 	fix_array(effects)
 	local recipe_name = (type(recipe) == "string" and recipe) or recipe.name
@@ -3567,6 +3593,51 @@ lazyAPI.tech.find_effect = function(prototype, type, recipe)
 			return effect
 		end
 	end
+end
+
+
+---https://wiki.factorio.com/Prototype/Technology#effects
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param type string #https://wiki.factorio.com/Types/ModifierPrototype
+---@param recipe string|table
+---@param difficulty? difficulty
+---@return table prototype
+lazyAPI.tech.remove_effect = function(prototype, type, recipe, difficulty)
+	local prot = prototype.prototype or prototype
+	local effects
+	if difficulty then
+		if prot[difficulty] then
+			effects = prot[difficulty].effects
+		else
+			return prototype
+		end
+	else
+		effects = prot.effects
+	end
+	if effects == nil then return prototype end
+
+	fix_array(effects)
+	local recipe_name = (type(recipe) == "string" and recipe) or recipe.name
+	for i=#effects, 1, -1 do
+		local effect = effects[i]
+		if effect.type == type and effect.recipe == recipe_name then
+			tremove(effects, i)
+		end
+	end
+	return prototype
+end
+
+
+---https://wiki.factorio.com/Prototype/Technology#effects
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param type string #https://wiki.factorio.com/Types/ModifierPrototype
+---@param recipe string|table
+---@return table prototype
+lazyAPI.tech.remove_effect_everywhere = function(prototype, type, recipe)
+	lazyAPI.tech.remove_effect(prototype, type, recipe)
+	lazyAPI.tech.remove_effect(prototype, type, recipe, "normal")
+	lazyAPI.tech.remove_effect(prototype, type, recipe, "expensive")
+	return prototype
 end
 
 
