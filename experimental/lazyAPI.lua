@@ -2488,14 +2488,22 @@ lazyAPI.resistance.remove = function(prototype, type)
 end
 
 
+-- Perhaps, not reliable
 ---@param prototype table
 ---@preturn boolean
 lazyAPI.ingredients.have_ingredients = function(prototype)
-	if prototype.ingredients then return true end
-	local normal = prototype.normal
-	if normal and normal.ingredients then return true end
-	local expensive = prototype.expensive
-	if expensive and expensive.ingredients then return true end
+	local prot = prototype.prototype or prototype
+	if prot.ingredients and next(prot.ingredients) then
+		return true
+	end
+	local normal = prot.normal
+	if normal and (normal.ingredients and next(normal.ingredients)) then
+		return true
+	end
+	local expensive = prot.expensive
+	if expensive and (expensive.ingredients and next(expensive.ingredients)) then
+		return true
+	end
 
 	return false
 end
@@ -3094,7 +3102,7 @@ lazyAPI.recipe.set_subgroup = function(prototype, subgroup, order)
 end
 
 
--- Probably, unstable
+-- Perhaps, not reliable
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@return boolean
 lazyAPI.recipe.has_result = function(prototype)
