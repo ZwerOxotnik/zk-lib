@@ -1521,6 +1521,9 @@ lazyAPI.add_listener("remove_prototype", {"all"}, "lazyAPI_remove_items", functi
 	for _, shortcut in pairs(data_raw.shortcut) do
 		if shortcut.item_to_spawn == item_name then
 			shortcut.item_to_spawn = nil
+			if shortcut.action == "spawn-item" then
+				lazyAPI.base.remove_prototype(shortcut) -- Perhaps, it's wrong
+			end
 		end
 	end
 
