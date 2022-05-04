@@ -6,6 +6,8 @@
 local lazyAPI = {}
 
 
+local type, table, rawget, rawset, log = type, table, rawget, rawset, log -- There's a chance something overwrite it
+local debug = debug -- I'm pretty sure, some mod did overwrite it
 local deepcopy = table.deepcopy
 local tremove = table.remove
 local data_raw = data.raw
@@ -17,6 +19,27 @@ local mining_drills = data_raw["mining-drill"]
 ---@alias ingredient_type "item" | "fluid"
 ---@alias difficulty "normal" | "expensive"
 
+
+---@type table<string, number>
+lazyAPI.error_types = {
+	mixed_array = 1, -- Don't add different keys for arrays. It's difficult to check and use messy tables.
+	value_by_key_is_nil = 2 -- Be careful with tables like: {nil, 2} because their length will be inconsistent.
+}
+local error_types = lazyAPI.error_types
+lazyAPI.error_messages = {
+	[error_types.mixed_array] = "a mixed array, some keys aren't numbers",
+	[error_types.value_by_key_is_nil] = "an array had been initialized with nils and keeped them"
+}
+---@type table<table, lazyAPI.error_types>
+lazyAPI.tables_with_errors = {}
+setmetatable(lazyAPI.tables_with_errors, {
+	__newindex = function(self, k, v)
+		if rawget(self, k) then return end -- No multiple errors etc in the table
+		log("lazyAPI detected an error: " .. (lazyAPI.error_messages[v] or 'unknown error'))
+		log(debug.traceback())
+		rawset(self, k, v)
+	end
+})
 
 lazyAPI.source = "https://github.com/ZwerOxotnik/zk-lib"
 lazyAPI.base = {}
@@ -547,6 +570,7 @@ lazyAPI.fix_inconsistent_array = function(array)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if array[i] == nil then
+				lazyAPI.tables_with_errors[array] = error_types.value_by_key_is_nil
 				tremove(array, i)
 			end
 		end
@@ -598,6 +622,7 @@ lazyAPI.fix_messy_table = function(t)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if t[i] == nil then
+				lazyAPI.tables_with_errors[t] = error_types.value_by_key_is_nil
 				tremove(t, i)
 			end
 		end
@@ -621,15 +646,21 @@ lazyAPI.fix_messy_table = function(t)
 			last_key = k
 			temp_arr = {v}
 			break
+		else
+			lazyAPI.tables_with_errors[t] = error_types.mixed_array
 		end
 	end
 
 	if temp_arr == nil then return end
 
 	for k, v in next, t, last_key do
-		if type(k) == "number" and k > len_before then
-			t[k] = nil
-			temp_arr[#temp_arr+1] = v
+		if type(k) == "number" then
+			if k > len_before then
+				t[k] = nil
+				temp_arr[#temp_arr+1] = v
+			end
+		else
+			lazyAPI.tables_with_errors[t] = error_types.mixed_array
 		end
 	end
 	for i=1, #temp_arr do
