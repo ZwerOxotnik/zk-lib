@@ -59,12 +59,20 @@
 <a href="https://mods.factorio.com/mod/zk-lib/downloads"><strong>Download the mod&nbsp;&nbsp;▶</strong></a>
 </p>
 
-| Settings stage | Data | Control stage | UI |
-| -------------- | ---- | ------------- | -- |
-| [ZKSettings](/experimental/ZKSettings.lua) - libary with new features for settings | [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua) | [universal command widget](zk-lib/universal-command-widget) (WIP) |
-| | [fakes](/data-api/fakes.lua) - creates fake entitites | ["Static libs"](#static-libs) for embedding | |
-| | [lazyAPI](/experimental/lazyAPI.lua) - Are you lazy to change/add/remove/check some prototypes in the data stage? Use this library then. | [Event listener][event-listener] (not improtant, currently) | |
+| Settings stage | Data stage | Control stage |
+| -------------- | ---------- | ------------- |
+| [ZKSettings](/experimental/ZKSettings.lua) - libary with new features for settings | [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua) |
+| | [fakes](/data-api/fakes.lua) - creates fake entitites | ["Static libs"](#static-libs) for embedding |
+| | [lazyAPI](/experimental/lazyAPI.lua) - Are you lazy to change/add/remove/check some prototypes in the data stage? Use this library then. | [Event listener][event-listener] (not improtant, currently) |
 | | [SPD](/experimental/SPD.lua) - Simple postdate data (WIP) | [event_handler_vZO](/static-libs/lualibs/event_handler_vZO.lua) - improved version of Factorio event_handler |
+
+**3rd party libraries**:
+- [basexx](/lualib/basexx.lua) - library for base2, base16, base32, base64, base85 decoding and encoding of data strings. ([source](https://github.com/aiq/basexx))\
+`local basexx = require("__zk-lib__/lualib/basexx")`
+- [bitwise](/lualib/bitwise.lua) - Bitwise operations. ([source](https://github.com/davidm/lua-bit-numberlua/blob/master/lmod/bit/numberlua.lua))\
+`local bitwise = require("__zk-lib__/lualib/bitwise")`
+- [fun](/lualib/fun.lua) - a high-performance functional programming library ([documentation](https://luafun.github.io/), [source](https://github.com/luafun/luafun/blob/master/fun.lua))\
+`local fun = require("__zk-lib__/lualib/fun")` or `require "__zk-lib__/lualib/fun" ()`
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 
