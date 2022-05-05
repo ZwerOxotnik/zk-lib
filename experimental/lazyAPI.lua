@@ -2570,6 +2570,16 @@ lazyAPI.ingredients.add_item_ingredient = function(prototype, item, amount, diff
 		end
 		ingredients = prot[difficulty].ingredients
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.ingredients.add_item_ingredient(prot, item, amount, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.ingredients.add_item_ingredient(prot, item, amount, "expensive")
+			end
+			return
+		end
+
 		ingredients = prot.ingredients
 		if ingredients == nil then
 			prot.ingredients = {}
@@ -2610,6 +2620,16 @@ lazyAPI.ingredients.add_fluid_ingredient = function(prototype, fluid, amount, di
 		end
 		ingredients = prot[difficulty].ingredients
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.ingredients.add_fluid_ingredient(prot, fluid, amount, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.ingredients.add_fluid_ingredient(prot, fluid, amount, "expensive")
+			end
+			return
+		end
+
 		ingredients = prot.ingredients
 		if ingredients == nil then
 			prot.ingredients = {}
@@ -2662,6 +2682,16 @@ lazyAPI.ingredients.set_item_ingredient = function(prototype, item, amount, diff
 		end
 		ingredients = prot[difficulty].ingredients
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.ingredients.set_item_ingredient(prot, item, amount, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.ingredients.set_item_ingredient(prot, item, amount, "expensive")
+			end
+			return
+		end
+
 		ingredients = prot.ingredients
 		if ingredients == nil then
 			prot.ingredients = {}
@@ -2703,6 +2733,16 @@ lazyAPI.ingredients.set_fluid_ingredient = function(prototype, fluid, amount, di
 		end
 		ingredients = prot[difficulty].ingredients
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.ingredients.set_fluid_ingredient(prot, fluid, amount, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.ingredients.set_fluid_ingredient(prot, fluid, amount, "expensive")
+			end
+			return
+		end
+
 		ingredients = prot.ingredients
 		if ingredients == nil then
 			prot.ingredients = {}
@@ -2821,6 +2861,15 @@ lazyAPI.ingredients.remove_ingredient = function(prototype, ingredient, _type, d
 		if prot[difficulty] == nil then return end
 		ingredients = prot[difficulty].ingredients
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.ingredients.remove_ingredient(prot, ingredient, _type, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.ingredients.remove_ingredient(prot, ingredient, _type, "expensive")
+			end
+			return
+		end
 		ingredients = prot.ingredients
 	end
 	if ingredients == nil then
@@ -2884,6 +2933,15 @@ lazyAPI.ingredients.replace_ingredient = function(prototype, old_ingredient, new
 		if prot[difficulty] == nil then return end
 		ingredients = prot[difficulty].ingredients
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.ingredients.replace_ingredient(prot, old_ingredient, new_ingredient, _type, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.ingredients.replace_ingredient(prot, old_ingredient, new_ingredient, _type, "expensive")
+			end
+			return
+		end
 		ingredients = prot.ingredients
 	end
 	if ingredients == nil then
@@ -2922,7 +2980,9 @@ end
 lazyAPI.ingredients.replace_ingredient_everywhere = function(prototype, old_ingredient, new_ingredient, _type)
 	_type = _type or "item"
 	local prot = prototype.prototype or prototype
-	lazyAPI.ingredients.replace_ingredient(prot, old_ingredient, new_ingredient, _type)
+	if prot.ingredients then
+		lazyAPI.ingredients.replace_ingredient(prot, old_ingredient, new_ingredient, _type)
+	end
 	if prot.normal then
 		lazyAPI.ingredients.replace_ingredient(prot, old_ingredient, new_ingredient, _type, "normal")
 	end
