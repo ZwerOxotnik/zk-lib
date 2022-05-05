@@ -414,7 +414,7 @@ local subscriptions = {
 -- lazyAPI.recipe.replace_ingredient_everywhere(prototype, old_ingredient, new_ingredient, type?): prototype
 -- lazyAPI.recipe.find_ingredient_by_name(prototype, ingredient, difficulty?): IngredientPrototype?
 
--- lazyAPI.product.make_product_prototype(item_product, product_type, show_details_in_recipe_tooltip): ProductPrototype
+-- lazyAPI.product.make_product_prototype(product, product_type, show_details_in_recipe_tooltip): ProductPrototype
 -- lazyAPI.product.make_item_product_prototype(item_product, show_details_in_recipe_tooltip): ItemProductPrototype
 -- lazyAPI.product.make_fluid_product_prototype(fluid_product, show_details_in_recipe_tooltip): FluidProductPrototype
 
@@ -3149,23 +3149,24 @@ lazyAPI.recipe.set_subgroup = function(prototype, subgroup, order)
 end
 
 
----@param item_product table
+---@param product table
 ---@param product_type? product_type
 ---@param show_details_in_recipe_tooltip? boolean #(true by default) When hovering over a recipe in the crafting menu the recipe tooltip will be shown. An additional item tooltip will be shown for every product, as a separate tooltip, if the item tooltip has a description and/or properties to show and if show_details_in_recipe_tooltip is true.
 ---@return table ProductPrototype #https://wiki.factorio.com/Types/ProductPrototype
-lazyAPI.product.make_product_prototype = function(item_product, product_type, show_details_in_recipe_tooltip)
-	if item_product.amount_min == nil or item_product.amount_max == nil then
-		item_product.amount_min = nil
-		item_product.amount_max = nil
-		item_product.amount = item_product.amount or 1
+lazyAPI.product.make_product_prototype = function(product, product_type, show_details_in_recipe_tooltip)
+	if product.amount_min == nil or product.amount_max == nil then
+		product.amount_min = nil
+		product.amount_max = nil
+		product.amount = product.amount or 1
 	end
 	return {
-		item = ItemProduct.item, type = product_type or ItemProduct.type or "item",
+		item = product.item, type = product_type or product.type or "item",
 		show_details_in_recipe_tooltip = show_details_in_recipe_tooltip,
-		amount_min = ItemProduct.amount_min, amount_max = ItemProduct.amount_max,
-		amount = ItemProduct.amount,
-		probability = ItemProduct.probability,
-		catalyst_amount = ItemProduct.catalyst_amount
+		amount_min = product.amount_min, amount_max = product.amount_max,
+		amount = product.amount,
+		probability = product.probability,
+		temperature = product.temperature,
+		catalyst_amount = product.catalyst_amount
 	}
 end
 local make_product_prototype = lazyAPI.product.make_product_prototype
