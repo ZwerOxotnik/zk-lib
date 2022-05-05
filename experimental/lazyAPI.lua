@@ -3276,6 +3276,17 @@ lazyAPI.recipe.add_item_in_result = function(prototype, item, item_product, diff
 	if item == nil then error("item is nil") end
 	local results
 	local prot = prototype.prototype or prototype
+	if difficulty == nil and (prot.normal or prot.expensive) then
+		local amount = item_product.amount
+		if prot.normal then
+			lazyAPI.recipe.add_item_in_result(prot, item, item_product, "normal")
+		end
+		if prot.expensive then
+			item_product.amount = amount
+			lazyAPI.recipe.add_item_in_result(prot, item, item_product, "expensive")
+		end
+		return
+	end
 	if (item_product.amount_min == nil or item_product.amount_max == nil)
 		and item_product.amount and item_product.amount > 65535
 	then
@@ -3340,6 +3351,17 @@ lazyAPI.recipe.add_fluid_in_result = function(prototype, fluid, fluid_product, d
 	if fluid == nil then error("item is nil") end
 	local results
 	local prot = prototype.prototype or prototype
+		if difficulty == nil and (prot.normal or prot.expensive) then
+		local amount = item_product.amount
+		if prot.normal then
+			lazyAPI.recipe.add_fluid_in_result(prot, fluid, fluid_product, "normal")
+		end
+		if prot.expensive then
+			item_product.amount = amount
+			lazyAPI.recipe.add_fluid_in_result(prot, fluid, fluid_product, "expensive")
+		end
+		return
+	end
 	if (fluid_product.amount_min == nil or fluid_product.amount_max == nil)
 		and fluid_product.amount and fluid_product.amount > 65535
 	then
@@ -3406,6 +3428,15 @@ lazyAPI.recipe.set_item_in_result = function(prototype, item, item_product, diff
 	if item == nil then error("item is nil") end
 	local results
 	local prot = prototype.prototype or prototype
+	if difficulty == nil and (prot.normal or prot.expensive) then
+		if prot.normal then
+			lazyAPI.recipe.set_item_in_result(prot, item, item_product, "normal")
+		end
+		if prot.expensive then
+			lazyAPI.recipe.set_item_in_result(prot, item, item_product, "expensive")
+		end
+		return
+	end
 	item_product.item = (type(item_product.item) == "string" and item_product.item) or item_product.item.name
 	lazyAPI.recipe.remove_item_from_result(prot, item, difficulty)
 	local is_simple_data = (next(item_product, next(item_product)) == nil) -- Improve
@@ -3464,6 +3495,15 @@ lazyAPI.recipe.set_fluid_in_result = function(prototype, fluid, fluid_product, d
 	if fluid == nil then error("item is nil") end
 	local results
 	local prot = prototype.prototype or prototype
+	if difficulty == nil and (prot.normal or prot.expensive) then
+		if prot.normal then
+			lazyAPI.recipe.set_fluid_in_result(prot, fluid, fluid_product, "normal")
+		end
+		if prot.expensive then
+			lazyAPI.recipe.set_fluid_in_result(prot, fluid, fluid_product, "expensive")
+		end
+		return
+	end
 	fluid_product.item = (type(fluid_product.item) == "string" and fluid_product.item) or fluid_product.item.name
 	lazyAPI.recipe.remove_fluid_from_result(prototype, fluid, difficulty)
 	if difficulty then
@@ -3544,6 +3584,15 @@ lazyAPI.recipe.remove_item_from_result = function(prototype, item, difficulty)
 		if prot[difficulty] == nil then return prototype end
 		results = prot[difficulty].results
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.recipe.remove_item_from_result(prot, item, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.recipe.remove_item_from_result(prot, item, "expensive")
+			end
+			return
+		end
 		results = prot.results
 	end
 
@@ -3608,6 +3657,16 @@ lazyAPI.recipe.remove_fluid_from_result = function(prototype, fluid, difficulty)
 		if prot[difficulty] == nil then return prototype end
 		results = prot[difficulty].results
 	else
+		if prot.normal or prot.expensive then
+			if prot.normal then
+				lazyAPI.recipe.remove_fluid_from_result(prot, fluid, "normal")
+			end
+			if prot.expensive then
+				lazyAPI.recipe.remove_fluid_from_result(prot, fluid, "expensive")
+			end
+			return
+		end
+
 		results = prot.results
 	end
 	if results == nil then
