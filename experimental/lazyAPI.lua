@@ -361,13 +361,16 @@ local subscriptions = {
 -- lazyAPI.ingredients.add_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype
 -- lazyAPI.ingredients.add_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype
 -- lazyAPI.ingredients.add_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype
+-- lazyAPI.ingredients.add_ingredient_if_exist(prototype, target, amount = 1, difficulty?): IngredientPrototype?
 -- lazyAPI.ingredients.set_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
 -- lazyAPI.ingredients.set_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
 -- lazyAPI.ingredients.set_ingredient(prototype, target, amount = 1, difficulty?): prototype
+-- lazyAPI.ingredients.set_ingredient_if_exist(prototype, target, amount = 1, difficulty?): prototype
 -- lazyAPI.ingredients.get_item_ingredients(prototype, item, difficulty?): ItemIngredientPrototype[]
 -- lazyAPI.ingredients.get_fluid_ingredients(prototype, fluid, difficulty?): FluidIngredientPrototype[]
 -- lazyAPI.ingredients.remove_ingredient(prototype, ingredient, type?, difficulty?): IngredientPrototype?
 -- lazyAPI.ingredients.remove_ingredient_everywhere(prototype, ingredient, type?): prototype
+-- lazyAPI.ingredients.remove_non_existing_ingredients(prototype): prototype
 -- lazyAPI.ingredients.replace_ingredient(prototype, old_ingredient, new_ingredient, type?, difficulty?): prototype
 -- lazyAPI.ingredients.replace_ingredient_everywhere(prototype, old_ingredient, new_ingredient, type?): prototype
 -- lazyAPI.ingredients.find_ingredient_by_name(prototype, ingredient, difficulty?): IngredientPrototype?
@@ -381,7 +384,9 @@ local subscriptions = {
 -- lazyAPI.loot.find(prototype, item): Loot?
 -- lazyAPI.loot.replace(prototype, item): prototype
 -- lazyAPI.loot.set(prototype, type, count_min?, count_max? percent?, decrease?): prototype
+-- lazyAPI.loot.set_if_exist(prototype, type, count_min?, count_max? percent?, decrease?): prototype
 -- lazyAPI.loot.remove(prototype, item): prototype
+-- lazyAPI.loot.remove_non_existing_loot(prototype): prototype
 
 
 -- lazyAPI.entity.has_item(entity): boolean
@@ -393,7 +398,9 @@ local subscriptions = {
 -- lazyAPI.EntityWithHealth.find_loot(prototype, item): Loot?
 -- lazyAPI.EntityWithHealth.replace_loot(prototype, item): prototype
 -- lazyAPI.EntityWithHealth.set_loot(prototype, type, count_min?, count_max? percent?, decrease?): prototype
+-- lazyAPI.EntityWithHealth.set_loot_if_exist(prototype, type, count_min?, count_max? percent?, decrease?): prototype
 -- lazyAPI.EntityWithHealth.remove_loot(prototype, item): prototype
+-- lazyAPI.EntityWithHealth.remove_non_existing_loot(prototype): prototype
 
 
 --# There are several issues still
@@ -403,13 +410,16 @@ local subscriptions = {
 -- lazyAPI.recipe.add_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype
 -- lazyAPI.recipe.add_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype
 -- lazyAPI.recipe.add_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype
+-- lazyAPI.recipe.add_ingredient_if_exist(prototype, target, amount = 1, difficulty?): IngredientPrototype?
 -- lazyAPI.recipe.set_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
 -- lazyAPI.recipe.set_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
 -- lazyAPI.recipe.set_ingredient(prototype, target, amount = 1, difficulty?): prototype
+-- lazyAPI.recipe.set_ingredient_if_exist(prototype, target, amount = 1, difficulty?): prototype
 -- lazyAPI.recipe.get_item_ingredients(prototype, item, difficulty?): ItemIngredientPrototype[]
 -- lazyAPI.recipe.get_fluid_ingredients(prototype, fluid, difficulty?): FluidIngredientPrototype[]
 -- lazyAPI.recipe.remove_ingredient(prototype, ingredient, type?, difficulty?): IngredientPrototype?
 -- lazyAPI.recipe.remove_ingredient_everywhere(prototype, ingredient, type?): prototype
+-- lazyAPI.recipe.remove_non_existing_ingredients(prototype): prototype
 -- lazyAPI.recipe.replace_ingredient(prototype, old_ingredient, new_ingredient, type?, difficulty?): prototype
 -- lazyAPI.recipe.replace_ingredient_everywhere(prototype, old_ingredient, new_ingredient, type?): prototype
 -- lazyAPI.recipe.find_ingredient_by_name(prototype, ingredient, difficulty?): IngredientPrototype?
@@ -422,14 +432,17 @@ local subscriptions = {
 -- lazyAPI.recipe.add_item_in_result(prototype, item, item_product, difficulty): prototype
 -- lazyAPI.recipe.add_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
 -- lazyAPI.recipe.add_product_in_result(prototype, product, product_prototype, difficulty): prototype
+-- lazyAPI.recipe.add_product_in_result_if_exist(prototype, product, product_prototype, difficulty): prototype
 -- lazyAPI.recipe.set_item_in_result(prototype, item, item_product, difficulty): prototype
 -- lazyAPI.recipe.set_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
 -- lazyAPI.recipe.set_product_in_result(prototype, product, product_prototype, difficulty): prototype
+-- lazyAPI.recipe.set_product_in_result_if_exist(prototype, product, product_prototype, difficulty): prototype
 -- lazyAPI.recipe.remove_if_empty_result(prototype): prototype?
 -- lazyAPI.recipe.remove_item_from_result(prototype, item, difficulty?): prototype
 -- lazyAPI.recipe.remove_item_from_result_everywhere(prototype, item): prototype
 -- lazyAPI.recipe.remove_fluid_from_result(prototype, fluid, difficulty?): prototype
 -- lazyAPI.recipe.remove_fluid_from_result_everywhere(prototype, fluid): prototype
+-- lazyAPI.recipe.remove_non_existing_results(prototype): prototype
 -- lazyAPI.recipe.find_item_in_result(prototype, item, difficulty?): ProductPrototype|string?
 -- lazyAPI.recipe.count_item_in_result(prototype, item, difficulty?): integer
 -- lazyAPI.recipe.find_fluid_in_result(prototype, fluid, difficulty?): ProductPrototype
@@ -462,7 +475,9 @@ local subscriptions = {
 -- lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech): prototype
 
 -- lazyAPI.tech.add_tool(prototype, tool, amount = 1): ItemIngredientPrototype?
+-- lazyAPI.tech.add_tool_if_exist(prototype, tool, amount = 1): ItemIngredientPrototype?
 -- lazyAPI.tech.set_tool(prototype, tool, amount = 1): prototype
+-- lazyAPI.tech.set_tool_if_exist(prototype, tool, amount = 1): prototype
 -- lazyAPI.tech.remove_tool(prototype, tool): IngredientPrototype
 -- lazyAPI.tech.replace_tool(prototype, old_tool, new_tool): prototype
 
@@ -1674,10 +1689,9 @@ end
 ---@param name string
 lazyAPI.remove_entities_by_name = function(name)
 	for _, prototypes in pairs(lazyAPI.all_entities) do
-		for _name, prototype in pairs(prototypes) do
-			if _name == name then
-				lazyAPI.base.remove_prototype(prototype)
-			end
+		local entity = prototypes[name]
+		if entity then
+			lazyAPI.base.remove_prototype(entity)
 		end
 	end
 end
@@ -1700,10 +1714,9 @@ end
 lazyAPI.find_entities_by_name = function(name)
 	local result = {}
 	for _, prototypes in pairs(lazyAPI.all_entities) do
-		for entity_name, entity in pairs(prototypes) do
-			if entity_name == name then
-				result[#result+1] = entity
-			end
+		local entity = prototypes[name]
+		if entity then
+			result[#result+1] = entity
 		end
 	end
 	return result
@@ -1713,10 +1726,9 @@ end
 ---@param name string
 lazyAPI.remove_items_by_name = function(name)
 	for _, prototypes in pairs(lazyAPI.all_items) do
-		for item_name, item in pairs(prototypes) do
-			if item_name == name then
-				lazyAPI.base.remove_prototype(item)
-			end
+		local item = prototypes[name]
+		if item then
+			lazyAPI.base.remove_prototype(item)
 		end
 	end
 end
@@ -1726,10 +1738,8 @@ end
 ---@return boolean
 lazyAPI.has_items_by_name = function(name)
 	for _, prototypes in pairs(lazyAPI.all_items) do
-		for item_name in pairs(prototypes) do
-			if item_name == name then
-				return true
-			end
+		if prototypes[name] then
+			return true
 		end
 	end
 	return false
@@ -1855,17 +1865,17 @@ end
 ---@return table tech, table[]
 lazyAPI.create_techs = function(name, max_level, tech_data)
 	local main_tech = {
-    type = "technology",
-    name = name,
+		type = "technology",
+		name = name,
 		icon = tech_data.icon,
-    icon_size = tech_data.icon_size, icon_mipmaps = icon_mipmaps.icon_size,
-    icons = tech_data.icons and deepcopy(tech_data.icons),
-    effects = (tech_data.effects and deepcopy(tech_data.effects)) or {},
-    prerequisites = (tech_data.prerequisites and deepcopy(tech_data.prerequisites)) or {},
-    unit = (tech_data.unit and deepcopy(tech_data.unit)) or {},
-    upgrade = tech_data.upgrade,
-    order = tech_data.order
-  }
+		icon_size = tech_data.icon_size, icon_mipmaps = icon_mipmaps.icon_size,
+		icons = tech_data.icons and deepcopy(tech_data.icons),
+		effects = (tech_data.effects and deepcopy(tech_data.effects)) or {},
+		prerequisites = (tech_data.prerequisites and deepcopy(tech_data.prerequisites)) or {},
+		unit = (tech_data.unit and deepcopy(tech_data.unit)) or {},
+		upgrade = tech_data.upgrade,
+		order = tech_data.order
+	}
 	local techs = {main_tech}
 	if max_level and max_level > 1 then
 		for i=1, max_level do
@@ -2131,12 +2141,7 @@ lazyAPI.can_i_create = function(_type, name)
 
 	local is_item = lazyAPI.all_items[_type]
 	if is_item then
-		for _, prototypes in pairs(lazyAPI.all_items) do
-			if prototypes[name] then
-				return false
-			end
-		end
-		return true
+		return not lazyAPI.has_items_by_name(name)
 	end
 
 	local is_equipment = lazyAPI.all_equipments[_type]
@@ -2593,7 +2598,7 @@ lazyAPI.ingredients.add_item_ingredient = function(prototype, item, amount, diff
 		if ingredient[1] == item_name then
 			ingredient[2] = ingredient[2] + amount
 			return ingredient
-		elseif ingredient.type == "item" and ingredient.name == item_name then
+		elseif ingredient.type ~= "fluid" and ingredient.name == item_name then
 			ingredient[2] = ingredient[2] + amount
 			return ingredient
 		end
@@ -2668,6 +2673,17 @@ end
 
 
 ---@param prototype table
+---@param target table #https://wiki.factorio.com/Prototype/Item or https://wiki.factorio.com/Prototype/Fluid
+---@param amount? integer #1 by default
+---@param difficulty? difficulty
+---@return table? IngredientPrototype #https://wiki.factorio.com/Types/IngredientPrototype
+lazyAPI.ingredients.add_ingredient_if_exist = function(prototype, target, amount, difficulty)
+	if data_raw[target.type][target.name] == nil then return end
+	return lazyAPI.ingredients.add_ingredient(prototype, target, amount, difficulty)
+end
+
+
+---@param prototype table
 ---@param item string|table #https://wiki.factorio.com/Prototype/Item
 ---@param amount? integer #1 by default
 ---@param difficulty? difficulty
@@ -2706,7 +2722,7 @@ lazyAPI.ingredients.set_item_ingredient = function(prototype, item, amount, diff
 		if ingredient[1] == item_name then
 			ingredient[2] = amount
 			return prototype
-		elseif ingredient.type == "item" and ingredient.name == item_name then
+		elseif ingredient.type ~= "fluid" and ingredient.name == item_name then
 			ingredient[2] = amount
 			return prototype
 		end
@@ -2777,6 +2793,18 @@ lazyAPI.ingredients.set_ingredient = function(prototype, target, amount, difficu
 	else -- item
 		return lazyAPI.recipe.set_fluid_ingredient(prototype, target.name, amount, difficulty)
 	end
+end
+
+
+---@param prototype table
+---@param target table #https://wiki.factorio.com/Prototype/Item or https://wiki.factorio.com/Prototype/Fluid
+---@param amount? integer #1 by default
+---@param difficulty? difficulty
+---@return table prototype
+lazyAPI.ingredients.set_ingredient_if_exist = function(prototype, target, amount, difficulty)
+	if data_raw[target.type][target.name] == nil then return prototype end
+	lazyAPI.ingredients.set_ingredient(prototype, target, amount, difficulty)
+	return prototype
 end
 
 
@@ -2890,7 +2918,7 @@ lazyAPI.ingredients.remove_ingredient = function(prototype, ingredient, _type, d
 			local _ingredient = ingredients[i]
 			if _ingredient[1] == ingredient_name then
 				return tremove(ingredients, i)
-			elseif _ingredient.type == "item" and _ingredient.name == ingredient_name then
+			elseif _ingredient.type ~= "fluid" and _ingredient.name == ingredient_name then
 				return tremove(ingredients, i)
 			end
 		end
@@ -2915,6 +2943,37 @@ lazyAPI.ingredients.remove_ingredient_everywhere = function(prototype, ingredien
 	if prot.expensive then
 		lazyAPI.ingredients.remove_ingredient(prot, ingredient_name, _type, "expensive")
 	end
+	return prototype
+end
+
+
+---@param t table
+---@param field string
+local function check_products(t, field)
+	local array = t[field]
+	if array == nil then return end
+	fix_array(array)
+	for i=1, #array do
+		local ingredient = array[i]
+		local item_name = _ingredient[1]
+		if item_name and not lazyAPI.has_items_by_name(item_name) then
+			tremove(array, i)
+		elseif (ingredient.type ~= "fluid" and not lazyAPI.has_items_by_name(ingredient.name))
+			or (ingredient.type == "fluid" and dat_raw.fluid[ingredient.name] == nil)
+		then
+			tremove(array, i)
+		end
+	end
+end
+
+
+---@param prototype table
+---@return table prototype
+lazyAPI.ingredients.remove_non_existing_ingredients = function(prototype)
+	local prot = prototype.prototype or prototype
+	check_products(prot, "ingredients")
+	check_products(prot.normal, "ingredients")
+	check_products(prot.expensive, "ingredients")
 	return prototype
 end
 
@@ -2963,7 +3022,7 @@ lazyAPI.ingredients.replace_ingredient = function(prototype, old_ingredient, new
 			local ingredient = ingredients[i]
 			if ingredient[1] == old_ingredient_name then
 				ingredient[1] = new_ingredient_name
-			elseif ingredient.type == "item" and ingredient.name == old_ingredient_name then
+			elseif ingredient.type ~= "fluid" and ingredient.name == old_ingredient_name then
 				ingredient.name = new_ingredient_name
 			end
 		end
@@ -3104,6 +3163,21 @@ end
 
 
 -- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
+-- https://wiki.factorio.com/Types/Loot
+---@param prototype table
+---@param item table
+---@param count_min? integer
+---@param count_max? integer
+---@param probability? float
+---@return table prototype
+lazyAPI.loot.set_if_exist = function(prototype, item, count_min, count_max, probability)
+	if data_raw[target.type][target.name] == nil then return prototype end
+	lazyAPI.loot.set(prototype, item, count_min, count_max, probability)
+	return prototype
+end
+
+
+-- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
 ---@param prototype table
 ---@param item string|table
 ---@return table prototype
@@ -3119,6 +3193,22 @@ lazyAPI.loot.remove = function(prototype, item)
 	for i=#loot, 1, -1 do
 		local iLoot = loot[i]
 		if iLoot.item == item_name then
+			tremove(loot, i)
+		end
+	end
+	return prototype
+end
+
+
+---@param prototype table
+---@return prototype
+lazyAPI.loot.remove_non_existing_loot = function(prototype)
+	local loot = prot.loot
+	if loot == nil then
+		return prototype
+	end
+	for i=#loot, 1, -1 do
+		if lazyAPI.has_items_by_name(loot[i].item) then
 			tremove(loot, i)
 		end
 	end
@@ -3145,7 +3235,9 @@ lazyAPI.EntityWithHealth.remove_resistance = lazyAPI.resistance.find
 lazyAPI.EntityWithHealth.find_loot = lazyAPI.loot.find
 lazyAPI.EntityWithHealth.replace_loot = lazyAPI.loot.replace
 lazyAPI.EntityWithHealth.set_loot = lazyAPI.loot.set
+lazyAPI.EntityWithHealth.set_loot_if_exist = lazyAPI.loot.set_if_exist
 lazyAPI.EntityWithHealth.remove_loot = lazyAPI.loot.remove
+lazyAPI.EntityWithHealth.remove_non_existing_loot = lazyAPI.loot.remove_non_existing_loot
 
 
 ---@param prototype table
@@ -3177,13 +3269,16 @@ lazyAPI.recipe.have_ingredients = lazyAPI.ingredients.have_ingredients
 lazyAPI.recipe.add_item_ingredient = lazyAPI.ingredients.add_item_ingredient
 lazyAPI.recipe.add_fluid_ingredient = lazyAPI.ingredients.add_fluid_ingredient
 lazyAPI.recipe.add_ingredient = lazyAPI.ingredients.add_ingredient
+lazyAPI.recipe.add_ingredient_if_exist = lazyAPI.ingredients.add_ingredient_if_exist
 lazyAPI.recipe.set_item_ingredient = lazyAPI.ingredients.set_item_ingredient
 lazyAPI.recipe.set_fluid_ingredient = lazyAPI.ingredients.set_fluid_ingredient
 lazyAPI.recipe.set_ingredient = lazyAPI.ingredients.set_ingredient
+lazyAPI.recipe.set_ingredient_if_exist = lazyAPI.ingredients.set_ingredient_if_exist
 lazyAPI.recipe.get_item_ingredients = lazyAPI.ingredients.get_item_ingredients
 lazyAPI.recipe.get_fluid_ingredients = lazyAPI.ingredients.get_fluid_ingredients
 lazyAPI.recipe.remove_ingredient = lazyAPI.ingredients.remove_ingredient
 lazyAPI.recipe.remove_ingredient_everywhere = lazyAPI.ingredients.remove_ingredient_everywhere
+lazyAPI.recipe.remove_non_existing_ingredients = lazyAPI.ingredients.remove_non_existing_ingredients
 lazyAPI.recipe.replace_ingredient = lazyAPI.ingredients.replace_ingredient
 lazyAPI.recipe.replace_ingredient_everywhere = lazyAPI.ingredients.replace_ingredient_everywhere
 lazyAPI.recipe.find_ingredient_by_name = lazyAPI.ingredients.find_ingredient_by_name
@@ -3420,6 +3515,19 @@ end
 
 ---https://wiki.factorio.com/Prototype/Recipe#results
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param product table
+---@param product_prototype table #https://wiki.factorio.com/Types/ProductPrototype
+---@param difficulty? difficulty
+---@return table prototype
+lazyAPI.recipe.add_product_in_result_if_exist = function(prototype, product, product_prototype, difficulty)
+	if data_raw[product.type][product.name] == nil then return prototype end
+	lazyAPI.recipe.add_product_in_result(prototype, product, product_prototype, difficulty)
+	return prototype
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@param item string|table
 ---@param item_product table #https://wiki.factorio.com/Types/ItemProductPrototype
 ---@param difficulty? difficulty
@@ -3550,6 +3658,19 @@ lazyAPI.recipe.set_product_in_result = function(prototype, product, product_prot
 	else
 		lazyAPI.recipe.set_item_in_result(prototype, product, product_prototype, difficulty)
 	end
+	return prototype
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@param product table
+---@param product_prototype table #https://wiki.factorio.com/Types/ProductPrototype
+---@param difficulty? difficulty
+---@return table prototype
+lazyAPI.recipe.set_product_in_result_if_exist = function(prototype, product, product_prototype, difficulty)
+	if data_raw[product.type][product.name] == nil then return prototype end
+	lazyAPI.recipe.set_product_in_result(prototype, product, product_prototype, difficulty)
 	return prototype
 end
 
@@ -3700,6 +3821,18 @@ lazyAPI.recipe.remove_fluid_from_result_everywhere = function(prototype, fluid)
 	if prot.expensive then
 		lazyAPI.recipe.remove_fluid_from_result(prototype, fluid_name, "expensive")
 	end
+	return prototype
+end
+
+
+---https://wiki.factorio.com/Prototype/Recipe#results
+---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
+---@return table prototype
+lazyAPI.recipe.remove_non_existing_results = function(prototype)
+	local prot = prototype.prototype or prototype
+	check_products(prot, "results")
+	check_products(prot.normal, "results")
+	check_products(prot.expensive, "results")
 	return prototype
 end
 
@@ -4286,6 +4419,19 @@ lazyAPI.tech.add_tool = function(prototype, tool, amount)
 end
 
 
+---Adds an ingredient for the technology
+---https://wiki.factorio.com/Prototype/Technology#unit
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param tool string|table #https://wiki.factorio.com/Prototype/Tool
+---@param amount? integer #1 by default
+---@return table? ItemIngredientPrototype #https://wiki.factorio.com/Types/ItemIngredientPrototype
+lazyAPI.tech.add_tool_if_exist = function(prototype, tool, amount)
+	local tool_name = (type(tool) == "string" and tool) or tool.name
+	if data_raw["tool"][tool_name] then return end
+	return lazyAPI.tech.add_tool(prototype, tool, amount)
+end
+
+
 ---Sets a tool for the technology
 ---https://wiki.factorio.com/Prototype/Technology#unit
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
@@ -4296,6 +4442,20 @@ lazyAPI.tech.set_tool = function(prototype, tool, amount)
 	local unit = (prototype.prototype or prototype).unit
 	if unit == nil then return prototype end
 	lazyAPI.ingredients.set_item_ingredient(unit, tool, amount)
+	return prototype
+end
+
+
+---Sets a tool for the technology
+---https://wiki.factorio.com/Prototype/Technology#unit
+---@param prototype table #https://wiki.factorio.com/Prototype/Technology
+---@param tool string|table #https://wiki.factorio.com/Prototype/Tool
+---@param amount? integer #1 by default
+---@return table prototype
+lazyAPI.tech.set_tool_if_exist = function(prototype, tool, amount)
+	local tool_name = (type(tool) == "string" and tool) or tool.name
+	if data_raw["tool"][tool_name] then return prototype end
+	lazyAPI.tech.set_tool(prototype, tool, amount)
 	return prototype
 end
 
