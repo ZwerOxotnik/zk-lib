@@ -338,7 +338,8 @@ local subscriptions = {
 -- lazyAPI.remove_tool_everywhere(tool)
 -- lazyAPI.rename_tool(prev_tool, new_tool)
 -- lazyAPI.remove_tile(tile_name)
-
+-- lazyAPI.is_product_valid(product): boolean
+-- lazyAPI.find_prototypes_by_product(product): table[]?
 
 -- lazyAPI.base.does_exist(prototype): boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
@@ -2366,6 +2367,40 @@ lazyAPI.remove_tile = function(tile_name)
 				remove_tile_from_action(final_actions, tile_name)
 			end
 		end
+	end
+end
+
+
+---@param product table #https://wiki.factorio.com/Types/ProductPrototype or https://wiki.factorio.com/Types/IngredientPrototype
+---@return boolean
+lazyAPI.is_product_valid = function(product)
+	local item_name = product[1]
+	if item_name then
+		return lazyAPI.has_items_by_name(item_name)
+	end
+	if product.type ~= "fluid" then -- item
+		return lazyAPI.has_items_by_name(product.name)
+	else
+		return (data_raw.fluid[product.name] ~= nil)
+	end
+end
+
+
+---@param product table #https://wiki.factorio.com/Types/ProductPrototype or https://wiki.factorio.com/Types/IngredientPrototype
+---@return table[]? product #Array of https://wiki.factorio.com/Prototype/Item or https://wiki.factorio.com/Prototype/Fluid
+lazyAPI.find_prototypes_by_product = function(product)
+	local item_name = product[1]
+	if item_name then
+		return lazyAPI.find_items_by_name(item_name)
+	end
+	if product.type ~= "fluid" then -- item
+		return lazyAPI.find_items_by_name(product.name)
+	else
+		local fluid = data_raw.fluid[product.name]
+		if fluid then
+			return {fluid}
+		end
+		return
 	end
 end
 
