@@ -512,18 +512,20 @@ local subscriptions = {
 -- It's weird and looks wrong but it should work
 data.extend = function(self, new_prototypes, ...)
 	add_prototypes(self, new_prototypes, ...) -- original data.extend
-	for _, prototype in pairs(new_prototypes) do
-		local prototype_type = prototype.type
-		local name = prototype.name
-		if data_raw[prototype_type][name] then
-			if subscriptions.add_prototype[prototype_type] then
-				for _, func in pairs(subscriptions.add_prototype[prototype_type]) do
-					func(prototype, name, prototype_type)
+	for k, prototype in pairs(new_prototypes) do
+		if type(k) == "number" and type(prototype) == "table" and prototype.type then
+			local prototype_type = prototype.type
+			local name = prototype.name
+			if data_raw[prototype_type][name] then
+				if subscriptions.add_prototype[prototype_type] then
+					for _, func in pairs(subscriptions.add_prototype[prototype_type]) do
+						func(prototype, name, prototype_type)
+					end
 				end
-			end
-			if subscriptions.add_prototype.all then
-				for _, func in pairs(subscriptions.add_prototype.all) do
-					func(prototype, name, prototype_type)
+				if subscriptions.add_prototype.all then
+					for _, func in pairs(subscriptions.add_prototype.all) do
+						func(prototype, name, prototype_type)
+					end
 				end
 			end
 		end
