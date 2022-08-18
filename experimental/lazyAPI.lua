@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-field
 -- Are you lazy to change/add/remove/check some prototypes/stuff in the data stage? Use this library then.\
 -- Currently, this is an experimental library, not everything is stable yet. (anything can be changed, removed, added etc.)\
 -- No messy data, efficient API.
@@ -8,6 +9,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 
 local type, table, rawget, rawset, log = type, table, rawget, rawset, log -- There's a chance something overwrite it
 local debug, error = debug, error -- I'm pretty sure, some mod did overwrite it
+---@diagnostic disable-next-line: undefined-field
 local deepcopy = table.deepcopy
 local tremove = table.remove
 local data_raw = data.raw
@@ -31,7 +33,7 @@ lazyAPI.error_messages = {
 	[error_types.mixed_array] = "a mixed array, some keys aren't numbers",
 	[error_types.element_is_nil] = "an array had been initialized with nils and keeped them"
 }
----@type table<table, lazyAPI.error_types>
+---@type table<table, integer>
 lazyAPI.tables_with_errors = {}
 setmetatable(lazyAPI.tables_with_errors, {
 	__newindex = function(self, k, v)
@@ -356,6 +358,8 @@ local subscriptions = {
 -- lazyAPI.base.find_in_array(prototype, field, data): integer?
 -- lazyAPI.base.has_in_array(prototype, field, data): boolean
 -- lazyAPI.base.remove_from_array(prototype, field, data): prototype
+-- lazyAPI.base.rename_in_array(prototype, field, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
+-- lazyAPI.base.add_to_array(prototype, field, data): prototype
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
 -- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
 -- lazyAPI.base.is_cheat_prototype(prototype): boolean
@@ -523,6 +527,8 @@ local subscriptions = {
 -- lazyAPI.mining_drill.add_resource_category(prototype, resource_category): prototype
 -- lazyAPI.mining_drill.remove_resource_category(prototype, resource_category): prototype
 -- lazyAPI.mining_drill.replace_resource_category(prototype, old_resource_category, new_resource_category): prototype
+-- TODO: recheck code \/
+-- lazyAPI.mining_drill.replace_resource_category_everywhere(prototype?, old_category, new_category): prototype?
 
 
 -- lazyAPI.character.remove_armor(prototype, armor): prototype
@@ -605,6 +611,7 @@ lazyAPI.get_mod_version = function(mod_name)
 	local str_version = mods[mod_name]
 	if str_version then
 		return memorized_versions(str_version)
+	---@diagnostic disable-next-line: missing-return
 	end
 end
 
@@ -779,6 +786,7 @@ local has_in_array = lazyAPI.base.has_in_array
 ---@return table prototype
 ---@overload fun(nil, ...)
 lazyAPI.base.remove_from_array = function(prototype, field, data)
+	---@diagnostic disable-next-line: missing-return
 	if prototype == nil then return end
 	if data == nil then error("data is nil") end
 	if field == nil then error("field is nil") end
@@ -803,6 +811,7 @@ local remove_from_array = lazyAPI.base.remove_from_array
 ---@return table prototype
 ---@overload fun(nil, ...)
 lazyAPI.base.rename_in_array = function(prototype, field, old_name, new_name)
+	---@diagnostic disable-next-line: missing-return
 	if prototype == nil then return end
 	if old_name == nil then error("old_name is nil") end
 	if new_name == nil then error("new_name is nil") end
@@ -822,7 +831,7 @@ local rename_in_array = lazyAPI.base.rename_in_array
 
 
 ---@param prototype table
----@param field string
+---@param field any
 ---@param data any
 ---@return table prototype
 lazyAPI.base.add_to_array = function(prototype, field, data)
@@ -922,107 +931,102 @@ end
 
 
 ---@param prototype table
----@param alternative_prototypes table[]
-lazyAPI.base.set_alternative_prototypes = function(prototype, alternative_prototypes)
-	if type(alternative_prototypes) ~= "table" then
+---@param alt_prototypes table[]
+lazyAPI.base.set_alternative_prototypes = function(prototype, alt_prototypes)
+	if type(alt_prototypes) ~= "table" then
 		error("lazyAPI.base.set_alternative_prototypes got incorrect data")
 		return
 	end
 	local prot = prototype.prototype or prototype
 	__all_alternative_prototypes[prot] = {}
-	local _alternative_prototypes = __all_alternative_prototypes[prot]
-	fix_array(alternative_prototypes)
-	for i=1, #alternative_prototypes do
-		local alternative_prototype = alternative_prototypes[i]
-		if alternative_prototype ~= prot then
-			_alternative_prototypes[#_alternative_prototypes+1] = alternative_prototype
-		end
-	end
-	if #_alternative_prototypes == 0 then
-		__all_alternative_prototypes[prot] = nil
-	end
+	lazyAPI.base.add_alternative_prototypes(prototype, alt_prototypes)
 end
 
 
 ---@param prototype table
----@param alternative_prototypes table[]
-lazyAPI.base.rawset_alternative_prototypes = function(prototype, alternative_prototypes)
-	if type(alternative_prototypes) ~= "table" then
+---@param alt_prototypes table[]
+lazyAPI.base.rawset_alternative_prototypes = function(prototype, alt_prototypes)
+	if type(alt_prototypes) ~= "table" then
 		error("lazyAPI.base.rawset_alternative_prototypes got incorrect data")
 		return
 	end
 	local prot = prototype.prototype or prototype
-	fix_array(alternative_prototypes)
-	__all_alternative_prototypes[prot] = alternative_prototypes
+	fix_array(alt_prototypes)
+	__all_alternative_prototypes[prot] = alt_prototypes
 end
 
 
 ---@param prototype table
----@param alternative_prototype table
-lazyAPI.base.add_alternative_prototype = function(prototype, alternative_prototype)
-	if type(alternative_prototype) ~= "table" then
+---@param alt_prototype table
+lazyAPI.base.add_alternative_prototype = function(prototype, alt_prototype)
+	if type(alt_prototype) ~= "table" then
 		error("lazyAPI.base.add_alternative_prototype got incorrect data")
 		return
 	end
 	local prot = prototype.prototype or prototype
-	if prot == alternative_prototype then return end
-	__all_alternative_prototypes[prot] = __all_alternative_prototypes[prot] or {}
-	local _alternative_prototypes = alternative_prototypes[prot]
-	_alternative_prototypes[#_alternative_prototypes+1] = alternative_prototype
+	if prot == alt_prototype then return end
+	add_to_array(__all_alternative_prototypes, prot, alt_prototype)
 end
 
 
 ---@param prototype table
----@param alternative_prototypes table[]
-lazyAPI.base.add_alternative_prototypes = function(prototype, alternative_prototypes)
-	if type(alternative_prototypes) ~= "table" then
+---@param alt_prototypes table[]
+lazyAPI.base.add_alternative_prototypes = function(prototype, alt_prototypes)
+	if type(alt_prototypes) ~= "table" then
 		error("lazyAPI.base.add_alternative_prototypes got incorrect data")
 		return
 	end
 	local prot = prototype.prototype or prototype
 	__all_alternative_prototypes[prot] = __all_alternative_prototypes[prot] or {}
-	local _alternative_prototypes = alternative_prototypes[prot]
-	fix_array(alternative_prototypes)
-	for i=1, #alternative_prototypes do
-		local alternative_prototype = alternative_prototypes[i]
-		if alternative_prototype ~= prot then
-			_alternative_prototypes[#_alternative_prototypes+1] = alternative_prototype
+	local _alt_prototypes = alt_prototypes[prot]
+	fix_array(alt_prototypes)
+	for i=1, #alt_prototypes do
+		local alt_prototype = alt_prototypes[i]
+		if alt_prototype ~= prot then
+			add_to_array(__all_alternative_prototypes, prototype, alt_prototype)
+			add_to_array(__all_alternative_prototypes, alt_prototype, prototype)
+			for j=1, #alt_prototypes do
+				local alternative_prototype2 = alt_prototypes[j]
+				if alternative_prototype2 ~= alt_prototype then
+					add_to_array(__all_alternative_prototypes, alt_prototype, alternative_prototype2)
+				end
+			end
 		end
 	end
-	if #_alternative_prototypes == 0 then
+	if #_alt_prototypes == 0 then
 		__all_alternative_prototypes[prot] = nil
 	end
 end
 
 
----@param action_name function #name of your
+---@param event_name string #name of an event
 ---@param types string[] #https://wiki.factorio.com/data_raw or "all"
----@param name function #name of your listener
+---@param name string #name of your listener
 ---@param func function #your function
 ---@return boolean #is added?
-lazyAPI.add_listener = function(action_name, types, name, func)
+lazyAPI.add_listener = function(event_name, types, name, func)
 	if next(types) == nil then
 		return false
 	end
 
-	for _, listener in ipairs(listeners[action_name]) do
+	for _, listener in ipairs(listeners[event_name]) do
 		if listener.name == name then
 			return false
 		end
 	end
 
 	table.insert(
-		listeners[action_name],
+		listeners[event_name],
 		{
 			name = name,
 			types = types,
-			action_name = action_name,
+			action_name = event_name,
 			func = func
 		}
 	)
 	for _, type in ipairs(types) do
-		subscriptions[action_name][type] = subscriptions[action_name][type] or {}
-		local subscription = subscriptions[action_name][type]
+		subscriptions[event_name][type] = subscriptions[event_name][type] or {}
+		local subscription = subscriptions[event_name][type]
 		table.insert(subscription, func)
 	end
 	return true
@@ -2613,6 +2617,7 @@ end
 ---@return table prototype
 ---@overload fun()
 lazyAPI.base.remove_prototype = function(prototype)
+	---@diagnostic disable-next-line: missing-return
 	if prototype == nil then return end
 	local prot = prototype.prototype or prototype
 	local name = prot.name
@@ -2764,6 +2769,7 @@ lazyAPI.ingredients.add_item_ingredient = function(prototype, item, amount, diff
 		ingredients = prot[difficulty].ingredients
 	else
 		if prot.normal or prot.expensive then
+			-- TODO: improve
 			if prot.normal then
 				lazyAPI.ingredients.add_item_ingredient(prot, item, amount, "normal")
 			end
@@ -2827,6 +2833,7 @@ lazyAPI.ingredients.add_fluid_ingredient = function(prototype, fluid, amount, di
 		ingredients = prot[difficulty].ingredients
 	else
 		if prot.normal or prot.expensive then
+			--- TODO: improve
 			if prot.normal then
 				lazyAPI.ingredients.add_fluid_ingredient(prot, fluid, amount, "normal")
 			end
@@ -2836,10 +2843,10 @@ lazyAPI.ingredients.add_fluid_ingredient = function(prototype, fluid, amount, di
 			return
 		end
 
-		ingredients = prot.ingredients
-		if ingredients == nil then
+		if prot.ingredients == nil then --TODO: recheck
 			prot.ingredients = {}
 		end
+		ingredients = prot.ingredients
 	end
 
 	local fluid_name = (type(fluid) == "string" and fluid) or fluid.name
@@ -2919,7 +2926,7 @@ lazyAPI.ingredients.set_item_ingredient = function(prototype, item, amount, diff
 			if prot.expensive then
 				lazyAPI.ingredients.set_item_ingredient(prot, item, amount, "expensive")
 			end
-			return
+			return prototype
 		end
 
 		ingredients = prot.ingredients
@@ -2985,7 +2992,7 @@ lazyAPI.ingredients.set_fluid_ingredient = function(prototype, fluid, amount, di
 			if prot.expensive then
 				lazyAPI.ingredients.set_fluid_ingredient(prot, fluid, amount, "expensive")
 			end
-			return
+			return prototype
 		end
 
 		ingredients = prot.ingredients
@@ -3660,7 +3667,7 @@ lazyAPI.recipe.add_item_in_result = function(prototype, item, item_product, diff
 			item_product.amount = amount
 			lazyAPI.recipe.add_item_in_result(prot, item, item_product, "expensive")
 		end
-		return
+		return prototype
 	end
 	if (item_product.amount_min == nil or item_product.amount_max == nil)
 		and item_product.amount and item_product.amount > 65535
@@ -3748,7 +3755,7 @@ lazyAPI.recipe.add_fluid_in_result = function(prototype, fluid, fluid_product, d
 			item_product.amount = amount
 			lazyAPI.recipe.add_fluid_in_result(prot, fluid, fluid_product, "expensive")
 		end
-		return
+		return prototype
 	end
 	if (fluid_product.amount_min == nil or fluid_product.amount_max == nil)
 		and fluid_product.amount and fluid_product.amount > 65535
@@ -3851,7 +3858,7 @@ lazyAPI.recipe.set_item_in_result = function(prototype, item, item_product, diff
 		if prot.expensive then
 			lazyAPI.recipe.set_item_in_result(prot, item, item_product, "expensive")
 		end
-		return
+		return prototype
 	end
 	item_product.item = (type(item_product.item) == "string" and item_product.item) or item_product.item.name
 	lazyAPI.recipe.remove_item_from_result(prot, item, difficulty)
@@ -3933,7 +3940,7 @@ lazyAPI.recipe.set_fluid_in_result = function(prototype, fluid, fluid_product, d
 		if prot.expensive then
 			lazyAPI.recipe.set_fluid_in_result(prot, fluid, fluid_product, "expensive")
 		end
-		return
+		return prototype
 	end
 	fluid_product.item = (type(fluid_product.item) == "string" and fluid_product.item) or fluid_product.item.name
 	lazyAPI.recipe.remove_fluid_from_result(prototype, fluid, difficulty)
@@ -4146,7 +4153,7 @@ lazyAPI.recipe.remove_item_from_result = function(prototype, item, difficulty)
 			if prot.expensive then
 				lazyAPI.recipe.remove_item_from_result(prot, item, "expensive")
 			end
-			return
+			return prototype
 		end
 		results = prot.results
 	end
@@ -4219,9 +4226,8 @@ lazyAPI.recipe.remove_fluid_from_result = function(prototype, fluid, difficulty)
 			if prot.expensive then
 				lazyAPI.recipe.remove_fluid_from_result(prot, fluid, "expensive")
 			end
-			return
+			return prototype
 		end
-
 		results = prot.results
 	end
 	if results == nil then
@@ -4280,7 +4286,7 @@ lazyAPI.recipe.find_items_in_result = function(prototype, item, difficulty)
 	local results
 	local prot = prototype.prototype or prototype
 	if difficulty then
-		if prot[difficulty] == nil then return end
+		if prot[difficulty] == nil then return {} end
 		results = prot[difficulty].results
 	else
 		results = prot.results
@@ -4323,7 +4329,7 @@ lazyAPI.recipe.count_item_in_result = function(prototype, item, difficulty)
 	local item_name = (type(item) == "string" and item) or item.name
 	local prot = prototype.prototype or prototype
 	if difficulty then
-		if prot[difficulty] == nil then return end
+		if prot[difficulty] == nil then return 0, 0 end -- is this fine to return??
 		results = prot[difficulty].results
 	else
 		results = prot.results
@@ -4403,7 +4409,7 @@ end
 ---@param prototype table #https://wiki.factorio.com/Prototype/Recipe
 ---@param fluid string|table
 ---@param difficulty? difficulty
----@return integer #amount
+---@return integer min_amount, integer max_amount
 lazyAPI.recipe.count_fluid_in_result = function(prototype, fluid, difficulty)
 	local results
 	local prot = prototype.prototype or prototype
@@ -4668,7 +4674,7 @@ lazyAPI.tech.remove_unlock_recipe_effect = function(prototype, recipe, difficult
 	else
 		effects = prot.effects
 	end
-	if effects == nil then return end
+	if effects == nil then return prototype end
 
 	lazyAPI.tech.remove_effect(prototype, "unlock-recipe", recipe, difficulty)
 	return prototype
@@ -5027,7 +5033,7 @@ end
 ---@param prototype string|table #https://wiki.factorio.com/Prototype/Technology or its name
 ---@param old_tech  string|table #https://wiki.factorio.com/Prototype/Technology or its name
 ---@param new_tech  string|table #https://wiki.factorio.com/Prototype/Technology or its name
----@return table prototype
+---@return string|table prototype
 function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
 	local old_tech_name = (type(old_tech) == "string" and old_tech) or old_tech.name
 	local new_tech_name = (type(new_tech) == "string" and new_tech) or new_tech.name
@@ -5038,13 +5044,13 @@ function lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech)
 			return prototype
 		end
 		replace_in_prototype(technology, "prerequisites", old_tech_name, new_tech_name)
+		return technology
 	else
 		---@cast prototype table
 		local prot = prototype.prototype or prototype
 		replace_in_prototype(prot, "prerequisites", old_tech_name, new_tech_name)
+		return prototype
 	end
-
-	return prototype
 end
 
 
@@ -5082,7 +5088,7 @@ end
 ---@param prototype? table
 ---@param old_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
 ---@param new_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
----@return table? #prototype
+---@return table prototype?
 lazyAPI.mining_drill.replace_resource_category_everywhere = function(prototype, old_category, new_category)
 	replace_in_prototypes(prototype, "resource_categories", old_category, new_category)
 	return prototype
