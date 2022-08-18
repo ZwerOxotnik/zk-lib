@@ -7,7 +7,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 
 
 local type, table, rawget, rawset, log = type, table, rawget, rawset, log -- There's a chance something overwrite it
-local debug = debug -- I'm pretty sure, some mod did overwrite it
+local debug, error = debug, error -- I'm pretty sure, some mod did overwrite it
 local deepcopy = table.deepcopy
 local tremove = table.remove
 local data_raw = data.raw
@@ -42,6 +42,8 @@ setmetatable(lazyAPI.tables_with_errors, {
 	end
 })
 
+---@type table<table, table[]>
+local __all_alternative_prototypes = {}
 lazyAPI.base = {}
 lazyAPI.resistance = {}
 lazyAPI.ingredients = {}
@@ -357,7 +359,11 @@ local subscriptions = {
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
 -- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
 -- lazyAPI.base.is_cheat_prototype(prototype): boolean
-
+-- lazyAPI.base.get_alternative_prototypes(prototype): table[]?
+-- lazyAPI.base.set_alternative_prototypes(prototype, alternative_prototypes)
+-- lazyAPI.base.rawset_alternative_prototypes(prototype, alternative_prototypes)
+-- lazyAPI.base.add_alternative_prototype(prototype, alternative_prototype)
+-- lazyAPI.base.add_alternative_prototypes(prototype, alternative_prototypes)
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -902,7 +908,90 @@ end)
 ---@param prototype table
 ---@return boolean
 lazyAPI.base.is_cheat_prototype = function(prototype)
-	return cheat_prototypes[prototype]
+	local prot = prototype.prototype or prototype
+	return cheat_prototypes[prot]
+end
+
+
+---@param prototype table
+---@return table[]?
+lazyAPI.base.get_alternative_prototypes = function(prototype)
+	local prot = prototype.prototype or prototype
+	return __all_alternative_prototypes[prot]
+end
+
+
+---@param prototype table
+---@param alternative_prototypes table[]
+lazyAPI.base.set_alternative_prototypes = function(prototype, alternative_prototypes)
+	if type(alternative_prototypes) ~= "table" then
+		error("lazyAPI.base.set_alternative_prototypes got incorrect data")
+		return
+	end
+	local prot = prototype.prototype or prototype
+	__all_alternative_prototypes[prot] = {}
+	local _alternative_prototypes = __all_alternative_prototypes[prot]
+	fix_array(alternative_prototypes)
+	for i=1, #alternative_prototypes do
+		local alternative_prototype = alternative_prototypes[i]
+		if alternative_prototype ~= prot then
+			_alternative_prototypes[#_alternative_prototypes+1] = alternative_prototype
+		end
+	end
+	if #_alternative_prototypes == 0 then
+		__all_alternative_prototypes[prot] = nil
+	end
+end
+
+
+---@param prototype table
+---@param alternative_prototypes table[]
+lazyAPI.base.rawset_alternative_prototypes = function(prototype, alternative_prototypes)
+	if type(alternative_prototypes) ~= "table" then
+		error("lazyAPI.base.rawset_alternative_prototypes got incorrect data")
+		return
+	end
+	local prot = prototype.prototype or prototype
+	fix_array(alternative_prototypes)
+	__all_alternative_prototypes[prot] = alternative_prototypes
+end
+
+
+---@param prototype table
+---@param alternative_prototype table
+lazyAPI.base.add_alternative_prototype = function(prototype, alternative_prototype)
+	if type(alternative_prototype) ~= "table" then
+		error("lazyAPI.base.add_alternative_prototype got incorrect data")
+		return
+	end
+	local prot = prototype.prototype or prototype
+	if prot == alternative_prototype then return end
+	__all_alternative_prototypes[prot] = __all_alternative_prototypes[prot] or {}
+	local _alternative_prototypes = alternative_prototypes[prot]
+	_alternative_prototypes[#_alternative_prototypes+1] = alternative_prototype
+end
+
+
+---@param prototype table
+---@param alternative_prototypes table[]
+lazyAPI.base.add_alternative_prototypes = function(prototype, alternative_prototypes)
+	if type(alternative_prototypes) ~= "table" then
+		error("lazyAPI.base.add_alternative_prototypes got incorrect data")
+		return
+	end
+	local prot = prototype.prototype or prototype
+	__all_alternative_prototypes[prot] = __all_alternative_prototypes[prot] or {}
+	local _alternative_prototypes = alternative_prototypes[prot]
+	fix_array(alternative_prototypes)
+	for i=1, #alternative_prototypes do
+		local alternative_prototype = alternative_prototypes[i]
+		if alternative_prototype ~= prot then
+			_alternative_prototypes[#_alternative_prototypes+1] = alternative_prototype
+		end
+	end
+	if #_alternative_prototypes == 0 then
+		__all_alternative_prototypes[prot] = nil
+	end
 end
 
 
