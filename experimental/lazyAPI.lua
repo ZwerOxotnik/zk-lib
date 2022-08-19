@@ -1065,6 +1065,12 @@ lazyAPI.base.remove_alternative_prototype = function(prototype, alt_prototype)
 	local _, removed_count = remove_from_array(__all_alternative_prototypes, prot, alt_prototype)
 	if removed_count > 0 then
 		notify_removed_alternative_prototype(prot, alt_prototype)
+		for _, v in pairs(__all_alternative_prototypes[prot]) do
+			_, removed_count = remove_from_array(__all_alternative_prototypes, v, alt_prototype)
+			if removed_count > 0 then
+				notify_removed_alternative_prototype(v, alt_prototype)
+			end
+		end
 	end
 	return prototype
 end
