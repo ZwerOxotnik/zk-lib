@@ -14,6 +14,7 @@ ZKSettings.title_color = "green"
 ZKSettings.note_color = "gray"
 
 
+local Version = require("static-libs/lualibs/version")
 local Locale = require("static-libs/lualibs/locale")
 ZKSettings.array_to_locale = Locale.array_to_locale
 ZKSettings.array_to_locale_as_new = Locale.array_to_locale_as_new
@@ -151,7 +152,9 @@ ZKSettings.create_setting = function(name, _type, setting_type, default_value, s
 
 	data:extend({setting_data})
 	ZKSettings.remember_setting(setting_data)
-	ZKSettings.show_default_value(setting_data)
+	if Version.get_mod_version("base") < Version.string_to_version("1.1.61") then
+		ZKSettings.show_default_value(setting_data)
+	end
 	setting_data.localised_description = ZKSettings.get_description_localization(setting_data)
 	return setting_data
 end
