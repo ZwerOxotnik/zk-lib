@@ -7,8 +7,8 @@
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 
 
-local type, table, rawget, rawset, log = type, table, rawget, rawset, log -- There's a chance something overwrite it
-local debug, error = debug, error -- I'm pretty sure, some mod did overwrite it
+local type, table, rawget, rawset = type, table, rawget, rawset -- There's a chance something overwrite it
+local debug, error, log = debug, error, log -- I'm pretty sure, some mod did overwrite it
 ---@diagnostic disable-next-line: undefined-field
 local deepcopy = table.deepcopy
 local tremove = table.remove
@@ -285,15 +285,14 @@ local listeners = {
 	remove_prototype = {},
 	rename_prototype = {},
 	on_new_prototype = {},
-	on_new_prototype_via_lazyAPI = {}
+	on_new_prototype_via_lazyAPI = {},
+	new_alternative_prototype = {},
+	removed_alternative_prototype = {}
 }
-local subscriptions = {
-	pre_remove_prototype = {},
-	remove_prototype = {},
-	rename_prototype = {},
-	on_new_prototype = {},
-	on_new_prototype_via_lazyAPI = {}
-}
+local subscriptions = {}
+for k in pairs(listeners) do
+	subscriptions[k] = {}
+end
 
 
 -- lazyAPI.format_special_symbols(string): string
@@ -310,7 +309,7 @@ local subscriptions = {
 -- lazyAPI.merge_locales(...): table
 -- lazyAPI.merge_locales_as_new(...): table
 -- lazyAPI.string_to_version(str): integer | lazyAPI.string_to_version()
--- lazyAPI.get_mod_version(mod_name): integer | lazyAPI.get_mod_version()
+-- lazyAPI.get_mod_version(mod_name): integer? | lazyAPI.get_mod_version()
 -- lazyAPI.remove_entity_from_action_delivery(action, action_delivery, entity_name)
 -- lazyAPI.remove_entity_from_action(action, entity_name)
 -- lazyAPI.get_barrel_recipes(name): recipe, recipe
@@ -357,17 +356,18 @@ local subscriptions = {
 -- lazyAPI.base.remove_prototype(prototype): prototype | lazyAPI.base.remove_prototype()
 -- lazyAPI.base.find_in_array(prototype, field, data): integer?
 -- lazyAPI.base.has_in_array(prototype, field, data): boolean
--- lazyAPI.base.remove_from_array(prototype, field, data): prototype
+-- lazyAPI.base.remove_from_array(prototype, field, data): prototype, integer
 -- lazyAPI.base.rename_in_array(prototype, field, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
--- lazyAPI.base.add_to_array(prototype, field, data): prototype
+-- lazyAPI.base.add_to_array(prototype, field, data): prototype, boolean
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
 -- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
 -- lazyAPI.base.is_cheat_prototype(prototype): boolean
 -- lazyAPI.base.get_alternative_prototypes(prototype): table[]?
--- lazyAPI.base.set_alternative_prototypes(prototype, alternative_prototypes)
--- lazyAPI.base.rawset_alternative_prototypes(prototype, alternative_prototypes)
--- lazyAPI.base.add_alternative_prototype(prototype, alternative_prototype)
--- lazyAPI.base.add_alternative_prototypes(prototype, alternative_prototypes)
+-- lazyAPI.base.set_alternative_prototypes(prototype, alternative_prototypes): prototype
+-- lazyAPI.base.rawset_alternative_prototypes(prototype, alternative_prototypes): prototype
+-- lazyAPI.base.add_alternative_prototype(prototype, alternative_prototype): prototype
+-- lazyAPI.base.add_alternative_prototypes(prototype, alternative_prototypes): prototype
+-- lazyAPI.base.remove_alternative_prototype(prototype, alternative_prototype): prototype
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -520,15 +520,14 @@ local subscriptions = {
 -- lazyAPI.tech.is_contiguous_tech(tech): boolean
 -- lazyAPI.tech.get_last_tech_level(tech): integer?
 -- lazyAPI.tech.get_last_valid_contiguous_tech_level(tech): integer?
--- lazyAPI.tech.remove_contiguous_techs(tech): tech
+-- lazyAPI.tech.remove_contiguous_techs(tech): technology?
 
 
 -- lazyAPI.mining_drill.find_resource_category(prototype, resource_category): integer?
 -- lazyAPI.mining_drill.add_resource_category(prototype, resource_category): prototype
 -- lazyAPI.mining_drill.remove_resource_category(prototype, resource_category): prototype
 -- lazyAPI.mining_drill.replace_resource_category(prototype, old_resource_category, new_resource_category): prototype
--- TODO: recheck code \/
--- lazyAPI.mining_drill.replace_resource_category_everywhere(prototype?, old_category, new_category): prototype?
+-- lazyAPI.mining_drill.replace_resource_category_everywhere(prototype, old_category, new_category): prototype
 
 
 -- lazyAPI.character.remove_armor(prototype, armor): prototype
@@ -593,6 +592,38 @@ lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 
 
+---@param prototype table
+---@param alt_prototype table
+local function notify_new_alternative_prototype(prototype, alt_prototype)
+	if subscriptions.new_alternative_prototype[prototype_type] then
+		for _, func in pairs(subscriptions.new_alternative_prototype[prototype_type]) do
+			func(prototype, alt_prototype)
+		end
+	end
+	if subscriptions.new_alternative_prototype.all then
+		for _, func in pairs(subscriptions.new_alternative_prototype.all) do
+			func(prototype, alt_prototype)
+		end
+	end
+end
+
+
+---@param prototype table
+---@param alt_prototype table
+local function notify_removed_alternative_prototype(prototype, alt_prototype)
+	if subscriptions.removed_alternative_prototype[prototype_type] then
+		for _, func in pairs(subscriptions.removed_alternative_prototype[prototype_type]) do
+			func(prototype, alt_prototype)
+		end
+	end
+	if subscriptions.removed_alternative_prototype.all then
+		for _, func in pairs(subscriptions.removed_alternative_prototype.all) do
+			func(prototype, alt_prototype)
+		end
+	end
+end
+
+
 ---@type table<string, integer>
 local memorized_versions = {}
 tmemoize(memorized_versions, Version.string_to_version)
@@ -605,13 +636,12 @@ lazyAPI.string_to_version = function(str)
 end
 
 ---@param mod_name string
----@return version
+---@return version?
 ---@overload fun()
 lazyAPI.get_mod_version = function(mod_name)
 	local str_version = mods[mod_name]
 	if str_version then
 		return memorized_versions(str_version)
-	---@diagnostic disable-next-line: missing-return
 	end
 end
 
@@ -740,7 +770,7 @@ local fix_messy_table = lazyAPI.fix_messy_table
 
 
 ---@param prototype table
----@param field string
+---@param field any
 ---@param data any
 ---@return integer? #index
 lazyAPI.base.find_in_array = function(prototype, field, data)
@@ -760,7 +790,7 @@ local find_in_array = lazyAPI.base.find_in_array
 
 
 ---@param prototype table
----@param field string
+---@param field any
 ---@param data any
 ---@return boolean
 lazyAPI.base.has_in_array = function(prototype, field, data)
@@ -781,37 +811,37 @@ local has_in_array = lazyAPI.base.has_in_array
 
 
 ---@param prototype table
----@param field string
+---@param field any
 ---@param data any
----@return table prototype
+---@return table prototype, integer removed_count
 ---@overload fun(nil, ...)
 lazyAPI.base.remove_from_array = function(prototype, field, data)
-	---@diagnostic disable-next-line: missing-return
-	if prototype == nil then return end
+	if prototype == nil then return nil, 0 end
 	if data == nil then error("data is nil") end
 	if field == nil then error("field is nil") end
 	local array = (prototype.prototype or prototype)[field]
-	if array == nil then return prototype end
+	if array == nil then return prototype, 0 end
 
 	fix_array(array)
+	local removed_count = 0
 	for i=#array, 1, -1 do
 		if array[i] == data then
 			tremove(array, i)
+			removed_count = removed_count + 1
 		end
 	end
-	return prototype
+	return prototype, removed_count
 end
 local remove_from_array = lazyAPI.base.remove_from_array
 
 
 ---@param prototype table
----@param field string
+---@param field any
 ---@param old_name string
 ---@param new_name string
 ---@return table prototype
 ---@overload fun(nil, ...)
 lazyAPI.base.rename_in_array = function(prototype, field, old_name, new_name)
-	---@diagnostic disable-next-line: missing-return
 	if prototype == nil then return end
 	if old_name == nil then error("old_name is nil") end
 	if new_name == nil then error("new_name is nil") end
@@ -833,7 +863,7 @@ local rename_in_array = lazyAPI.base.rename_in_array
 ---@param prototype table
 ---@param field any
 ---@param data any
----@return table prototype
+---@return table prototype, boolean
 lazyAPI.base.add_to_array = function(prototype, field, data)
 	if data == nil then error("data is nil") end
 	if field == nil then error("field is nil") end
@@ -841,24 +871,24 @@ lazyAPI.base.add_to_array = function(prototype, field, data)
 	local array = prot[field]
 	if array == nil then
 		prot[field] = {data}
-		return prototype
+		return prototype, true
 	end
 
 	fix_array(array)
 	for i=1, #array do
 		if array[i] == data then
-			return prototype
+			return prototype, false
 		end
 	end
 
 	array[#array+1] = data
-	return prototype
+	return prototype, true
 end
 local add_to_array = lazyAPI.base.add_to_array
 
 
 ---@param prototype table
----@param field string
+---@param field any
 ---@param old_data any
 ---@param new_data any
 ---@return table prototype
@@ -878,7 +908,7 @@ local replace_in_prototype = lazyAPI.base.replace_in_prototype
 
 
 ---@param prototypes table #https://wiki.factorio.com/data_raw or similar structure
----@param field string
+---@param field any
 ---@param old_data any
 ---@param new_data any
 ---@return table prototypes
@@ -932,49 +962,60 @@ end
 
 ---@param prototype table
 ---@param alt_prototypes table[]
+---@return table prototype
 lazyAPI.base.set_alternative_prototypes = function(prototype, alt_prototypes)
 	if type(alt_prototypes) ~= "table" then
 		error("lazyAPI.base.set_alternative_prototypes got incorrect data")
-		return
+		return prototype
 	end
 	local prot = prototype.prototype or prototype
 	__all_alternative_prototypes[prot] = {}
 	lazyAPI.base.add_alternative_prototypes(prototype, alt_prototypes)
+	return prototype
 end
 
 
 ---@param prototype table
 ---@param alt_prototypes table[]
+---@return table prototype
 lazyAPI.base.rawset_alternative_prototypes = function(prototype, alt_prototypes)
 	if type(alt_prototypes) ~= "table" then
 		error("lazyAPI.base.rawset_alternative_prototypes got incorrect data")
-		return
+		return prototype
 	end
 	local prot = prototype.prototype or prototype
 	fix_array(alt_prototypes)
 	__all_alternative_prototypes[prot] = alt_prototypes
+	return prototype
 end
 
 
 ---@param prototype table
 ---@param alt_prototype table
+---@return table prototype
 lazyAPI.base.add_alternative_prototype = function(prototype, alt_prototype)
 	if type(alt_prototype) ~= "table" then
 		error("lazyAPI.base.add_alternative_prototype got incorrect data")
-		return
+		return prototype
 	end
 	local prot = prototype.prototype or prototype
-	if prot == alt_prototype then return end
-	add_to_array(__all_alternative_prototypes, prot, alt_prototype)
+	if prot == alt_prototype then return prototype end
+	local _, is_new = add_to_array(__all_alternative_prototypes, prot, alt_prototype)
+	if is_new then
+		notify_new_alternative_prototype(prot, alt_prototype)
+	end
+	return prototype
+
 end
 
 
 ---@param prototype table
 ---@param alt_prototypes table[]
+---@return table prototype
 lazyAPI.base.add_alternative_prototypes = function(prototype, alt_prototypes)
 	if type(alt_prototypes) ~= "table" then
 		error("lazyAPI.base.add_alternative_prototypes got incorrect data")
-		return
+		return prototype
 	end
 	local prot = prototype.prototype or prototype
 	__all_alternative_prototypes[prot] = __all_alternative_prototypes[prot] or {}
@@ -983,19 +1024,49 @@ lazyAPI.base.add_alternative_prototypes = function(prototype, alt_prototypes)
 	for i=1, #alt_prototypes do
 		local alt_prototype = alt_prototypes[i]
 		if alt_prototype ~= prot then
-			add_to_array(__all_alternative_prototypes, prototype, alt_prototype)
-			add_to_array(__all_alternative_prototypes, alt_prototype, prototype)
+			local _, is_new = add_to_array(__all_alternative_prototypes, prot, alt_prototype)
+			if is_new then
+				notify_new_alternative_prototype(prot, alt_prototype)
+			end
+			_, is_new = add_to_array(__all_alternative_prototypes, alt_prototype, prot)
+			if is_new then
+				notify_new_alternative_prototype(alt_prototype, prot)
+			end
+
 			for j=1, #alt_prototypes do
-				local alternative_prototype2 = alt_prototypes[j]
-				if alternative_prototype2 ~= alt_prototype then
-					add_to_array(__all_alternative_prototypes, alt_prototype, alternative_prototype2)
+				local alt_prototype2 = alt_prototypes[j]
+				if alt_prototype2 ~= alt_prototype then
+					_, is_new = add_to_array(__all_alternative_prototypes, alt_prototype, alt_prototype2)
+					if is_new then
+						notify_new_alternative_prototype(alt_prototype, prot)
+					end
 				end
 			end
 		end
 	end
+
 	if #_alt_prototypes == 0 then
 		__all_alternative_prototypes[prot] = nil
 	end
+	return prototype
+end
+
+
+---@param prototype table
+---@param alt_prototype table
+---@return table prototype
+lazyAPI.base.remove_alternative_prototype = function(prototype, alt_prototype)
+	if type(alt_prototype) ~= "table" then
+		error("lazyAPI.base.remove_alternative_prototype got incorrect data")
+		return prototype
+	end
+	local prot = prototype.prototype or prototype
+	if prot == alt_prototype then return prototype end
+	local _, removed_count = remove_from_array(__all_alternative_prototypes, prot, alt_prototype)
+	if removed_count > 0 then
+		notify_removed_alternative_prototype(prot, alt_prototype)
+	end
+	return prototype
 end
 
 
@@ -2617,7 +2688,6 @@ end
 ---@return table prototype
 ---@overload fun()
 lazyAPI.base.remove_prototype = function(prototype)
-	---@diagnostic disable-next-line: missing-return
 	if prototype == nil then return end
 	local prot = prototype.prototype or prototype
 	local name = prot.name
@@ -3528,7 +3598,8 @@ end
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
 ---@return table prototype
 lazyAPI.flags.add_flag = function(prototype, flag)
-	return add_to_array(prototype, "flags", flag)
+	add_to_array(prototype, "flags", flag)
+	return prototype
 end
 
 
@@ -4856,7 +4927,8 @@ end
 ---@return table prototype
 lazyAPI.tech.add_prerequisite = function(prototype, tech)
 	local tech_name = (type(tech) == "string" and tech) or tech.name
-	return add_to_array(prototype, "prerequisites", tech_name)
+	add_to_array(prototype, "prerequisites", tech_name)
+	return prototype
 end
 
 
@@ -5003,9 +5075,16 @@ end
 
 
 ---@param tech string|table #https://wiki.factorio.com/Prototype/Technology or its name
----@return table tech
+---@return table? tech
 lazyAPI.tech.remove_contiguous_techs = function(tech)
-	local tech_name = (type(tech) == "string" and tech) or tech.name
+	local tech_name
+	if type(tech) == "string" then
+		tech_name = tech
+		tech = technologies[tech_name]
+	else
+		tech_name = tech.name
+	end
+
 	local main_name, tech_level = tech_name:match("^(.+)%-(%d+)$")
 	if tech_level then
 		tech_level = tonumber(tech_level)
@@ -5070,7 +5149,8 @@ end
 ---@return table prototype
 lazyAPI.mining_drill.add_resource_category = function(prototype, resource_category)
 	local resource_category_name = (type(resource_category) == "string" and resource_category) or resource_category.name
-	return add_to_array(prototype, "resource_categories", resource_category_name)
+	add_to_array(prototype, "resource_categories", resource_category_name)
+	return prototype
 end
 
 
@@ -5085,10 +5165,10 @@ end
 
 
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
----@param prototype? table
+---@param prototype table
 ---@param old_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
 ---@param new_category string #Name of https://wiki.factorio.com/Prototype/ResourceCategory
----@return table prototype?
+---@return table prototype
 lazyAPI.mining_drill.replace_resource_category_everywhere = function(prototype, old_category, new_category)
 	replace_in_prototypes(prototype, "resource_categories", old_category, new_category)
 	return prototype
