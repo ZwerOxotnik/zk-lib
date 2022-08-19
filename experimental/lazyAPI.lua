@@ -1038,7 +1038,7 @@ lazyAPI.base.add_alternative_prototypes = function(prototype, alt_prototypes)
 				if alt_prototype2 ~= alt_prototype then
 					_, is_new = add_to_array(__all_alternative_prototypes, alt_prototype, alt_prototype2)
 					if is_new then
-						notify_new_alternative_prototype(alt_prototype, prot)
+						notify_new_alternative_prototype(alt_prototype, alt_prototype2)
 					end
 				end
 			end
