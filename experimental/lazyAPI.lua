@@ -985,6 +985,13 @@ lazyAPI.base.rawset_alternative_prototypes = function(prototype, alt_prototypes)
 	end
 	local prot = prototype.prototype or prototype
 	fix_array(alt_prototypes)
+	for i=1, #alt_prototypes do
+		local alt_prototype = alt_prototypes[i]
+		if prot.type ~= alt_prototype.type then
+			error("Expected \"" .. prot.type .. "\" type for \"" .. alt_prototype.name  .. "\" prototype")
+			return prototype
+		end
+	end
 	__all_alternative_prototypes[prot] = alt_prototypes
 	return prototype
 end
@@ -1000,6 +1007,10 @@ lazyAPI.base.add_alternative_prototype = function(prototype, alt_prototype)
 	end
 	local prot = prototype.prototype or prototype
 	if prot == alt_prototype then return prototype end
+	if prot.type ~= alt_prototype.type then
+		error("Expected \"" .. prot.type .. "\" type for \"" .. alt_prototype.name  .. "\" prototype")
+		return prototype
+	end
 	local _, is_new = add_to_array(__all_alternative_prototypes, prot, alt_prototype)
 	if is_new then
 		notify_new_alternative_prototype(prot, alt_prototype)
@@ -1024,6 +1035,10 @@ lazyAPI.base.add_alternative_prototypes = function(prototype, alt_prototypes)
 	for i=1, #alt_prototypes do
 		local alt_prototype = alt_prototypes[i]
 		if alt_prototype ~= prot then
+			if prot.type ~= alt_prototype.type then
+				error("Expected \"" .. prot.type .. "\" type for \"" .. alt_prototype.name  .. "\" prototype")
+				return prototype
+			end
 			local _, is_new = add_to_array(__all_alternative_prototypes, prot, alt_prototype)
 			if is_new then
 				notify_new_alternative_prototype(prot, alt_prototype)
