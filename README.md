@@ -71,8 +71,12 @@
 `local basexx = require("__zk-lib__/lualib/basexx")`
 - [bitwise](/lualib/bitwise.lua) - Bitwise operations. ([source](https://github.com/davidm/lua-bit-numberlua/blob/master/lmod/bit/numberlua.lua))\
 `local bitwise = require("__zk-lib__/lualib/bitwise")`
-- [fun](/lualib/fun.lua) - a high-performance functional programming library ([documentation](https://luafun.github.io/), [source](https://github.com/luafun/luafun/blob/master/fun.lua))\
+- [fun](/lualib/fun.lua) - a functional programming library ([documentation](https://luafun.github.io/), [source](https://github.com/luafun/luafun/blob/master/fun.lua))\
 `local fun = require("__zk-lib__/lualib/fun")` or `require "__zk-lib__/lualib/fun" ()`
+- [candran](/lualib/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran)) (**WARNING: this modified version has some bugs and some fuctions were removed due to technical limitations, please report in this repository if you have any issues with it**)\
+`local candran = require("__zk-lib__/lualib/candran/candran")`
+- [LuLPeg](/lualib/LuLPeg) - A port of LPeg 100% written in Lua. ([source](https://github.com/pygy/LuLPeg)) (use with cautious)\
+`local lpeg = require("__zk-lib__/lualib/LuLPeg/lulpeg")`
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 
