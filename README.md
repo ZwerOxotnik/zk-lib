@@ -73,10 +73,15 @@
 `local bitwise = require("__zk-lib__/lualib/bitwise")`
 - [fun](/lualib/fun.lua) - a functional programming library ([documentation](https://luafun.github.io/), [source](https://github.com/luafun/luafun/blob/master/fun.lua))\
 `local fun = require("__zk-lib__/lualib/fun")` or `require "__zk-lib__/lualib/fun" ()`
-- [candran](/lualib/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran)) (**WARNING: this modified version has some bugs and some fuctions were removed due to technical limitations, please report in this repository if you have any issues with it**)\
+- [candran](/lualib/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran/tree/1e118381f8276fe66a2cad02f1b9f4535e7e253e)) (**WARNING:** this modified version has some bugs and some functions were removed due to technical limitations, please report in this repository if you have any issues with it)\
 `local candran = require("__zk-lib__/lualib/candran/candran")`
-- [LuLPeg](/lualib/LuLPeg) - A port of LPeg 100% written in Lua. ([source](https://github.com/pygy/LuLPeg)) (use with cautious)\
+- [LuLPeg](/lualib/LuLPeg) - A port of LPeg 100% written in Lua. ([source](https://github.com/pygy/LuLPeg/tree/f07f5be09d0461b1e83a8f811ca2c9cb79a69ab2)) (use with cautious)\
 `local lpeg = require("__zk-lib__/lualib/LuLPeg/lulpeg")`
+- [Luxtre](/lualib/luxtre/) is a fully portable dialect of Lua 5.2 which compiles back into native code, written entirely in native Lua. It adds helpful additions and changes to Lua's default syntax and enables useful macros and preprocessing. ([source](https://github.com/DimitriBarronmore/luxtre/tree/d16ac671a4a9dd3f900e7cba86f0d45321322881)) (not fully tested, can't be used outside of control.lua parsing yet)\
+`local luxtre = require("__zk-lib__/lualib/luxtre/init")`
+- [lal](/lualib/lal/) is the implementation of a Compiler for a Scheme like dialect of Lisp that compiles to Lua. ([source](https://github.com/WeirdConstructor/lal/tree/38aaa0c426a9b52cd8d74d375f9a11e117be2007)) (expect bugs (I should fix some of them), can't be used outside of control.lua parsing yet)\
+`# FAIL LAL-Compiler (74 OF 82 OK, 82 of 82 were run)`\
+`local lal = require("__zk-lib__/lualib/lal/lal")`
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 

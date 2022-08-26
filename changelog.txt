@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.1
+Date: 26. 08. 2022
+  Scripting:
+    - Added new libraries: "lal", "luxtre" see GitHub repository for details
+---------------------------------------------------------------------------------------------------
 Version: 0.11.0
 Date: 24. 08. 2022
   Changes:
@@ -6,9 +11,9 @@ Date: 24. 08. 2022
   Scripting:
     - Improved "lazyAPI" library and fixed several bugs
     - Added libraries:
-    - candran (/lualib/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran)) (WARNING: this modified version has some bugs and some fuctions were removed due to technical limitations, please report in this repository if you have any issues with it)
+    - candran (/lualib/candran.lua) - a Lua dialect and simple preprocessor (https://github.com/Reuh/candran) (WARNING: this modified version has some bugs and some fuctions were removed due to technical limitations, please report in this repository if you have any issues with it)
     - `local candran = require("__zk-lib__/lualib/candran/candran")`
-    - LuLPeg (/lualib/LuLPeg) - A port of LPeg 100% written in Lua. ([source](https://github.com/pygy/LuLPeg)) (use with cautious)
+    - LuLPeg (/lualib/LuLPeg) - A port of LPeg 100% written in Lua. (https://github.com/pygy/LuLPeg) (use with cautious)
     - `local lpeg = require("__zk-lib__/lualib/LuLPeg/lulpeg")`
   Translation:
     - Added partially Catalan translation (thanks to @J0anJosep (Joan Josep Navarro) on crowdin)
