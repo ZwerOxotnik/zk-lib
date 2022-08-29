@@ -83,7 +83,9 @@
 `# FAIL LAL-Compiler (74 OF 82 OK, 82 of 82 were run)`\
 `local lal = require("__zk-lib__/lualib/lal/lal")`
 - [tl](/lualib/tl/) is compiler for Teal, a typed dialect of Lua. ([tutorial](https://github.com/teal-language/tl/blob/v0.14.1/docs/tutorial.md), [source](https://github.com/teal-language/tl/tree/v0.14.1)) (not fully tested)\
-`tl = require("__zk-lib__/lualib/tl/0.14.1/tl")`
+`local tl = require("__zk-lib__/lualib/tl/0.14.1/tl")`
+- [moonscript](/lualib/moonscript/) is a programmer friendly language that compiles into Lua. ([source](https://github.com/leafo/moonscript/tree/b7efcd131046ed921ae1075d7c0f6a3b64a570f7)) (not fully tested, can't be used outside of control.lua parsing **yet**)\
+`local moonscript = require("__zk-lib__/lualib/moonscript/base")`
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 
