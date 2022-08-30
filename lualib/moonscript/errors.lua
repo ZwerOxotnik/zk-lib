@@ -1,12 +1,8 @@
-local util = require("__zk-lib__/lualib/moonscript/util")
+local __util = require("__zk-lib__/lualib/moonscript/util")
 local lpeg = require("__zk-lib__/lualib/LuLPeg/lulpeg")
-local concat, insert
-do
-  local _obj_0 = table
-  concat, insert = _obj_0.concat, _obj_0.insert
-end
+local concat, insert = table.concat, table.insert
 local split, pos_to_line
-split, pos_to_line = util.split, util.pos_to_line
+split, pos_to_line = __util.split, __util.pos_to_line
 local user_error
 user_error = function(...)
   return error({

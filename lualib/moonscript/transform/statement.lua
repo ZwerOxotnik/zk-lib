@@ -1,3 +1,4 @@
+local __Value = require("__zk-lib__/lualib/moonscript/transform/value")
 local Transformer
 Transformer = require("__zk-lib__/lualib/moonscript/transform/transformer").Transformer
 local NameProxy, LocalName, is_name_proxy
@@ -180,8 +181,7 @@ return Transformer({
       return implicitly_return(self)(ret_val)
     end
     if ret_val_type == "chain" or ret_val_type == "comprehension" or ret_val_type == "tblcomprehension" then
-      local Value = require("__zk-lib__/lualib/moonscript/transform/value")
-      ret_val = Value:transform_once(self, ret_val)
+      ret_val = __Value:transform_once(self, ret_val)
       if ntype(ret_val) == "block_exp" then
         return build.group(transform_last_stm(ret_val[2], function(stm)
           return {
@@ -240,8 +240,7 @@ return Transformer({
       local first_name = names[1]
       local first_type = ntype(first_value)
       if first_type == "chain" then
-        local Value = require("__zk-lib__/lualib/moonscript/transform/value")
-        first_value = Value:transform_once(self, first_value)
+        first_value = __Value:transform_once(self, first_value)
         first_type = ntype(first_value)
       end
       local _exp_0 = ntype(first_value)
@@ -262,8 +261,7 @@ return Transformer({
           }
         })
       elseif "comprehension" == _exp_0 or "tblcomprehension" == _exp_0 or "foreach" == _exp_0 or "for" == _exp_0 or "while" == _exp_0 then
-        local Value = require("__zk-lib__/lualib/moonscript/transform/value")
-        return build.assign_one(first_name, Value:transform_once(self, first_value))
+        return build.assign_one(first_name, __Value:transform_once(self, first_value))
       else
         values[1] = first_value
       end

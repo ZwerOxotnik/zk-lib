@@ -4,13 +4,9 @@ lpeg.setmaxstack(10000)
 local err_msg = "Failed to parse:%s\n [%d] >>    %s"
 local Stack
 Stack = require("__zk-lib__/lualib/moonscript/data").Stack
-local trim, pos_to_line, get_line
-do
-  local _obj_0 = require("__zk-lib__/lualib/moonscript/util")
-  trim, pos_to_line, get_line = _obj_0.trim, _obj_0.pos_to_line, _obj_0.get_line
-end
-local unpack
-unpack = require("__zk-lib__/lualib/moonscript/util").unpack
+local MUtil = require("__zk-lib__/lualib/moonscript/util")
+local trim, pos_to_line, get_line = MUtil.trim, MUtil.pos_to_line, MUtil.get_line
+local unpack = MUtil.unpack
 local wrap_env
 wrap_env = require("__zk-lib__/lualib/moonscript/parse/env").wrap_env
 local R, S, V, P, C, Ct, Cmt, Cg, Cb, Cc

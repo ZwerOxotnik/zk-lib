@@ -4,11 +4,7 @@ local ntype
 ntype = require("__zk-lib__/lualib/moonscript/types").ntype
 local user_error
 user_error = require("__zk-lib__/lualib/moonscript/errors").user_error
-local concat, insert
-do
-  local _obj_0 = table
-  concat, insert = _obj_0.concat, _obj_0.insert
-end
+local concat, insert = table.concat, table.insert
 local unpack
 unpack = util.unpack
 local table_delim = ","

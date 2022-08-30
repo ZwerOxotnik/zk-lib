@@ -1,11 +1,8 @@
 local safe_module
 safe_module = require("__zk-lib__/lualib/moonscript/util").safe_module
-local S, P, R, C
-do
-  local _obj_0 = require("__zk-lib__/lualib/LuLPeg/lulpeg")
-  S, P, R, C = _obj_0.S, _obj_0.P, _obj_0.R, _obj_0.C
-end
 local lpeg = require("__zk-lib__/lualib/LuLPeg/lulpeg")
+local S, P, R, C
+S, P, R, C = lpeg.S, lpeg.P, lpeg.R, lpeg.C
 local L = lpeg.luversion and lpeg.L or function(v)
   return #v
 end

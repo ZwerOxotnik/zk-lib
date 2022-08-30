@@ -1,10 +1,6 @@
 local ntype
 ntype = require("__zk-lib__/lualib/moonscript/types").ntype
-local concat, insert
-do
-  local _obj_0 = table
-  concat, insert = _obj_0.concat, _obj_0.insert
-end
+local concat, insert = table.concat, table.insert
 local unpack
 unpack = require("__zk-lib__/lualib/moonscript/util").unpack
 return {

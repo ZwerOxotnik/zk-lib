@@ -54,8 +54,7 @@ value_can_be_statement = function(node)
 end
 local is_value
 is_value = function(stm)
-	-- TODO: change it to make it compile on the control stage!
-  return require("__zk-lib__/lualib/moonscript/compile").Block:is_value(stm) or require("__zk-lib__/lualib/moonscript/transform/value"):can_transform(stm)
+  return package.loaded["__zk-lib__/lualib/moonscript/compile"].Block:is_value(stm) or package.loaded["__zk-lib__/lualib/moonscript/transform/value"]:can_transform(stm)
 end
 local value_is_singular
 value_is_singular = function(node)

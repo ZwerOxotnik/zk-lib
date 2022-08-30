@@ -1,13 +1,14 @@
-local util = require("__zk-lib__/lualib/moonscript/util")
+local __util = require("__zk-lib__/lualib/moonscript/util")
 local dump = require("__zk-lib__/lualib/moonscript/dump")
 local transform = require("__zk-lib__/lualib/moonscript/transform")
+local __data = require("__zk-lib__/lualib/moonscript/data")
 local NameProxy, LocalName
 do
   local _obj_0 = require("__zk-lib__/lualib/moonscript/transform/names")
   NameProxy, LocalName = _obj_0.NameProxy, _obj_0.LocalName
 end
 local Set
-Set = require("__zk-lib__/lualib/moonscript/data").Set
+Set = __data.Set
 local ntype, value_can_be_statement
 do
   local _obj_0 = require("__zk-lib__/lualib/moonscript/types")
@@ -15,14 +16,10 @@ do
 end
 local statement_compilers = require("__zk-lib__/lualib/moonscript/compile/statement")
 local value_compilers = require("__zk-lib__/lualib/moonscript/compile/value")
-local concat, insert
-do
-  local _obj_0 = table
-  concat, insert = _obj_0.concat, _obj_0.insert
-end
+local concat, insert = table.concat, table.insert
 local pos_to_line, get_closest_line, trim, unpack
-pos_to_line, get_closest_line, trim, unpack = util.pos_to_line, util.get_closest_line, util.trim, util.unpack
-local mtype = util.moon.type
+pos_to_line, get_closest_line, trim, unpack = __util.pos_to_line, __util.get_closest_line, __util.trim, __util.unpack
+local mtype = __util.moon.type
 local indent_char = "  "
 local Line, DelayedLine, Lines, Block, RootBlock
 do
@@ -123,7 +120,7 @@ do
           return t
         end
       end
-      return "Lines<" .. tostring(util.dump(strip(self)):sub(1, -2)) .. ">"
+      return "Lines<" .. tostring(__util.dump(strip(self)):sub(1, -2)) .. ">"
     end
   }
   _base_0.__index = _base_0
@@ -205,7 +202,7 @@ do
       return buffer
     end,
     __tostring = function(self)
-      return "Line<" .. tostring(util.dump(self):sub(1, -2)) .. ">"
+      return "Line<" .. tostring(__util.dump(self):sub(1, -2)) .. ">"
     end
   }
   _base_0.__index = _base_0
@@ -716,7 +713,7 @@ tree = function(tree, options)
       if "user-error" == _exp_0 or "compile-error" == _exp_0 then
         error_msg, error_pos = unpack(err, 2)
       else
-        error_msg, error_pos = error("Unknown error thrown", util.dump(error_msg))
+        error_msg, error_pos = error("Unknown error thrown", __util.dump(error_msg))
       end
     else
       error_msg, error_pos = concat({
@@ -731,13 +728,12 @@ tree = function(tree, options)
   return lua_code, posmap
 end
 do
-  local data = require("__zk-lib__/lualib/moonscript/data")
   for name, cls in pairs({
     Line = Line,
     Lines = Lines,
     DelayedLine = DelayedLine
   }) do
-    data[name] = cls
+    __data[name] = cls
   end
 end
 return {
