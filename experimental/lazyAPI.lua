@@ -348,6 +348,7 @@ end
 -- lazyAPI.is_product_valid(product): boolean
 -- lazyAPI.find_prototypes_by_product(product): table[]?
 -- lazyAPI.make_fake_simple_entity_with_owner(prototype)
+-- lazyAPI.find_prototypes_filtered(prototype_filter): table[]
 
 -- lazyAPI.base.does_exist(prototype): boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
@@ -1016,7 +1017,6 @@ lazyAPI.base.add_alternative_prototype = function(prototype, alt_prototype)
 		notify_new_alternative_prototype(prot, alt_prototype)
 	end
 	return prototype
-
 end
 
 
@@ -2646,6 +2646,311 @@ lazyAPI.make_fake_simple_entity_with_owner = function(prototype)
   prototype.picture = prototype.base_picture -- TODO: check
   prototype.base_picture = nil
   prototype.base_render_layer = nil -- TODO: check
+end
+
+
+---@class prototype_filter
+---@field type string|string[]?
+---@field name string|string[]?
+---@field limit integer?
+---@field invert boolean? #Whether the filters should be inverted
+
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_names = function(prototype_filter, results)
+	local target_names = prototype_filter.name
+	---@cast target_names string[]
+	if prototype_filter.invert then
+		for _, prototypes in (data_raw) do
+			for _, prototype in (prototypes) do
+				if not has_in_array(prototype_filter, "name", prototype.name) then
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return
+					end
+				end
+			end
+		end
+	else
+		for _, prototypes in (data_raw) do
+			for _, prototype_name in (target_names) do
+				local prototype = prototypes[prototype_name]
+				if prototype then
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return
+					end
+				end
+			end
+		end
+	end
+end
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_types_and_names = function(prototype_filter, results)
+	local target_types = prototype_filter.type
+	---@cast target_types string[]
+	local target_names = prototype_filter.name
+	---@cast target_names string[]
+	if prototype_filter.invert then
+		for _type, prototypes in (data_raw) do
+			if not has_in_array(prototype_filter, "type", _type) then
+				for _, prototype in (prototypes) do
+					if not has_in_array(target_names, "name", prototype.name) then
+						results[#results+1] = prototype
+						if prototype_filter.limit and #results >= prototype_filter.limit then
+							return
+						end
+					end
+				end
+			end
+		end
+	else
+		for _, _type in (target_types) do
+			for _, prototypes in (data_raw[_type]) do
+				for _, prototype in (prototypes) do
+					if has_in_array(target_names, "name", prototype.name) then -- TODO: improve
+						results[#results+1] = prototype
+						if prototype_filter.limit and #results >= prototype_filter.limit then
+							return
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_types_and_name = function(prototype_filter, results)
+	local target_types = prototype_filter.type
+	---@cast target_types string[]
+	local target_name = prototype_filter.name
+	---@cast target_name string
+	if prototype_filter.invert then
+		for _type, prototypes in (data_raw) do
+			if not has_in_array(prototype_filter, "type", _type) then
+				for _, prototype in (prototypes) do
+					if prototype.name ~= target_name then
+						results[#results+1] = prototype
+						if prototype_filter.limit and #results >= prototype_filter.limit then
+							return
+						end
+					end
+				end
+			end
+		end
+	else
+		for _, _type in (target_types) do
+			for _, prototypes in (data_raw[_type]) do
+				local prototype = prototypes[target_name]
+				if prototype then
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return
+					end
+				end
+			end
+		end
+	end
+end
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_types = function(prototype_filter, results)
+	local target_types = prototype_filter.type
+	---@cast target_types string[]
+	if prototype_filter.invert then
+		for _type, prototypes in (data_raw) do
+			if not has_in_array(prototype_filter, "type", _type) then
+				for _, prototype in (prototypes) do
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return
+					end
+				end
+			end
+		end
+	else
+		for _, _type in (target_types) do
+			for _, prototypes in (data_raw[_type]) do
+				for _, prototype in (prototypes) do
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return
+					end
+				end
+			end
+		end
+	end
+end
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_name = function(prototype_filter, results)
+	local target_name = prototype_filter.name
+	---@cast target_name string
+	if prototype_filter.invert then
+		for _, prototypes in (data_raw) do
+			for _, prototype in (prototypes) do
+				if prototype.name ~= target_name then
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return
+					end
+				end
+			end
+		end
+	else
+		for _, prototypes in (data_raw) do
+			local prototype = prototypes[target_name]
+			if prototype then
+				results[#results+1] = prototype
+				if prototype_filter.limit and #results >= prototype_filter.limit then
+					return
+				end
+			end
+		end
+	end
+end
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_type_and_names = function(prototype_filter, results)
+	local target_type = prototype_filter.type
+	---@cast target_type string
+	local target_names = prototype_filter.name
+	---@cast target_names string[]
+	if prototype_filter.invert then
+		for _type, prototypes in (data_raw) do
+			if _type ~= target_type then
+				for _, prototype in (prototypes) do
+					if not has_in_array(prototype_filter, "name", prototype.name) then
+						results[#results+1] = prototype
+						if prototype_filter.limit and #results >= prototype_filter.limit then
+							return
+						end
+					end
+				end
+			end
+		end
+		return
+	end
+	for _, prototypes in (data_raw[target_type]) do
+		for _, prototype_name in (target_names) do
+			local prototype = prototypes[prototype_name]
+			if prototype then
+				results[#results+1] = prototype
+				if prototype_filter.limit and #results >= prototype_filter.limit then
+					return
+				end
+			end
+		end
+	end
+end
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_type_and_name = function(prototype_filter, results)
+	local target_type = prototype_filter.type
+	---@cast target_type string
+	local target_name = prototype_filter.name
+	---@cast target_name string
+	if prototype_filter.invert then
+		for _type, prototypes in (data_raw) do
+			if _type ~= target_type then
+				for _, prototype in (prototypes) do
+					if prototype.name ~= target_name then
+						results[#results+1] = prototype
+						if prototype_filter.limit and #results >= prototype_filter.limit then
+							return
+						end
+					end
+				end
+			end
+		end
+		return
+	end
+	local prototypes = data_raw[target_type]
+	if prototypes == nil then return end
+	local prototype = prototypes[target_name]
+	if prototype == nil then return end
+	results[#results+1] = prototype
+end
+
+---@param prototype_filter prototype_filter
+---@param results table
+local find_prototypes_by_type = function(prototype_filter, results)
+	local target_type = prototype_filter.type
+	---@cast target_type string
+	if prototype_filter.invert then
+		for _type, prototypes in (data_raw) do
+			if _type ~= target_type then
+				for _, prototype in (prototypes) do
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return results
+					end
+				end
+			end
+		end
+	else
+		for _, prototypes in (data_raw[target_type]) do
+			for _, prototype in (prototypes) do
+				if prototype then
+					results[#results+1] = prototype
+					if prototype_filter.limit and #results >= prototype_filter.limit then
+						return results
+					end
+				end
+			end
+		end
+	end
+end
+
+
+---@param prototype_filter prototype_filter
+---@return table[]
+lazyAPI.find_prototypes_filtered = function(prototype_filter)
+	local results = {}
+	if prototype_filter.type then
+		if type(prototype_filter.type) == "table" then
+				find_prototypes_by_types_and_names(prototype_filter, results)
+			if type(prototype_filter.name) == "table" then
+				find_prototypes_by_types_and_name(prototype_filter, results)
+			elseif type(prototype_filter.name) == "string" then
+			else -- prototype_filter.name == nil
+				find_prototypes_by_types(prototype_filter, results)
+			end
+		else -- string
+			if type(prototype_filter.name) == "table" then
+				find_prototypes_by_type_and_names(prototype_filter, results)
+			elseif type(prototype_filter.name) == "string" then
+				find_prototypes_by_type_and_name(prototype_filter, results)
+			else -- prototype_filter.name == nil
+				find_prototypes_by_type(prototype_filter, results)
+			end
+		end
+	elseif prototype_filter.name then
+		if type(prototype_filter.name) == "table" then
+			find_prototypes_by_names(prototype_filter, results)
+		else -- string
+			find_prototypes_by_name(prototype_filter, results)
+		end
+	elseif not prototype_filter.invert then
+		for _, prototypes in (data_raw) do
+			for _, prototype in (prototypes) do
+				results[#results+1] = prototype
+				if prototype_filter.limit and #results >= prototype_filter.limit then
+					return results
+				end
+			end
+		end
+	end
+	return results
 end
 
 
