@@ -817,7 +817,7 @@ local has_in_array = lazyAPI.base.has_in_array
 ---@param field any
 ---@param data any
 ---@return table prototype, integer removed_count
----@overload fun(nil, ...)
+---@overload fun(): nil, integer
 lazyAPI.base.remove_from_array = function(prototype, field, data)
 	if prototype == nil then return nil, 0 end
 	if data == nil then error("data is nil") end
@@ -843,7 +843,7 @@ local remove_from_array = lazyAPI.base.remove_from_array
 ---@param old_name string
 ---@param new_name string
 ---@return table prototype
----@overload fun(nil, ...)
+---@overload fun()
 lazyAPI.base.rename_in_array = function(prototype, field, old_name, new_name)
 	if prototype == nil then return end
 	if old_name == nil then error("old_name is nil") end
