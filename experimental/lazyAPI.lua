@@ -64,6 +64,44 @@ lazyAPI.character = {}
 ---@type table<table, table[]>
 local __all_alternative_prototypes = {}
 
+lazyAPI.all_utility_sound_fields = {
+		"gui_click", "list_box_click", "build_small", "build_medium",
+    "build_large", "cannot_build", "build_blueprint_small",
+    "build_blueprint_medium", "build_blueprint_large", "deconstruct_small",
+		"deconstruct_medium", "deconstruct_big", "deconstruct_robot",
+    "rotated_small", "rotated_medium", "rotated_big", "axe_mining_ore",
+    "mining_wood", "axe_fighting", "alert_destroyed", "console_message",
+    "scenario_message", "new_objective", "game_lost", "game_won",
+		"metal_walking_sound", "research_completed", "default_manual_repair",
+		"crafting_finished", "inventory_click", "inventory_move",
+    "clear_cursor", "armor_insert", "armor_remove", "achievement_unlocked",
+    "wire_connect_pole", "wire_disconnect", "wire_pickup", "tutorial_notice",
+    "smart_pipette", "switch_gun", "picked_up_item",
+		"blueprint_selection_ended", "blueprint_selection_started",
+		"deconstruction_selection_started", "deconstruction_selection_ended",
+    "cancel_deconstruction_selection_started", "cancel_deconstruction_selection_ended",
+    "upgrade_selection_started", "upgrade_selection_ended",
+    "copy_activated", "cut_activated", "paste_activated",
+    "item_deleted", "entity_settings_pasted", "entity_settings_copied",
+    "item_spawned", "confirm", "undo", "drop_item", "rail_plan_start"
+}
+lazyAPI.all_sound_fields = {
+	"open_sound", "close_sound", "build_sound", "mined_sound",
+	"mining_sound", "rotated_sound", "vehicle_impact_sound",
+	"working_sound", "large_build_sound", "medium_build_sound",
+	"repair_sound", "sound", "close_sound", "animation_sound",
+	"activate_sound", "deactivate_sound", "walking_sound",
+	"alarm_sound", "clamps_off_sound", "clamps_on_sound",
+	"doors_sound", "flying_sound", "raise_rocket_sound",
+	"dying_sound", "folding_sound", "prepared_alternative_sound",
+	"prepared_sound", "preparing_sound", "starting_attack_sound",
+	"achievement_unlocked", "repairing_sound", "heartbeat",
+	"sound_no_fuel", "eat", "rotating_stopped_sound", "rotating_stopped_sound"
+}
+for _, sound_name in pairs(lazyAPI.all_utility_sound_fields) do
+	lazyAPI.all_sound_fields[#lazyAPI.all_sound_fields+1] = sound_name
+end
+
 lazyAPI.all_rolling_stocks = {
 	["artillery-wagon"] = data_raw["artillery"],
 	["cargo-wagon"] = data_raw["cargo-wagon"],
@@ -371,6 +409,7 @@ end
 -- lazyAPI.base.add_alternative_prototypes(prototype, alternative_prototypes): prototype
 -- lazyAPI.base.remove_alternative_prototype(prototype, alternative_prototype): prototype
 -- lazyAPI.base.copy_icons(to_prototype, from_prototype): to_prototype
+-- lazyAPI.base.copy_sounds(to_prototype, from_prototype): to_prototype
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -1106,9 +1145,36 @@ lazyAPI.base.copy_icons = function(to_prototype, from_prototype)
 	else
 		to_prot.icons = nil
 	end
+	if from_prot.dark_background_icons then
+		to_prot.dark_background_icons = table.deepcopy(from_prot.dark_background_icons)
+	else
+		to_prot.dark_background_icons = nil
+	end
+
+	to_prot.dark_background_icon = from_prot.dark_background_icon
 	to_prot.icon = from_prot.icon
 	to_prot.icon_size = from_prot.icon_size
 	to_prot.icon_mipmaps = from_prot.icon_mipmaps
+
+	return to_prototype
+end
+
+
+---@param to_prototype table
+---@param from_prototype table
+---@return table to_prototype
+lazyAPI.base.copy_sounds = function(to_prototype, from_prototype)
+	local to_prot = to_prototype.prototype or to_prototype
+	local from_prot = from_prototype.prototype or from_prototype
+	if to_prot == from_prot then return to_prototype end
+
+	for _, field_name in ipairs(lazyAPI.all_sound_fields) do
+		if from_prot[field_name] then
+			to_prot[field_name] = table.deepcopy(from_prot[field_name])
+		else
+			to_prot[field_name] = nil
+		end
+	end
 
 	return to_prototype
 end
