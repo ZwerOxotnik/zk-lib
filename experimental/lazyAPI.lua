@@ -7,7 +7,7 @@
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 
 
-local type, table, rawget, rawset = type, table, rawget, rawset -- There's a chance something overwrite it
+local type, table, rawget, rawset = type, table, rawget, rawset -- There's a chance something overwrites it
 local debug, error, log = debug, error, log -- I'm pretty sure, some mod did overwrite it
 ---@diagnostic disable-next-line: undefined-field
 local deepcopy = table.deepcopy
@@ -44,8 +44,6 @@ setmetatable(lazyAPI.tables_with_errors, {
 	end
 })
 
----@type table<table, table[]>
-local __all_alternative_prototypes = {}
 lazyAPI.base = {}
 lazyAPI.resistance = {}
 lazyAPI.ingredients = {}
@@ -62,6 +60,9 @@ lazyAPI.technology = lazyAPI.tech
 lazyAPI.mining_drill = {}
 lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
+
+---@type table<table, table[]>
+local __all_alternative_prototypes = {}
 
 lazyAPI.all_rolling_stocks = {
 	["artillery-wagon"] = data_raw["artillery"],
@@ -369,6 +370,7 @@ end
 -- lazyAPI.base.add_alternative_prototype(prototype, alternative_prototype): prototype
 -- lazyAPI.base.add_alternative_prototypes(prototype, alternative_prototypes): prototype
 -- lazyAPI.base.remove_alternative_prototype(prototype, alternative_prototype): prototype
+-- lazyAPI.base.copy_icons(to_prototype, from_prototype): to_prototype
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -1088,6 +1090,27 @@ lazyAPI.base.remove_alternative_prototype = function(prototype, alt_prototype)
 		end
 	end
 	return prototype
+end
+
+
+---@param to_prototype table
+---@param from_prototype table
+---@return table to_prototype
+lazyAPI.base.copy_icons = function(to_prototype, from_prototype)
+	local to_prot = to_prototype.prototype or to_prototype
+	local from_prot = from_prototype.prototype or from_prototype
+	if to_prot == from_prot then return to_prototype end
+
+	if from_prot.icons then
+		to_prot.icons = table.deepcopy(from_prot.icons)
+	else
+		to_prot.icons = nil
+	end
+	to_prot.icon = from_prot.icon
+	to_prot.icon_size = from_prot.icon_size
+	to_prot.icon_mipmaps = from_prot.icon_mipmaps
+
+	return to_prototype
 end
 
 
