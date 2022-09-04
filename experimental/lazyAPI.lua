@@ -18,6 +18,7 @@ local technologies = data_raw.technology
 local recipes = data_raw.recipe
 local modules = data_raw.module
 local mining_drills = data_raw["mining-drill"]
+
 ---@alias ingredient_type "item" | "fluid"
 ---@alias product_type ingredient_type
 ---@alias difficulty "normal" | "expensive"
@@ -85,11 +86,11 @@ lazyAPI.all_utility_sound_fields = {
     "item_deleted", "entity_settings_pasted", "entity_settings_copied",
     "item_spawned", "confirm", "undo", "drop_item", "rail_plan_start"
 }
-lazyAPI.all_sound_fields = {
+lazyAPI.all_common_sound_fields = {
 	"open_sound", "close_sound", "build_sound", "mined_sound",
 	"mining_sound", "rotated_sound", "vehicle_impact_sound",
 	"working_sound", "large_build_sound", "medium_build_sound",
-	"repair_sound", "sound", "close_sound", "animation_sound",
+	"repair_sound", "sound", "animation_sound",
 	"activate_sound", "deactivate_sound", "walking_sound",
 	"alarm_sound", "clamps_off_sound", "clamps_on_sound",
 	"doors_sound", "flying_sound", "raise_rocket_sound",
@@ -98,9 +99,201 @@ lazyAPI.all_sound_fields = {
 	"achievement_unlocked", "repairing_sound", "heartbeat",
 	"sound_no_fuel", "eat", "rotating_stopped_sound", "rotating_stopped_sound"
 }
+lazyAPI.all_sound_fields = {}
 for _, sound_name in pairs(lazyAPI.all_utility_sound_fields) do
 	lazyAPI.all_sound_fields[#lazyAPI.all_sound_fields+1] = sound_name
 end
+for _, sound_name in pairs(lazyAPI.all_common_sound_fields) do
+	lazyAPI.all_sound_fields[#lazyAPI.all_sound_fields+1] = sound_name
+end
+
+lazyAPI.all_spriteVariations_fields = {
+	"picture", "pictures", "integration", "burnt_patch_pictures",
+	"connection_patches_connected", "connection_patches_disconnected",
+	"heat_connection_patches_connected", "heat_connection_patches_disconnected",
+	"overlay"
+}
+lazyAPI.all_unique_sprite_fields = {"cursor_box"}
+lazyAPI.all_utility_animations_fields = {
+	"clouds", "arrow_button", "explosion_chart_visualization", "refresh_white"
+}
+lazyAPI.all_utility_sprite_fields = {
+	"center", "check_mark", "check_mark_white", "check_mark_green",
+	"check_mark_dark_green", "not_played_yet_green", "not_played_yet_dark_green",
+	"played_green", "played_dark_green", "close_fat", "close_white",
+	"close_black", "close_map_preview", "color_picker", "change_recipe",
+	"dropdown", "downloading", "downloading_white", "downloaded",
+	"downloaded_white", "equipment_grid", "expand_dots", "expand_dots_white",
+	"export", "import", "map", "map_exchange_string", "missing_mod_icon",
+	"not_available", "play", "stop", "preset", "refresh", "reset",
+	"reset_white", "shuffle", "station_name", "search_black", "search_white",
+	"sync_mods", "trash", "trash_white", "copy", "reassign", "warning",
+	"warning_white", "list_view", "grid_view", "reference_point", "mouse_cursor",
+	"mod_dependency_arrow", "add", "clone", "go_to_arrow", "pause",
+	"speed_down", "speed_up", "editor_speed_down", "editor_pause",
+	"editor_play", "editor_speed_up", "tick_once", "tick_sixty", "tick_custom",
+	"search_icon", "too_far", "shoot_cursor_green", "shoot_cursor_red",
+	"electricity_icon", "fuel_icon", "ammo_icon", "fluid_icon", "warning_icon",
+	"danger_icon", "destroyed_icon", "recharge_icon",
+	"too_far_from_roboport_icon", "pump_cannot_connect_icon",
+	"not_enough_repair_packs_icon", "not_enough_construction_robots_icon",
+	"no_building_material_icon", "no_storage_space_icon",
+	"electricity_icon_unplugged", "game_stopped_visualization",
+	"health_bar_green_pip", "health_bar_yellow_pip", "health_bar_red_pip",
+	"ghost_bar_pip", "bar_gray_pip", "shield_bar_pip", "hand", "hand_black",
+	"entity_info_dark_background", "medium_gui_arrow", "small_gui_arrow",
+	"light_medium", "light_small", "light_cone", "color_effect", "clock",
+	"default_ammo_damage_modifier_icon", "default_gun_speed_modifier_icon",
+	"default_turret_attack_modifier_icon", "hint_arrow_up", "hint_arrow_down",
+	"hint_arrow_right", "hint_arrow_left", "fluid_indication_arrow",
+	"fluid_indication_arrow_both_ways", "heat_exchange_indication",
+	"indication_arrow", "rail_planner_indication_arrow",
+	"rail_planner_indication_arrow_too_far", "rail_path_not_possible",
+	"indication_line", "short_indication_line", "short_indication_line_green",
+	"slot_icon_module", "slot_icon_module_black", "slot_icon_armor",
+	"slot_icon_armor_black", "slot_icon_gun", "slot_icon_gun_black",
+	"slot_icon_ammo", "slot_icon_ammo_black", "slot_icon_resource",
+	"slot_icon_resource_black", "slot_icon_fuel", "slot_icon_fuel_black",
+	"slot_icon_result", "slot_icon_result_black", "slot_icon_robot",
+	"slot_icon_robot_black", "slot_icon_robot_material",
+	"slot_icon_robot_material_black", "slot_icon_inserter_hand",
+	"slot_icon_inserter_hand_black", "upgrade_blueprint", "slot",
+	"equipment_slot", "equipment_collision", "battery", "green_circle",
+	"green_dot", "robot_slot", "set_bar_slot", "missing_icon",
+	"deconstruction_mark", "upgrade_mark", "confirm_slot", "export_slot",
+	"import_slot", "none_editor_icon", "cable_editor_icon",
+	"tile_editor_icon", "decorative_editor_icon", "resource_editor_icon",
+	"entity_editor_icon", "item_editor_icon", "force_editor_icon",
+	"clone_editor_icon", "scripting_editor_icon", "paint_bucket_icon",
+	"surface_editor_icon", "time_editor_icon", "cliff_editor_icon",
+	"brush_icon", "spray_icon", "cursor_icon", "area_icon", "line_icon",
+	"variations_tool_icon", "lua_snippet_tool_icon", "editor_selection",
+	"brush_square_shape", "brush_circle_shape", "player_force_icon",
+	"neutral_force_icon", "enemy_force_icon", "nature_icon",
+	"no_nature_icon", "multiplayer_waiting_icon", "spawn_flag",
+	"questionmark", "copper_wire", "green_wire", "red_wire",
+	"green_wire_hightlight", "red_wire_hightlight", "wire_shadow",
+	"and_or", "left_arrow", "right_arrow", "down_arrow", "enter",
+	"side_menu_blueprint_library_icon", "side_menu_production_icon",
+	"side_menu_bonus_icon", "side_menu_tutorials_icon",
+	"side_menu_train_icon", "side_menu_achievements_icon",
+	"side_menu_menu_icon", "side_menu_map_icon",
+	"side_menu_blueprint_library_hover_icon",
+	"side_menu_production_hover_icon", "side_menu_bonus_hover_icon",
+	"side_menu_tutorials_hover_icon", "side_menu_train_hover_icon",
+	"side_menu_achievements_hover_icon", "side_menu_menu_hover_icon",
+	"side_menu_map_hover_icon", "circuit_network_panel_black",
+	"circuit_network_panel_white", "logistic_network_panel_black",
+	"logistic_network_panel_white", "rename_icon_small_black",
+	"rename_icon_small_white", "rename_icon_normal",
+	"achievement_label_locked", "achievement_label_unlocked_off",
+	"achievement_label_unlocked", "achievement_label_failed",
+	"rail_signal_placement_indicator", "train_stop_placement_indicator",
+	"placement_indicator_leg", "grey_rail_signal_placement_indicator",
+	"grey_placement_indicator_leg", "logistic_radius_visualization",
+	"construction_radius_visualization", "track_button",
+	"show_logistics_network_in_map_view", "show_electric_network_in_map_view",
+	"show_turret_range_in_map_view", "show_pollution_in_map_view",
+	"show_train_station_names_in_map_view", "show_player_names_in_map_view",
+	"show_tags_in_map_view", "show_worker_robots_in_map_view",
+	"show_rail_signal_states_in_map_view", "show_recipe_icons_in_map_view",
+	"show_logistics_network_in_map_view_black",
+	"show_electric_network_in_map_view_black",
+	"show_turret_range_in_map_view_black", "show_pollution_in_map_view_black",
+	"show_train_station_names_in_map_view_black",
+	"show_player_names_in_map_view_black", "show_tags_in_map_view_black",
+	"show_worker_robots_in_map_view_black",
+	"show_rail_signal_states_in_map_view_black",
+	"show_recipe_icons_in_map_view_black", "train_stop_in_map_view",
+	"train_stop_disabled_in_map_view", "train_stop_full_in_map_view",
+	"custom_tag_in_map_view", "covered_chunk", "white_square", "white_mask",
+	"favourite_server_icon", "crafting_machine_recipe_not_unlocked",
+	"gps_map_icon", "custom_tag_icon", "underground_remove_belts",
+	"underground_remove_pipes", "underground_pipe_connection",
+	"ghost_cursor", "tile_ghost_cursor", "expand", "expand_dark",
+	"collapse", "collapse_dark", "status_working", "status_not_working",
+	"status_yellow", "gradient", "output_console_gradient",
+	"select_icon_black", "select_icon_white", "notification", "alert_arrow",
+	"technology_black", "technology_white",
+	"inserter_stack_size_bonus_modifier_icon",
+	"inserter_stack_size_bonus_modifier_constant",
+	"stack_inserter_capacity_bonus_modifier_icon",
+	"stack_inserter_capacity_bonus_modifier_constant",
+	"laboratory_speed_modifier_icon", "laboratory_speed_modifier_constant",
+	"character_logistic_slots_modifier_icon",
+	"character_logistic_slots_modifier_constant",
+	"character_logistic_trash_slots_modifier_icon",
+	"character_logistic_trash_slots_modifier_constant",
+	"maximum_following_robots_count_modifier_icon",
+	"maximum_following_robots_count_modifier_constant",
+	"worker_robot_speed_modifier_icon", "worker_robot_speed_modifier_constant",
+	"worker_robot_storage_modifier_icon",
+	"worker_robot_storage_modifier_constant",
+	"ghost_time_to_live_modifier_icon", "ghost_time_to_live_modifier_constant",
+	"turret_attack_modifier_icon", "turret_attack_modifier_constant",
+	"ammo_damage_modifier_icon", "ammo_damage_modifier_constant",
+	"give_item_modifier_icon", "give_item_modifier_constant",
+	"gun_speed_modifier_icon", "gun_speed_modifier_constant",
+	"unlock_recipe_modifier_icon", "unlock_recipe_modifier_constant",
+	"character_crafting_speed_modifier_icon",
+	"character_crafting_speed_modifier_constant",
+	"character_mining_speed_modifier_icon",
+	"character_mining_speed_modifier_constant",
+	"character_running_speed_modifier_icon",
+	"character_running_speed_modifier_constant",
+	"character_build_distance_modifier_icon",
+	"character_build_distance_modifier_constant",
+	"character_item_drop_distance_modifier_icon",
+	"character_item_drop_distance_modifier_constant",
+	"character_reach_distance_modifier_icon",
+	"character_reach_distance_modifier_constant",
+	"character_resource_reach_distance_modifier_icon",
+	"character_resource_reach_distance_modifier_constant",
+	"character_item_pickup_distance_modifier_icon",
+	"character_item_pickup_distance_modifier_constant",
+	"character_loot_pickup_distance_modifier_icon",
+	"character_loot_pickup_distance_modifier_constant",
+	"character_inventory_slots_bonus_modifier_icon", "character_inventory_slots_bonus_modifier_constant",
+	"deconstruction_time_to_live_modifier_icon", "deconstruction_time_to_live_modifier_constant",
+	"max_failed_attempts_per_tick_per_construction_queue_modifier_icon",
+	"max_failed_attempts_per_tick_per_construction_queue_modifier_constant",
+	"max_successful_attempts_per_tick_per_construction_queue_modifier_icon",
+	"max_successful_attempts_per_tick_per_construction_queue_modifier_constant", "character_health_bonus_modifier_icon",
+	"character_health_bonus_modifier_constant", "mining_drill_productivity_bonus_modifier_icon",
+	"mining_drill_productivity_bonus_modifier_constant", "train_braking_force_bonus_modifier_icon",
+	"train_braking_force_bonus_modifier_constant", "zoom_to_world_enabled_modifier_icon",
+	"zoom_to_world_enabled_modifier_constant", "zoom_to_world_ghost_building_enabled_modifier_icon",
+	"zoom_to_world_ghost_building_enabled_modifier_constant", "zoom_to_world_blueprint_enabled_modifier_icon",
+	"zoom_to_world_blueprint_enabled_modifier_constant", "zoom_to_world_deconstruction_planner_enabled_modifier_icon",
+	"zoom_to_world_deconstruction_planner_enabled_modifier_constant", "zoom_to_world_upgrade_planner_enabled_modifier_icon",
+	"zoom_to_world_upgrade_planner_enabled_modifier_constant", "zoom_to_world_selection_tool_enabled_modifier_icon",
+	"zoom_to_world_selection_tool_enabled_modifier_constant", "worker_robot_battery_modifier_icon",
+	"worker_robot_battery_modifier_constant", "laboratory_productivity_modifier_icon",
+	"laboratory_productivity_modifier_constant", "follower_robot_lifetime_modifier_icon",
+	"follower_robot_lifetime_modifier_constant", "artillery_range_modifier_icon", "artillery_range_modifier_constant",
+	"nothing_modifier_icon", "nothing_modifier_constant", "character_additional_mining_categories_modifier_icon",
+	"character_additional_mining_categories_modifier_constant", "character_logistic_requests_modifier_icon",
+	"character_logistic_requests_modifier_constant"
+}
+lazyAPI.all_common_sprite_fields = {
+	"picture", "pictures", "active_picture", "arrow_picture", "circle_picture",
+	"chart_picture", "shadow", "base_picture", "radius_visualisation_picture",
+	"sprite", "out_of_ammo_alert_icon", "hand_base_picture", "hand_base_shadow",
+	"hand_closed_picture", "hand_closed_shadow", "hand_open_picture",
+	"hand_open_shadow", "picture_off", "picture_on", "picture_safe",
+	"picture_set", "picture_set_enemy", "placeable_position_visualization",
+	"led_off", "led_on", "heat_lower_layer_picture", "lower_layer_picture",
+	"working_light_picture", "base", "base_patch", "base_day_sprite",
+	"base_front_sprite", "base_night_sprite", "door_back_sprite",
+	"door_front_sprite", "hole_light_sprite", "hole_sprite",
+	"red_lights_back_sprites", "red_lights_front_sprites",
+	"rocket_glow_overlay_sprite", "rocket_shadow_overlay_sprite",
+	"shadow_sprite", "rocket_glare_overlay_sprite", "rocket_shadow_sprite",
+	"rocket_sprite", "disabled_icon", "disabled_small_icon",
+	"icon", "small_icon", "picture", "hr_version", "layers", "texture",
+	"integration", "underground_remove_belts_sprite", "underground_sprite"
+}
+
 
 lazyAPI.all_rolling_stocks = {
 	["artillery-wagon"] = data_raw["artillery"],
@@ -410,6 +603,7 @@ end
 -- lazyAPI.base.remove_alternative_prototype(prototype, alternative_prototype): prototype
 -- lazyAPI.base.copy_icons(to_prototype, from_prototype): to_prototype
 -- lazyAPI.base.copy_sounds(to_prototype, from_prototype): to_prototype
+-- lazyAPI.base.copy_graphics(to_prototype, from_prototype): to_prototype
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -1140,6 +1334,7 @@ lazyAPI.base.copy_icons = function(to_prototype, from_prototype)
 	local from_prot = from_prototype.prototype or from_prototype
 	if to_prot == from_prot then return to_prototype end
 
+	-- Perhaps, I should copy icons from shortcut prototypes etc.
 	if from_prot.icons then
 		to_prot.icons = table.deepcopy(from_prot.icons)
 	else
@@ -1169,6 +1364,55 @@ lazyAPI.base.copy_sounds = function(to_prototype, from_prototype)
 	if to_prot == from_prot then return to_prototype end
 
 	for _, field_name in ipairs(lazyAPI.all_sound_fields) do
+		if from_prot[field_name] then
+			to_prot[field_name] = table.deepcopy(from_prot[field_name])
+		else
+			to_prot[field_name] = nil
+		end
+	end
+
+	return to_prototype
+end
+
+
+-- Perhaps, it works wrong
+---@param to_prototype table
+---@param from_prototype table
+---@return table to_prototype
+lazyAPI.base.copy_graphics = function(to_prototype, from_prototype)
+	local to_prot = to_prototype.prototype or to_prototype
+	local from_prot = from_prototype.prototype or from_prototype
+	if to_prot == from_prot then return to_prototype end
+
+	for _, field_name in ipairs(lazyAPI.all_common_sprite_fields) do
+		if from_prot[field_name] then
+			to_prot[field_name] = table.deepcopy(from_prot[field_name])
+		else
+			to_prot[field_name] = nil
+		end
+	end
+	for _, field_name in ipairs(lazyAPI.all_utility_sprite_fields) do
+		if from_prot[field_name] then
+			to_prot[field_name] = table.deepcopy(from_prot[field_name])
+		else
+			to_prot[field_name] = nil
+		end
+	end
+	for _, field_name in ipairs(lazyAPI.all_utility_animations_fields) do
+		if from_prot[field_name] then
+			to_prot[field_name] = table.deepcopy(from_prot[field_name])
+		else
+			to_prot[field_name] = nil
+		end
+	end
+	for _, field_name in ipairs(lazyAPI.all_unique_sprite_fields) do
+		if from_prot[field_name] then
+			to_prot[field_name] = table.deepcopy(from_prot[field_name])
+		else
+			to_prot[field_name] = nil
+		end
+	end
+	for _, field_name in ipairs(lazyAPI.all_spriteVariations_fields) do
 		if from_prot[field_name] then
 			to_prot[field_name] = table.deepcopy(from_prot[field_name])
 		else
