@@ -7,6 +7,248 @@
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 
 
+-- lazyAPI.format_special_symbols(string): string
+-- lazyAPI.add_extension(function)
+-- lazyAPI.add_listener(action_name, name, types, func): boolean
+-- lazyAPI.remove_listener(action_name, name)
+-- lazyAPI.wrap_prototype(prototype): table
+-- lazyAPI.add_prototype(prototype_type, name, prototype_data): table, table
+-- lazyAPI.fix_inconsistent_array(array): integer? | lazyAPI.fix_array(array): integer?
+-- lazyAPI.fix_messy_table(array): integer? | -- lazyAPI.fix_table(array): integer?
+-- lazyAPI.array_to_locale(array): table?
+-- lazyAPI.array_to_locale_as_new(array): table?
+-- lazyAPI.locale_to_array(array): table
+-- lazyAPI.merge_locales(...): table
+-- lazyAPI.merge_locales_as_new(...): table
+-- lazyAPI.string_to_version(str): integer | lazyAPI.string_to_version()
+-- lazyAPI.get_mod_version(mod_name): integer? | lazyAPI.get_mod_version()
+-- lazyAPI.remove_entity_from_action_delivery(action, action_delivery, entity_name)
+-- lazyAPI.remove_entity_from_action(action, entity_name)
+-- lazyAPI.get_barrel_recipes(name): recipe, recipe
+-- lazyAPI.create_trigger_capsule(tool_data): capsule, projectile
+-- lazyAPI.create_techs(name, max_level = 1, tech_data): tech, techs
+-- lazyAPI.attach_custom_input_event(name): CustomInput
+-- lazyAPI.make_empty_sprite(frame_count): table
+-- lazyAPI.make_empty_sprites(): table
+-- lazyAPI.remove_item_ingredient_everywhere(item_name)
+-- lazyAPI.remove_items_by_entity(entity)
+-- lazyAPI.replace_items_by_entity(entity, new_entity)
+-- lazyAPI.remove_items_by_tile(tile)
+-- lazyAPI.replace_items_by_tile(tile, new_tile)
+-- lazyAPI.remove_items_by_equipment(equipment)
+-- lazyAPI.replace_items_by_equipment(battery_equipment, new_battery_equipment)
+-- lazyAPI.remove_equipment_by_item(item): boolean
+-- lazyAPI.remove_recipes_by_fluid(fluid)
+-- lazyAPI.remove_recipes_by_item(item)
+-- lazyAPI.remove_loot_everywhere(item)
+-- lazyAPI.replace_loot_everywhere(item, new_item)
+-- lazyAPI.remove_entities_by_name(name)
+-- lazyAPI.has_entities_by_name(name)
+-- lazyAPI.find_entities_by_name(name)
+-- lazyAPI.remove_items_by_name(name)
+-- lazyAPI.has_items_by_name(name)
+-- lazyAPI.find_items_by_name(name)
+-- lazyAPI.remove_recipe_from_modules(recipe)
+-- lazyAPI.replace_recipe_in_all_modules(old_recipe, new_recipe)
+-- lazyAPI.replace_prerequisite_in_all_techs(old_tech, new_tech)
+-- lazyAPI.replace_resource_category_in_all_mining_drills(old_resource_category, new_resource_category)
+-- lazyAPI.can_i_create(_type, name): boolean
+-- lazyAPI.remove_fluid(fluid_name)
+-- lazyAPI.remove_tool_everywhere(tool)
+-- lazyAPI.rename_tool(prev_tool, new_tool)
+-- lazyAPI.remove_tile(tile_name)
+-- lazyAPI.is_product_valid(product): boolean
+-- lazyAPI.find_prototypes_by_product(product): table[]?
+-- lazyAPI.make_fake_simple_entity_with_owner(prototype)
+-- lazyAPI.find_prototypes_filtered(prototype_filter): table[]
+
+-- lazyAPI.base.does_exist(prototype): boolean
+-- lazyAPI.base.get_field(prototype, field_name): any
+-- lazyAPI.base.rename(prototype, new_name) | lazyAPI.base.rename_prototype(prototype, new_name)
+-- lazyAPI.base.set_subgroup(prototype, subgroup, order?)
+-- lazyAPI.base.remove_prototype(prototype): prototype | lazyAPI.base.remove_prototype()
+-- lazyAPI.base.find_in_array(prototype, field, data): integer?
+-- lazyAPI.base.has_in_array(prototype, field, data): boolean
+-- lazyAPI.base.remove_from_array(prototype, field, data): prototype, integer
+-- lazyAPI.base.rename_in_array(prototype, field, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
+-- lazyAPI.base.add_to_array(prototype, field, data): prototype, boolean
+-- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
+-- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
+-- lazyAPI.base.is_cheat_prototype(prototype): boolean
+-- lazyAPI.base.get_alternative_prototypes(prototype): table[]?
+-- lazyAPI.base.set_alternative_prototypes(prototype, alternative_prototypes): prototype
+-- lazyAPI.base.rawset_alternative_prototypes(prototype, alternative_prototypes): prototype
+-- lazyAPI.base.add_alternative_prototype(prototype, alternative_prototype): prototype
+-- lazyAPI.base.add_alternative_prototypes(prototype, alternative_prototypes): prototype
+-- lazyAPI.base.remove_alternative_prototype(prototype, alternative_prototype): prototype
+-- lazyAPI.base.copy_icons(to_prototype, from_prototype): to_prototype
+-- lazyAPI.base.copy_sounds(to_prototype, from_prototype): to_prototype
+-- lazyAPI.base.copy_graphics(to_prototype, from_prototype): to_prototype
+
+-- lazyAPI.flags.add_flag(prototype, flag): prototype
+-- lazyAPI.flags.remove_flag(prototype, flag): prototype
+-- lazyAPI.flags.find_flag(prototype, flag): integer?
+
+
+-- lazyAPI.ingredients.add_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype
+-- lazyAPI.ingredients.add_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype
+-- lazyAPI.ingredients.add_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype
+-- lazyAPI.ingredients.add_valid_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype?
+-- lazyAPI.ingredients.add_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype?
+-- lazyAPI.ingredients.add_valid_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype?
+-- lazyAPI.ingredients.set_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
+-- lazyAPI.ingredients.set_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
+-- lazyAPI.ingredients.set_ingredient(prototype, target, amount = 1, difficulty?): prototype
+-- lazyAPI.ingredients.set_valid_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
+-- lazyAPI.ingredients.set_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
+-- lazyAPI.ingredients.set_valid_ingredient(prototype, target, amount = 1, difficulty?): prototype
+-- lazyAPI.ingredients.get_item_ingredients(prototype, item, difficulty?): ItemIngredientPrototype[]
+-- lazyAPI.ingredients.get_fluid_ingredients(prototype, fluid, difficulty?): FluidIngredientPrototype[]
+-- lazyAPI.ingredients.remove_ingredient(prototype, ingredient, type?, difficulty?): IngredientPrototype?
+-- lazyAPI.ingredients.remove_ingredient_everywhere(prototype, ingredient, type?): prototype
+-- lazyAPI.ingredients.remove_all_ingredients(prototype): prototype
+-- lazyAPI.ingredients.remove_non_existing_ingredients(prototype): prototype
+-- lazyAPI.ingredients.replace_ingredient(prototype, old_ingredient, new_ingredient, type?, difficulty?): prototype
+-- lazyAPI.ingredients.replace_ingredient_everywhere(prototype, old_ingredient, new_ingredient, type?): prototype
+-- lazyAPI.ingredients.find_ingredient_by_name(prototype, ingredient, difficulty?): IngredientPrototype?
+
+
+-- lazyAPI.resistance.find(prototype, type): Resistances?
+-- lazyAPI.resistance.set(prototype, type, percent, decrease?): prototype
+-- lazyAPI.resistance.remove(prototype, type): prototype
+
+
+-- lazyAPI.loot.find(prototype, item): Loot?
+-- lazyAPI.loot.replace(prototype, item): prototype
+-- lazyAPI.loot.set(prototype, item, count_min?, count_max? percent?, decrease?): prototype
+-- lazyAPI.loot.set_if_exist(prototype, item, count_min?, count_max? percent?, decrease?): prototype
+-- lazyAPI.loot.remove(prototype, item): prototype
+-- lazyAPI.loot.remove_non_existing_loot(prototype): prototype
+
+
+-- lazyAPI.entity.has_item(entity): boolean
+
+
+-- lazyAPI.EntityWithHealth.find_resistance(prototype, type)
+-- lazyAPI.EntityWithHealth.set_resistance(prototype, type, percent, decrease)
+-- lazyAPI.EntityWithHealth.remove_resistance(prototype, type)
+-- lazyAPI.EntityWithHealth.find_loot(prototype, item): Loot?
+-- lazyAPI.EntityWithHealth.replace_loot(prototype, item): prototype
+-- lazyAPI.EntityWithHealth.set_loot(prototype, item, count_min?, count_max? percent?, decrease?): prototype
+-- lazyAPI.EntityWithHealth.set_valid_loot(prototype, item, count_min?, count_max? percent?, decrease?): prototype
+-- lazyAPI.EntityWithHealth.remove_loot(prototype, item): prototype
+-- lazyAPI.EntityWithHealth.remove_non_existing_loot(prototype): prototype
+
+
+-- lazyAPI.item.find_main_recipes(item): table[]
+
+
+--# There are several issues still
+-- lazyAPI.recipe.set_subgroup(prototype, subgroup, order?): prototype
+-- lazyAPI.recipe.have_ingredients(recipe): boolean
+
+-- lazyAPI.recipe.add_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype
+-- lazyAPI.recipe.add_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype
+-- lazyAPI.recipe.add_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype
+-- lazyAPI.recipe.add_valid_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype?
+-- lazyAPI.recipe.add_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype?
+-- lazyAPI.recipe.add_valid_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype?
+-- lazyAPI.recipe.set_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
+-- lazyAPI.recipe.set_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
+-- lazyAPI.recipe.set_valid_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
+-- lazyAPI.recipe.set_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
+-- lazyAPI.recipe.set_ingredient(prototype, target, amount = 1, difficulty?): prototype
+-- lazyAPI.recipe.set_valid_ingredient(prototype, target, amount = 1, difficulty?): prototype
+-- lazyAPI.recipe.get_item_ingredients(prototype, item, difficulty?): ItemIngredientPrototype[]
+-- lazyAPI.recipe.get_fluid_ingredients(prototype, fluid, difficulty?): FluidIngredientPrototype[]
+-- lazyAPI.recipe.remove_ingredient(prototype, ingredient, type?, difficulty?): IngredientPrototype?
+-- lazyAPI.recipe.remove_ingredient_everywhere(prototype, ingredient, type?): prototype
+-- lazyAPI.recipe.remove_non_existing_ingredients(prototype): prototype
+-- lazyAPI.recipe.replace_ingredient(prototype, old_ingredient, new_ingredient, type?, difficulty?): prototype
+-- lazyAPI.recipe.replace_ingredient_everywhere(prototype, old_ingredient, new_ingredient, type?): prototype
+-- lazyAPI.recipe.find_ingredient_by_name(prototype, ingredient, difficulty?): IngredientPrototype?
+
+-- lazyAPI.product.make_product_prototype(product, product_type, show_details_in_recipe_tooltip): ProductPrototype
+-- lazyAPI.product.make_item_product_prototype(item_product, show_details_in_recipe_tooltip): ItemProductPrototype
+-- lazyAPI.product.make_fluid_product_prototype(fluid_product, show_details_in_recipe_tooltip): FluidProductPrototype
+
+-- lazyAPI.recipe.has_result(prototype): boolean
+-- lazyAPI.recipe.find_main_result(prototype, item): boolean
+-- lazyAPI.recipe.add_item_in_result(prototype, item, item_product, difficulty): prototype
+-- lazyAPI.recipe.add_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
+-- lazyAPI.recipe.add_product_in_result(prototype, product, product_prototype, difficulty): prototype
+-- lazyAPI.recipe.add_valid_item_in_result(prototype, item, item_product, difficulty): prototype
+-- lazyAPI.recipe.add_valid_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
+-- lazyAPI.recipe.add_valid_product_in_result(prototype, product, product_prototype, difficulty): prototype
+-- lazyAPI.recipe.set_item_in_result(prototype, item, item_product, difficulty): prototype
+-- lazyAPI.recipe.set_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
+-- lazyAPI.recipe.set_product_in_result(prototype, product, product_prototype, difficulty): prototype
+-- lazyAPI.recipe.set_valid_item_in_result(prototype, item, item_product, difficulty): prototype
+-- lazyAPI.recipe.set_valid_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
+-- lazyAPI.recipe.set_valid_product_in_result(prototype, product, product_prototype, difficulty): prototype
+-- lazyAPI.recipe.replace_result(prototype, item, new_item, _type, difficulty): prototype
+-- lazyAPI.recipe.replace_result_everywhere(prototype, item, new_item, _type, difficulty): prototype
+-- lazyAPI.recipe.remove_if_no_result(prototype): prototype?
+-- lazyAPI.recipe.remove_if_no_ingredients(prototype): prototype?
+-- lazyAPI.recipe.remove_item_from_result(prototype, item, difficulty?): prototype
+-- lazyAPI.recipe.remove_item_from_result_everywhere(prototype, item): prototype
+-- lazyAPI.recipe.remove_fluid_from_result(prototype, fluid, difficulty?): prototype
+-- lazyAPI.recipe.remove_fluid_from_result_everywhere(prototype, fluid): prototype
+-- lazyAPI.recipe.remove_non_existing_results(prototype): prototype
+-- lazyAPI.recipe.find_items_in_result(prototype, item, difficulty?): ProductPrototype[]|string
+-- lazyAPI.recipe.count_item_in_result(prototype, item, difficulty?): integer, integer
+-- lazyAPI.recipe.find_fluids_in_result(prototype, fluid, difficulty?): ProductPrototype[]
+-- lazyAPI.recipe.count_fluid_in_result(prototype, fluid, difficulty?): integer, integer
+
+
+-- lazyAPI.module.is_recipe_allowed(prototype, recipe): boolean
+-- lazyAPI.module.find_allowed_recipe_index(prototype, recipe): integer?
+-- lazyAPI.module.find_blacklisted_recipe_index(prototype, recipe): integer?
+-- lazyAPI.module.allow_recipe(prototype, recipe): prototype
+-- lazyAPI.module.prohibit_recipe(prototype, recipe): prototype
+-- lazyAPI.module.remove_allowed_recipe(prototype, recipe): prototype
+-- lazyAPI.module.remove_blacklisted_recipe(prototype, recipe): prototype
+-- lazyAPI.module.replace_recipe(prototype, old_recipe, new_recipe): prototype
+
+
+-- lazyAPI.tech.remove_if_no_effects(prototype): prototype?
+-- lazyAPI.tech.unlock_recipe(prototype, recipe, difficulty?): prototype
+-- lazyAPI.tech.find_unlock_recipe_effect(prototype, recipe, difficulty?): UnlockRecipeModifierPrototype?
+-- lazyAPI.tech.add_effect(prototype, type, recipe, difficulty?): prototype?
+-- lazyAPI.tech.find_effect(prototype, type, recipe, difficulty?): ModifierPrototype?
+-- lazyAPI.tech.remove_unlock_recipe_effect(prototype, recipe, difficulty?): prototype
+-- lazyAPI.tech.remove_unlock_recipe_effect_everywhere(prototype, recipe_name): prototype
+-- lazyAPI.tech.remove_effect(prototype, type, recipe, difficulty?): prototype
+-- lazyAPI.tech.remove_effect_everywhere(prototype, type, recipe): prototype
+
+-- lazyAPI.tech.find_prerequisite(prototype, tech): integer?
+-- lazyAPI.tech.add_prerequisite(prototype, tech): prototype
+-- lazyAPI.tech.remove_prerequisite(prototype, tech): prototype
+-- lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech): prototype
+
+-- lazyAPI.tech.add_tool(prototype, tool, amount = 1): ItemIngredientPrototype?
+-- lazyAPI.tech.add_valid_tool(prototype, tool, amount = 1): ItemIngredientPrototype?
+-- lazyAPI.tech.set_tool(prototype, tool, amount = 1): prototype
+-- lazyAPI.tech.set_valid_tool(prototype, tool, amount = 1): prototype
+-- lazyAPI.tech.remove_tool(prototype, tool): IngredientPrototype
+-- lazyAPI.tech.replace_tool(prototype, old_tool, new_tool): prototype
+
+-- lazyAPI.tech.is_contiguous_tech(tech): boolean
+-- lazyAPI.tech.get_last_tech_level(tech): integer?
+-- lazyAPI.tech.get_last_valid_contiguous_tech_level(tech): integer?
+-- lazyAPI.tech.remove_contiguous_techs(tech): technology?
+
+
+-- lazyAPI.mining_drill.find_resource_category(prototype, resource_category): integer?
+-- lazyAPI.mining_drill.add_resource_category(prototype, resource_category): prototype
+-- lazyAPI.mining_drill.remove_resource_category(prototype, resource_category): prototype
+-- lazyAPI.mining_drill.replace_resource_category(prototype, old_resource_category, new_resource_category): prototype
+-- lazyAPI.mining_drill.replace_resource_category_everywhere(prototype, old_category, new_category): prototype
+
+
+-- lazyAPI.character.remove_armor(prototype, armor): prototype
+
+
 local type, table, rawget, rawset = type, table, rawget, rawset -- There's a chance something overwrites it
 local debug, error, log = debug, error, log -- I'm pretty sure, some mod did overwrite it
 ---@diagnostic disable-next-line: undefined-field
@@ -66,20 +308,20 @@ lazyAPI.character = {}
 local __all_alternative_prototypes = {}
 
 lazyAPI.all_utility_sound_fields = {
-		"gui_click", "list_box_click", "build_small", "build_medium",
+	"gui_click", "list_box_click", "build_small", "build_medium",
     "build_large", "cannot_build", "build_blueprint_small",
     "build_blueprint_medium", "build_blueprint_large", "deconstruct_small",
-		"deconstruct_medium", "deconstruct_big", "deconstruct_robot",
+	"deconstruct_medium", "deconstruct_big", "deconstruct_robot",
     "rotated_small", "rotated_medium", "rotated_big", "axe_mining_ore",
     "mining_wood", "axe_fighting", "alert_destroyed", "console_message",
     "scenario_message", "new_objective", "game_lost", "game_won",
-		"metal_walking_sound", "research_completed", "default_manual_repair",
-		"crafting_finished", "inventory_click", "inventory_move",
+	"metal_walking_sound", "research_completed", "default_manual_repair",
+	"crafting_finished", "inventory_click", "inventory_move",
     "clear_cursor", "armor_insert", "armor_remove", "achievement_unlocked",
     "wire_connect_pole", "wire_disconnect", "wire_pickup", "tutorial_notice",
     "smart_pipette", "switch_gun", "picked_up_item",
-		"blueprint_selection_ended", "blueprint_selection_started",
-		"deconstruction_selection_started", "deconstruction_selection_ended",
+	"blueprint_selection_ended", "blueprint_selection_started",
+	"deconstruction_selection_started", "deconstruction_selection_ended",
     "cancel_deconstruction_selection_started", "cancel_deconstruction_selection_ended",
     "upgrade_selection_started", "upgrade_selection_ended",
     "copy_activated", "cut_activated", "paste_activated",
@@ -107,16 +349,90 @@ for _, sound_name in pairs(lazyAPI.all_common_sound_fields) do
 	lazyAPI.all_sound_fields[#lazyAPI.all_sound_fields+1] = sound_name
 end
 
+-- TODO: add more functions to compare these values etc.
+-- https://wiki.factorio.com/Types/RenderLayer
+-- The order from lowest to highest:
+lazyAPI.RenderLayers = {
+	"water-tile", "ground-tile", "tile-transition", "decals",
+    "lower-radius-visualization", "radius-visualization",
+    "transport-belt-integration", "resource", "building-smoke",
+    "decorative", "ground-patch", "ground-patch-higher",
+    "ground-patch-higher2", "remnants", "floor", "transport-belt",
+    "transport-belt-endings", "floor-mechanics-under-corpse", "corpse",
+    "floor-mechanics", "item", "lower-object",
+    "transport-belt-circuit-connector", "lower-object-above-shadow",
+    "object", "higher-object-under", "higher-object-above",
+    "item-in-inserter-hand", "wires", "wires-above", "entity-info-icon",
+    "entity-info-icon-above", "explosion", "projectile", "smoke",
+    "air-object", "air-entity-info-icon", "light-effect",
+    "selection-box", "higher-selection-box", "collision-selection-box",
+    "arrow", "cursor"
+}
+-- https://wiki.factorio.com/Types/LightDefinition
+lazyAPI.all_LightDefinition_fields = {
+	"charge_light", "discharge_light", "light", "activity_led_light",
+	"screen_light", "working_light", "ground_light", "stream_light",
+	"enough_fuel_indicator_light", "muzzle_light",
+	"not_enough_fuel_indicator_light", "light_when_colored",
+	"front_light", "blue_light", "green_light", "orange_light",
+	"red_light", "recharging_light", "base_engine_light",
+	"base_light", "glow_light", "back_light", "stand_by_light",
+	"wall_diode_green_light_bottom", "wall_diode_green_light_left",
+	"wall_diode_green_light_right", "wall_diode_green_light_top",
+	"wall_diode_red_light_bottom", "wall_diode_red_light_left",
+	" wall_diode_red_light_right", "wall_diode_red_light_top"
+}
+-- https://wiki.factorio.com/Types/RenderLayer
+lazyAPI.all_RenderLayer_fields = {
+	"render_layer", "render_layer_when_on_ground", "base_picture_render_layer",
+	"animation_overlay_final_render_layer", "animation_overlay_render_layer",
+	"animation_render_layer", "final_render_layer",
+	"ground_patch_render_layer", "splash_render_layer",
+	"integration_patch_render_layer", "initial_render_layer",
+	"secondary_render_layer", "structure_render_layer", "base_render_layer",
+	"gun_animation_render_layer"
+}
+-- https://wiki.factorio.com/Types/Animation4Way
+-- Perhaps, it's not all of them
+-- Actually, "pictures" can be an misleading or exception https://wiki.factorio.com/Prototype/Wall
+lazyAPI.all_Sprite4Way_fields = {
+	"pipe_covers", "heat_pipe_covers", "heat_picture",
+	"heat_glow", "platform_picture", "picture", "pictures",
+	"glass_pictures", "integration_patch", "ending_patch",
+	"activity_led_sprites", "enough_fuel_indicator_picture",
+	"not_enough_fuel_indicator_picture", "wall_diode_green",
+	"wall_diode_red", "equal_symbol_sprites",
+	"greater_or_equal_symbol_sprites", "greater_symbol_sprites",
+	"less_or_equal_symbol_sprites", "less_symbol_sprites",
+	"not_equal_symbol_sprites", "and_symbol_sprites",
+	"divide_symbol_sprites", "left_shift_symbol_sprites",
+	"minus_symbol_sprites", "modulo_symbol_sprites",
+	"multiply_symbol_sprites", "or_symbol_sprites",
+	"plus_symbol_sprites", "power_symbol_sprites",
+	"right_shift_symbol_sprites", "xor_symbol_sprites"
+}
+-- https://wiki.factorio.com/Types/Animation4Way
+-- Perhaps, it should be named differently
+lazyAPI.all_unique_Sprite4Way_fields = {
+	"structure", "light1", "light2"
+}
+-- https://wiki.factorio.com/Types/SpriteVariations
 lazyAPI.all_spriteVariations_fields = {
 	"picture", "pictures", "integration", "burnt_patch_pictures",
 	"connection_patches_connected", "connection_patches_disconnected",
 	"heat_connection_patches_connected", "heat_connection_patches_disconnected",
 	"overlay"
 }
-lazyAPI.all_unique_sprite_fields = {"cursor_box"}
+-- https://wiki.factorio.com/Types/Sprite
+-- It's not clear where "graphics_set" should be. Perhaps new table should be created.
+lazyAPI.all_unique_sprite_fields = {"cursor_box", "graphics_set"}
+-- Probably, I didn't find all
+lazyAPI.all_unique_animation_fields = {"belt_animation_set", "graphics_set"}
+-- https://wiki.factorio.com/Prototype/UtilitySprites
 lazyAPI.all_utility_animations_fields = {
 	"clouds", "arrow_button", "explosion_chart_visualization", "refresh_white"
 }
+-- https://wiki.factorio.com/Prototype/UtilitySprites
 lazyAPI.all_utility_sprite_fields = {
 	"center", "check_mark", "check_mark_white", "check_mark_green",
 	"check_mark_dark_green", "not_played_yet_green", "not_played_yet_dark_green",
@@ -275,6 +591,7 @@ lazyAPI.all_utility_sprite_fields = {
 	"character_additional_mining_categories_modifier_constant", "character_logistic_requests_modifier_icon",
 	"character_logistic_requests_modifier_constant"
 }
+-- https://wiki.factorio.com/Types/Sprite
 lazyAPI.all_common_sprite_fields = {
 	"picture", "pictures", "active_picture", "arrow_picture", "circle_picture",
 	"chart_picture", "shadow", "base_picture", "radius_visualisation_picture",
@@ -525,248 +842,6 @@ local subscriptions = {}
 for k in pairs(listeners) do
 	subscriptions[k] = {}
 end
-
-
--- lazyAPI.format_special_symbols(string): string
--- lazyAPI.add_extension(function)
--- lazyAPI.add_listener(action_name, name, types, func): boolean
--- lazyAPI.remove_listener(action_name, name)
--- lazyAPI.wrap_prototype(prototype): table
--- lazyAPI.add_prototype(prototype_type, name, prototype_data): table, table
--- lazyAPI.fix_inconsistent_array(array): integer? | lazyAPI.fix_array(array): integer?
--- lazyAPI.fix_messy_table(array): integer? | -- lazyAPI.fix_table(array): integer?
--- lazyAPI.array_to_locale(array): table?
--- lazyAPI.array_to_locale_as_new(array): table?
--- lazyAPI.locale_to_array(array): table
--- lazyAPI.merge_locales(...): table
--- lazyAPI.merge_locales_as_new(...): table
--- lazyAPI.string_to_version(str): integer | lazyAPI.string_to_version()
--- lazyAPI.get_mod_version(mod_name): integer? | lazyAPI.get_mod_version()
--- lazyAPI.remove_entity_from_action_delivery(action, action_delivery, entity_name)
--- lazyAPI.remove_entity_from_action(action, entity_name)
--- lazyAPI.get_barrel_recipes(name): recipe, recipe
--- lazyAPI.create_trigger_capsule(tool_data): capsule, projectile
--- lazyAPI.create_techs(name, max_level = 1, tech_data): tech, techs
--- lazyAPI.attach_custom_input_event(name): CustomInput
--- lazyAPI.make_empty_sprite(frame_count): table
--- lazyAPI.make_empty_sprites(): table
--- lazyAPI.remove_item_ingredient_everywhere(item_name)
--- lazyAPI.remove_items_by_entity(entity)
--- lazyAPI.replace_items_by_entity(entity, new_entity)
--- lazyAPI.remove_items_by_tile(tile)
--- lazyAPI.replace_items_by_tile(tile, new_tile)
--- lazyAPI.remove_items_by_equipment(equipment)
--- lazyAPI.replace_items_by_equipment(battery_equipment, new_battery_equipment)
--- lazyAPI.remove_equipment_by_item(item): boolean
--- lazyAPI.remove_recipes_by_fluid(fluid)
--- lazyAPI.remove_recipes_by_item(item)
--- lazyAPI.remove_loot_everywhere(item)
--- lazyAPI.replace_loot_everywhere(item, new_item)
--- lazyAPI.remove_entities_by_name(name)
--- lazyAPI.has_entities_by_name(name)
--- lazyAPI.find_entities_by_name(name)
--- lazyAPI.remove_items_by_name(name)
--- lazyAPI.has_items_by_name(name)
--- lazyAPI.find_items_by_name(name)
--- lazyAPI.remove_recipe_from_modules(recipe)
--- lazyAPI.replace_recipe_in_all_modules(old_recipe, new_recipe)
--- lazyAPI.replace_prerequisite_in_all_techs(old_tech, new_tech)
--- lazyAPI.replace_resource_category_in_all_mining_drills(old_resource_category, new_resource_category)
--- lazyAPI.can_i_create(_type, name): boolean
--- lazyAPI.remove_fluid(fluid_name)
--- lazyAPI.remove_tool_everywhere(tool)
--- lazyAPI.rename_tool(prev_tool, new_tool)
--- lazyAPI.remove_tile(tile_name)
--- lazyAPI.is_product_valid(product): boolean
--- lazyAPI.find_prototypes_by_product(product): table[]?
--- lazyAPI.make_fake_simple_entity_with_owner(prototype)
--- lazyAPI.find_prototypes_filtered(prototype_filter): table[]
-
--- lazyAPI.base.does_exist(prototype): boolean
--- lazyAPI.base.get_field(prototype, field_name): any
--- lazyAPI.base.rename(prototype, new_name) | lazyAPI.base.rename_prototype(prototype, new_name)
--- lazyAPI.base.set_subgroup(prototype, subgroup, order?)
--- lazyAPI.base.remove_prototype(prototype): prototype | lazyAPI.base.remove_prototype()
--- lazyAPI.base.find_in_array(prototype, field, data): integer?
--- lazyAPI.base.has_in_array(prototype, field, data): boolean
--- lazyAPI.base.remove_from_array(prototype, field, data): prototype, integer
--- lazyAPI.base.rename_in_array(prototype, field, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
--- lazyAPI.base.add_to_array(prototype, field, data): prototype, boolean
--- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
--- lazyAPI.base.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
--- lazyAPI.base.is_cheat_prototype(prototype): boolean
--- lazyAPI.base.get_alternative_prototypes(prototype): table[]?
--- lazyAPI.base.set_alternative_prototypes(prototype, alternative_prototypes): prototype
--- lazyAPI.base.rawset_alternative_prototypes(prototype, alternative_prototypes): prototype
--- lazyAPI.base.add_alternative_prototype(prototype, alternative_prototype): prototype
--- lazyAPI.base.add_alternative_prototypes(prototype, alternative_prototypes): prototype
--- lazyAPI.base.remove_alternative_prototype(prototype, alternative_prototype): prototype
--- lazyAPI.base.copy_icons(to_prototype, from_prototype): to_prototype
--- lazyAPI.base.copy_sounds(to_prototype, from_prototype): to_prototype
--- lazyAPI.base.copy_graphics(to_prototype, from_prototype): to_prototype
-
--- lazyAPI.flags.add_flag(prototype, flag): prototype
--- lazyAPI.flags.remove_flag(prototype, flag): prototype
--- lazyAPI.flags.find_flag(prototype, flag): integer?
-
-
--- lazyAPI.ingredients.add_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype
--- lazyAPI.ingredients.add_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype
--- lazyAPI.ingredients.add_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype
--- lazyAPI.ingredients.add_valid_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype?
--- lazyAPI.ingredients.add_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype?
--- lazyAPI.ingredients.add_valid_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype?
--- lazyAPI.ingredients.set_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
--- lazyAPI.ingredients.set_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
--- lazyAPI.ingredients.set_ingredient(prototype, target, amount = 1, difficulty?): prototype
--- lazyAPI.ingredients.set_valid_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
--- lazyAPI.ingredients.set_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
--- lazyAPI.ingredients.set_valid_ingredient(prototype, target, amount = 1, difficulty?): prototype
--- lazyAPI.ingredients.get_item_ingredients(prototype, item, difficulty?): ItemIngredientPrototype[]
--- lazyAPI.ingredients.get_fluid_ingredients(prototype, fluid, difficulty?): FluidIngredientPrototype[]
--- lazyAPI.ingredients.remove_ingredient(prototype, ingredient, type?, difficulty?): IngredientPrototype?
--- lazyAPI.ingredients.remove_ingredient_everywhere(prototype, ingredient, type?): prototype
--- lazyAPI.ingredients.remove_all_ingredients(prototype): prototype
--- lazyAPI.ingredients.remove_non_existing_ingredients(prototype): prototype
--- lazyAPI.ingredients.replace_ingredient(prototype, old_ingredient, new_ingredient, type?, difficulty?): prototype
--- lazyAPI.ingredients.replace_ingredient_everywhere(prototype, old_ingredient, new_ingredient, type?): prototype
--- lazyAPI.ingredients.find_ingredient_by_name(prototype, ingredient, difficulty?): IngredientPrototype?
-
-
--- lazyAPI.resistance.find(prototype, type): Resistances?
--- lazyAPI.resistance.set(prototype, type, percent, decrease?): prototype
--- lazyAPI.resistance.remove(prototype, type): prototype
-
-
--- lazyAPI.loot.find(prototype, item): Loot?
--- lazyAPI.loot.replace(prototype, item): prototype
--- lazyAPI.loot.set(prototype, item, count_min?, count_max? percent?, decrease?): prototype
--- lazyAPI.loot.set_if_exist(prototype, item, count_min?, count_max? percent?, decrease?): prototype
--- lazyAPI.loot.remove(prototype, item): prototype
--- lazyAPI.loot.remove_non_existing_loot(prototype): prototype
-
-
--- lazyAPI.entity.has_item(entity): boolean
-
-
--- lazyAPI.EntityWithHealth.find_resistance(prototype, type)
--- lazyAPI.EntityWithHealth.set_resistance(prototype, type, percent, decrease)
--- lazyAPI.EntityWithHealth.remove_resistance(prototype, type)
--- lazyAPI.EntityWithHealth.find_loot(prototype, item): Loot?
--- lazyAPI.EntityWithHealth.replace_loot(prototype, item): prototype
--- lazyAPI.EntityWithHealth.set_loot(prototype, item, count_min?, count_max? percent?, decrease?): prototype
--- lazyAPI.EntityWithHealth.set_valid_loot(prototype, item, count_min?, count_max? percent?, decrease?): prototype
--- lazyAPI.EntityWithHealth.remove_loot(prototype, item): prototype
--- lazyAPI.EntityWithHealth.remove_non_existing_loot(prototype): prototype
-
-
--- lazyAPI.item.find_main_recipes(item): table[]
-
-
---# There are several issues still
--- lazyAPI.recipe.set_subgroup(prototype, subgroup, order?): prototype
--- lazyAPI.recipe.have_ingredients(recipe): boolean
-
--- lazyAPI.recipe.add_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype
--- lazyAPI.recipe.add_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype
--- lazyAPI.recipe.add_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype
--- lazyAPI.recipe.add_valid_item_ingredient(prototype, item, amount = 1, difficulty?): ItemIngredientPrototype?
--- lazyAPI.recipe.add_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): FluidIngredientPrototype?
--- lazyAPI.recipe.add_valid_ingredient(prototype, target, amount = 1, difficulty?): IngredientPrototype?
--- lazyAPI.recipe.set_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
--- lazyAPI.recipe.set_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
--- lazyAPI.recipe.set_valid_item_ingredient(prototype, item, amount = 1, difficulty?): prototype
--- lazyAPI.recipe.set_valid_fluid_ingredient(prototype, fluid, amount = 1, difficulty?): prototype
--- lazyAPI.recipe.set_ingredient(prototype, target, amount = 1, difficulty?): prototype
--- lazyAPI.recipe.set_valid_ingredient(prototype, target, amount = 1, difficulty?): prototype
--- lazyAPI.recipe.get_item_ingredients(prototype, item, difficulty?): ItemIngredientPrototype[]
--- lazyAPI.recipe.get_fluid_ingredients(prototype, fluid, difficulty?): FluidIngredientPrototype[]
--- lazyAPI.recipe.remove_ingredient(prototype, ingredient, type?, difficulty?): IngredientPrototype?
--- lazyAPI.recipe.remove_ingredient_everywhere(prototype, ingredient, type?): prototype
--- lazyAPI.recipe.remove_non_existing_ingredients(prototype): prototype
--- lazyAPI.recipe.replace_ingredient(prototype, old_ingredient, new_ingredient, type?, difficulty?): prototype
--- lazyAPI.recipe.replace_ingredient_everywhere(prototype, old_ingredient, new_ingredient, type?): prototype
--- lazyAPI.recipe.find_ingredient_by_name(prototype, ingredient, difficulty?): IngredientPrototype?
-
--- lazyAPI.product.make_product_prototype(product, product_type, show_details_in_recipe_tooltip): ProductPrototype
--- lazyAPI.product.make_item_product_prototype(item_product, show_details_in_recipe_tooltip): ItemProductPrototype
--- lazyAPI.product.make_fluid_product_prototype(fluid_product, show_details_in_recipe_tooltip): FluidProductPrototype
-
--- lazyAPI.recipe.has_result(prototype): boolean
--- lazyAPI.recipe.find_main_result(prototype, item): boolean
--- lazyAPI.recipe.add_item_in_result(prototype, item, item_product, difficulty): prototype
--- lazyAPI.recipe.add_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
--- lazyAPI.recipe.add_product_in_result(prototype, product, product_prototype, difficulty): prototype
--- lazyAPI.recipe.add_valid_item_in_result(prototype, item, item_product, difficulty): prototype
--- lazyAPI.recipe.add_valid_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
--- lazyAPI.recipe.add_valid_product_in_result(prototype, product, product_prototype, difficulty): prototype
--- lazyAPI.recipe.set_item_in_result(prototype, item, item_product, difficulty): prototype
--- lazyAPI.recipe.set_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
--- lazyAPI.recipe.set_product_in_result(prototype, product, product_prototype, difficulty): prototype
--- lazyAPI.recipe.set_valid_item_in_result(prototype, item, item_product, difficulty): prototype
--- lazyAPI.recipe.set_valid_fluid_in_result(prototype, fluid, fluid_product, difficulty): prototype
--- lazyAPI.recipe.set_valid_product_in_result(prototype, product, product_prototype, difficulty): prototype
--- lazyAPI.recipe.replace_result(prototype, item, new_item, _type, difficulty): prototype
--- lazyAPI.recipe.replace_result_everywhere(prototype, item, new_item, _type, difficulty): prototype
--- lazyAPI.recipe.remove_if_no_result(prototype): prototype?
--- lazyAPI.recipe.remove_if_no_ingredients(prototype): prototype?
--- lazyAPI.recipe.remove_item_from_result(prototype, item, difficulty?): prototype
--- lazyAPI.recipe.remove_item_from_result_everywhere(prototype, item): prototype
--- lazyAPI.recipe.remove_fluid_from_result(prototype, fluid, difficulty?): prototype
--- lazyAPI.recipe.remove_fluid_from_result_everywhere(prototype, fluid): prototype
--- lazyAPI.recipe.remove_non_existing_results(prototype): prototype
--- lazyAPI.recipe.find_items_in_result(prototype, item, difficulty?): ProductPrototype[]|string
--- lazyAPI.recipe.count_item_in_result(prototype, item, difficulty?): integer, integer
--- lazyAPI.recipe.find_fluids_in_result(prototype, fluid, difficulty?): ProductPrototype[]
--- lazyAPI.recipe.count_fluid_in_result(prototype, fluid, difficulty?): integer, integer
-
-
--- lazyAPI.module.is_recipe_allowed(prototype, recipe): boolean
--- lazyAPI.module.find_allowed_recipe_index(prototype, recipe): integer?
--- lazyAPI.module.find_blacklisted_recipe_index(prototype, recipe): integer?
--- lazyAPI.module.allow_recipe(prototype, recipe): prototype
--- lazyAPI.module.prohibit_recipe(prototype, recipe): prototype
--- lazyAPI.module.remove_allowed_recipe(prototype, recipe): prototype
--- lazyAPI.module.remove_blacklisted_recipe(prototype, recipe): prototype
--- lazyAPI.module.replace_recipe(prototype, old_recipe, new_recipe): prototype
-
-
--- lazyAPI.tech.remove_if_no_effects(prototype): prototype?
--- lazyAPI.tech.unlock_recipe(prototype, recipe, difficulty?): prototype
--- lazyAPI.tech.find_unlock_recipe_effect(prototype, recipe, difficulty?): UnlockRecipeModifierPrototype?
--- lazyAPI.tech.add_effect(prototype, type, recipe, difficulty?): prototype?
--- lazyAPI.tech.find_effect(prototype, type, recipe, difficulty?): ModifierPrototype?
--- lazyAPI.tech.remove_unlock_recipe_effect(prototype, recipe, difficulty?): prototype
--- lazyAPI.tech.remove_unlock_recipe_effect_everywhere(prototype, recipe_name): prototype
--- lazyAPI.tech.remove_effect(prototype, type, recipe, difficulty?): prototype
--- lazyAPI.tech.remove_effect_everywhere(prototype, type, recipe): prototype
-
--- lazyAPI.tech.find_prerequisite(prototype, tech): integer?
--- lazyAPI.tech.add_prerequisite(prototype, tech): prototype
--- lazyAPI.tech.remove_prerequisite(prototype, tech): prototype
--- lazyAPI.tech.replace_prerequisite(prototype, old_tech, new_tech): prototype
-
--- lazyAPI.tech.add_tool(prototype, tool, amount = 1): ItemIngredientPrototype?
--- lazyAPI.tech.add_valid_tool(prototype, tool, amount = 1): ItemIngredientPrototype?
--- lazyAPI.tech.set_tool(prototype, tool, amount = 1): prototype
--- lazyAPI.tech.set_valid_tool(prototype, tool, amount = 1): prototype
--- lazyAPI.tech.remove_tool(prototype, tool): IngredientPrototype
--- lazyAPI.tech.replace_tool(prototype, old_tool, new_tool): prototype
-
--- lazyAPI.tech.is_contiguous_tech(tech): boolean
--- lazyAPI.tech.get_last_tech_level(tech): integer?
--- lazyAPI.tech.get_last_valid_contiguous_tech_level(tech): integer?
--- lazyAPI.tech.remove_contiguous_techs(tech): technology?
-
-
--- lazyAPI.mining_drill.find_resource_category(prototype, resource_category): integer?
--- lazyAPI.mining_drill.add_resource_category(prototype, resource_category): prototype
--- lazyAPI.mining_drill.remove_resource_category(prototype, resource_category): prototype
--- lazyAPI.mining_drill.replace_resource_category(prototype, old_resource_category, new_resource_category): prototype
--- lazyAPI.mining_drill.replace_resource_category_everywhere(prototype, old_category, new_category): prototype
-
-
--- lazyAPI.character.remove_armor(prototype, armor): prototype
 
 
 -- It's weird and looks wrong but it should work
@@ -1375,7 +1450,7 @@ lazyAPI.base.copy_sounds = function(to_prototype, from_prototype)
 end
 
 
--- Perhaps, it works wrong
+-- Perhaps, it works wrong or/and doesn't copy all stuff. (I didn't test it at all)
 ---@param to_prototype table
 ---@param from_prototype table
 ---@return table to_prototype
@@ -1384,39 +1459,20 @@ lazyAPI.base.copy_graphics = function(to_prototype, from_prototype)
 	local from_prot = from_prototype.prototype or from_prototype
 	if to_prot == from_prot then return to_prototype end
 
-	for _, field_name in ipairs(lazyAPI.all_common_sprite_fields) do
-		if from_prot[field_name] then
-			to_prot[field_name] = table.deepcopy(from_prot[field_name])
-		else
-			to_prot[field_name] = nil
-		end
-	end
-	for _, field_name in ipairs(lazyAPI.all_utility_sprite_fields) do
-		if from_prot[field_name] then
-			to_prot[field_name] = table.deepcopy(from_prot[field_name])
-		else
-			to_prot[field_name] = nil
-		end
-	end
-	for _, field_name in ipairs(lazyAPI.all_utility_animations_fields) do
-		if from_prot[field_name] then
-			to_prot[field_name] = table.deepcopy(from_prot[field_name])
-		else
-			to_prot[field_name] = nil
-		end
-	end
-	for _, field_name in ipairs(lazyAPI.all_unique_sprite_fields) do
-		if from_prot[field_name] then
-			to_prot[field_name] = table.deepcopy(from_prot[field_name])
-		else
-			to_prot[field_name] = nil
-		end
-	end
-	for _, field_name in ipairs(lazyAPI.all_spriteVariations_fields) do
-		if from_prot[field_name] then
-			to_prot[field_name] = table.deepcopy(from_prot[field_name])
-		else
-			to_prot[field_name] = nil
+	local all_main_fields = {
+		"all_common_sprite_fields", "all_utility_sprite_fields",
+		"all_utility_animations_fields", "all_unique_sprite_fields",
+		"all_spriteVariations_fields", "all_RenderLayer_fields",
+		"all_unique_animation_fields", "all_Sprite4Way_fields",
+		"all_unique_Sprite4Way_fields", "all_LightDefinition_fields"
+	}
+	for _, main_field_name in ipairs(all_main_fields) do
+		for _, field_name in ipairs(lazyAPI[main_field_name]) do
+			if from_prot[field_name] then
+				to_prot[field_name] = table.deepcopy(from_prot[field_name])
+			else
+				to_prot[field_name] = nil
+			end
 		end
 	end
 
@@ -4264,7 +4320,6 @@ end
 
 ---@param prototype table
 ---@param flag string #https://wiki.factorio.com/Types/ItemPrototypeFlags
----@return table prototype
 lazyAPI.flags.remove_flag = function(prototype, flag)
 	return remove_from_array(prototype, "flags", flag)
 end
@@ -5288,7 +5343,6 @@ end
 -- https://wiki.factorio.com/Prototype/Module#limitation
 ---@param prototype table
 ---@param recipe string|table
----@return table prototype
 lazyAPI.module.remove_allowed_recipe = function(prototype, recipe)
 	local recipe_name = (type(recipe) == "string" and recipe) or recipe.name
 	return remove_from_array(prototype, "limitation", recipe_name)
@@ -5298,7 +5352,6 @@ end
 -- https://wiki.factorio.com/Prototype/Module#limitation_blacklist
 ---@param prototype table
 ---@param recipe string|table
----@return table prototype
 lazyAPI.module.remove_blacklisted_recipe = function(prototype, recipe)
 	local recipe_name = (type(recipe) == "string" and recipe) or recipe.name
 	return remove_from_array(prototype, "limitation_blacklist", recipe_name)
@@ -5594,7 +5647,6 @@ end
 ---https://wiki.factorio.com/Prototype/Technology#prerequisites
 ---@param prototype table #https://wiki.factorio.com/Prototype/Technology
 ---@param tech string|table
----@return table prototype
 lazyAPI.tech.remove_prerequisite = function(prototype, tech)
 	local tech_name = (type(tech) == "string" and tech) or tech.name
 	return remove_from_array(prototype, "prerequisites", tech_name)
@@ -5816,7 +5868,6 @@ end
 -- https://wiki.factorio.com/Prototype/MiningDrill#resource_categories
 ---@param prototype table
 ---@param resource_category string|table #https://wiki.factorio.com/Prototype/ResourceCategory
----@return table prototype
 lazyAPI.mining_drill.remove_resource_category = function(prototype, resource_category)
 	local resource_category_name = (type(resource_category) == "string" and resource_category) or resource_category.name
 	return remove_from_array(prototype, "resource_categories", resource_category_name)
