@@ -87,6 +87,8 @@
 - [moonscript](/lualib/moonscript/) is a programmer friendly language that compiles into Lua. ([source](https://github.com/leafo/moonscript/tree/b7efcd131046ed921ae1075d7c0f6a3b64a570f7)) (not fully tested)\
 `local moonscript = require("__zk-lib__/lualib/moonscript/base")`
 - [std](/lualib/std/) is collection of Lua libraries. ([source](https://github.com/lua-stdlib/lua-stdlib/tree/a632078f216ac6b9994449b7f1435a419172b44f)) (not fully tested, some stuff were removed)
+- [vivid](/lualib/vivid.lua) is simple color manipulation library. Used for color conversion and math. ([source](https://github.com/WetDesertRock/vivid/blob/55cb54578949f74534ab89e75e72a3f013292fda/vivid.lua), [documentation](https://github.com/WetDesertRock/vivid/tree/55cb54578949f74534ab89e75e72a3f013292fda))\
+`local vivid = require("__zk-lib__/lualib/vivid")`
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 
