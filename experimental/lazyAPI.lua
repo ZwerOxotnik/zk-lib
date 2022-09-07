@@ -309,24 +309,24 @@ local __all_alternative_prototypes = {}
 
 lazyAPI.all_utility_sound_fields = {
 	"gui_click", "list_box_click", "build_small", "build_medium",
-    "build_large", "cannot_build", "build_blueprint_small",
-    "build_blueprint_medium", "build_blueprint_large", "deconstruct_small",
+	"build_large", "cannot_build", "build_blueprint_small",
+	"build_blueprint_medium", "build_blueprint_large", "deconstruct_small",
 	"deconstruct_medium", "deconstruct_big", "deconstruct_robot",
-    "rotated_small", "rotated_medium", "rotated_big", "axe_mining_ore",
-    "mining_wood", "axe_fighting", "alert_destroyed", "console_message",
-    "scenario_message", "new_objective", "game_lost", "game_won",
+	"rotated_small", "rotated_medium", "rotated_big", "axe_mining_ore",
+	"mining_wood", "axe_fighting", "alert_destroyed", "console_message",
+	"scenario_message", "new_objective", "game_lost", "game_won",
 	"metal_walking_sound", "research_completed", "default_manual_repair",
 	"crafting_finished", "inventory_click", "inventory_move",
-    "clear_cursor", "armor_insert", "armor_remove", "achievement_unlocked",
-    "wire_connect_pole", "wire_disconnect", "wire_pickup", "tutorial_notice",
-    "smart_pipette", "switch_gun", "picked_up_item",
+	"clear_cursor", "armor_insert", "armor_remove", "achievement_unlocked",
+	"wire_connect_pole", "wire_disconnect", "wire_pickup", "tutorial_notice",
+	"smart_pipette", "switch_gun", "picked_up_item",
 	"blueprint_selection_ended", "blueprint_selection_started",
 	"deconstruction_selection_started", "deconstruction_selection_ended",
-    "cancel_deconstruction_selection_started", "cancel_deconstruction_selection_ended",
-    "upgrade_selection_started", "upgrade_selection_ended",
-    "copy_activated", "cut_activated", "paste_activated",
-    "item_deleted", "entity_settings_pasted", "entity_settings_copied",
-    "item_spawned", "confirm", "undo", "drop_item", "rail_plan_start"
+	"cancel_deconstruction_selection_started", "cancel_deconstruction_selection_ended",
+	"upgrade_selection_started", "upgrade_selection_ended",
+	"copy_activated", "cut_activated", "paste_activated",
+	"item_deleted", "entity_settings_pasted", "entity_settings_copied",
+	"item_spawned", "confirm", "undo", "drop_item", "rail_plan_start"
 }
 lazyAPI.all_common_sound_fields = {
 	"open_sound", "close_sound", "build_sound", "mined_sound",
@@ -354,19 +354,19 @@ end
 -- The order from lowest to highest:
 lazyAPI.RenderLayers = {
 	"water-tile", "ground-tile", "tile-transition", "decals",
-    "lower-radius-visualization", "radius-visualization",
-    "transport-belt-integration", "resource", "building-smoke",
-    "decorative", "ground-patch", "ground-patch-higher",
-    "ground-patch-higher2", "remnants", "floor", "transport-belt",
-    "transport-belt-endings", "floor-mechanics-under-corpse", "corpse",
-    "floor-mechanics", "item", "lower-object",
-    "transport-belt-circuit-connector", "lower-object-above-shadow",
-    "object", "higher-object-under", "higher-object-above",
-    "item-in-inserter-hand", "wires", "wires-above", "entity-info-icon",
-    "entity-info-icon-above", "explosion", "projectile", "smoke",
-    "air-object", "air-entity-info-icon", "light-effect",
-    "selection-box", "higher-selection-box", "collision-selection-box",
-    "arrow", "cursor"
+	"lower-radius-visualization", "radius-visualization",
+	"transport-belt-integration", "resource", "building-smoke",
+	"decorative", "ground-patch", "ground-patch-higher",
+	"ground-patch-higher2", "remnants", "floor", "transport-belt",
+	"transport-belt-endings", "floor-mechanics-under-corpse", "corpse",
+	"floor-mechanics", "item", "lower-object",
+	"transport-belt-circuit-connector", "lower-object-above-shadow",
+	"object", "higher-object-under", "higher-object-above",
+	"item-in-inserter-hand", "wires", "wires-above", "entity-info-icon",
+	"entity-info-icon-above", "explosion", "projectile", "smoke",
+	"air-object", "air-entity-info-icon", "light-effect",
+	"selection-box", "higher-selection-box", "collision-selection-box",
+	"arrow", "cursor"
 }
 -- https://wiki.factorio.com/Types/LightDefinition
 lazyAPI.all_LightDefinition_fields = {
