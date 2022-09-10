@@ -62,6 +62,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.make_fake_simple_entity_with_owner(prototype)
 -- lazyAPI.find_prototypes_filtered(prototype_filter): table[]
 
+-- lazyAPI.base.raise_change(prototype): prototype
 -- lazyAPI.base.does_exist(prototype): boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
 -- lazyAPI.base.rename(prototype, new_name) | lazyAPI.base.rename_prototype(prototype, new_name)
@@ -835,9 +836,11 @@ local listeners = {
 	rename_prototype = {},
 	on_new_prototype = {},
 	on_new_prototype_via_lazyAPI = {},
+	on_prototype_changed = {},
 	new_alternative_prototype = {},
 	removed_alternative_prototype = {}
 }
+-- TODO: Refactor notifying
 local subscriptions = {}
 for k in pairs(listeners) do
 	subscriptions[k] = {}
@@ -3342,12 +3345,33 @@ lazyAPI.find_prototypes_filtered = function(prototype_filter)
 	return results
 end
 
+---@param prototype table
+---@return table prototype
+lazyAPI.base.raise_change = function(prototype)
+	local prot = prototype.prototype or prototype
+	local prototype_type = prot.type
+	local name = prot.name
+	if subscriptions.on_prototype_changed[prototype_type] then
+		for _, func in pairs(subscriptions.on_prototype_changed[prototype_type]) do
+			func(prot, name, prototype_type)
+		end
+	end
+	if subscriptions.on_prototype_changed.all then
+		for _, func in pairs(subscriptions.on_prototype_changed.all) do
+			func(prot, name, prototype_type)
+		end
+	end
+
+	return prototype
+end
+
 
 -- Checks its existence in data.raw by name and type
 ---@param prototype table
 ---@return boolean
 lazyAPI.base.does_exist = function(prototype)
-	return (data_raw[prototype.type][prototype.name] ~= nil)
+	local prot = prototype.prototype or prototype
+	return (data_raw[prot.type][prot.name] ~= nil)
 end
 
 
@@ -3355,7 +3379,8 @@ end
 ---@param field_name string
 ---@return any
 lazyAPI.base.get_field = function(prototype, field_name)
-	return (prototype.prototype or prototype)[field_name]
+	local prot = prototype.prototype or prototype
+	return prot[field_name]
 end
 
 
