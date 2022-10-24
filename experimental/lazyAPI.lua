@@ -1893,7 +1893,8 @@ end
 lazyAPI.remove_entity_from_action = function(action, entity_name)
 	local action_delivery = action.action_delivery
 	if action_delivery == nil then return end
-	if type(next(action_delivery)) == number then
+	--- TODO: recheck, perhaps, I should check all data
+	if type(next(action_delivery)) == "number" then
 		fix_messy_table(action_delivery)
 		for i=#action_delivery, 1, -1 do
 			lazyAPI.remove_entity_from_action_delivery(action, action_delivery[i], entity_name)
