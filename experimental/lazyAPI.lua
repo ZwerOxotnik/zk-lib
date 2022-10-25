@@ -613,6 +613,22 @@ lazyAPI.all_common_sprite_fields = {
 }
 
 
+-- https://wiki.factorio.com/Types/CollisionMask
+lazyAPI.collision_mask_layers = {
+	"ground-tile", "water-tile", "resource-layer", "doodad-layer",
+	"floor-layer", "rail-layer", "transport-belt-layer", "item-layer",
+	"ghost-layer", "object-layer", "player-layer", "train-layer",
+}
+for i=13, 55 do
+	table.insert(lazyAPI.collision_mask_layers, "layer-" .. i)
+end
+
+-- https://wiki.factorio.com/Types/CollisionMask
+lazyAPI.collision_mask_options = {
+	"not-colliding-with-itself", "consider-tile-transitions", "colliding-with-tiles-only"
+}
+
+
 lazyAPI.all_rolling_stocks = {
 	["artillery-wagon"] = data_raw["artillery"],
 	["cargo-wagon"] = data_raw["cargo-wagon"],
