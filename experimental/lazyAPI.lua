@@ -5945,14 +5945,16 @@ lazyAPI.resource.add_inf_version = function(prototype)
 		return prototype, new_prototype
 	end
 
-	local new_prototype = table.deepcopy(prot)
-	new_prototype.name = "inf-" .. prot.name
-	new_prototype.infinite  = true
-	new_prototype.minimum   = 15
-	new_prototype.normal    = 100
-	new_prototype.autoplace = nil
-	lazyAPI.add_prototype(prot.type, new_prototype.name, new_prototype)
-	return prototype, new_prototype
+	local new_prot = table.deepcopy(prot)
+	new_prot.name = "inf-" .. prot.name
+	new_prot.infinite  = true
+	new_prot.minimum   = 15
+	new_prot.normal    = 100
+	new_prot.autoplace = nil
+	-- TODO: change localised_name
+	new_prot.localised_name = new_prot.localised_name or {"entity-name." .. prot.name}
+	lazyAPI.add_prototype(prot.type, new_prot.name, new_prot)
+	return prototype, new_prot
 end
 
 
