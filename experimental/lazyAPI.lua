@@ -5941,7 +5941,7 @@ lazyAPI.resource.add_inf_version = function(prototype)
 		log('"' .. prot.name .. '" is already infinite')
 		return prototype
 	end
-	if data_raw.resource["inf-" .. prot] then
+	if data_raw.resource["inf-" .. prot.name] then
 		return prototype, new_prototype
 	end
 
