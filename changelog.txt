@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.6
+Date: 01. 11. 2022
+  Scripting:
+    - Improved lazyAPI
+  Translation:
+    - Updated French translation (thanks to @Stargateur (Antoine) on crowdin)
+    - Translations: https://crowdin.com/project/factorio-mods-localization (thank you for contributions, I really appreciate it)
+---------------------------------------------------------------------------------------------------
 Version: 0.11.5
 Date: 07. 09. 2022
   Scripting:
