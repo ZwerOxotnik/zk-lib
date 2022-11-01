@@ -247,6 +247,9 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.mining_drill.replace_resource_category_everywhere(prototype, old_category, new_category): prototype
 
 
+-- lazyAPI.resource.add_inf_version(prototype): prototype, new_prototype?
+
+
 -- lazyAPI.character.remove_armor(prototype, armor): prototype
 
 
@@ -302,6 +305,7 @@ lazyAPI.module = {}
 lazyAPI.tech = {}
 lazyAPI.technology = lazyAPI.tech
 lazyAPI.mining_drill = {}
+lazyAPI.resource = {}
 lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
 
@@ -5924,6 +5928,31 @@ end
 lazyAPI.mining_drill.replace_resource_category_everywhere = function(prototype, old_category, new_category)
 	replace_in_prototypes(prototype, "resource_categories", old_category, new_category)
 	return prototype
+end
+
+
+-- TODO: recheck, perhaps, I should track both in a table for compatibility
+-- https://wiki.factorio.com/Prototype/ResourceEntity
+---@param prototype table
+---@return table prototype, table new_prototype?
+lazyAPI.resource.add_inf_version = function(prototype)
+	local prot = prototype.prototype or prototype
+	if prot.infinite then
+		log('"' .. prot.name .. '" is already infinite')
+		return prototype
+	end
+	if data_raw.resource["inf-" .. prot] then
+		return prototype, new_prototype
+	end
+
+	local new_prototype = table.deepcopy(prot)
+	new_prototype.name = "inf-" .. prot.name
+	new_prototype.infinite  = true
+	new_prototype.minimum   = 15
+	new_prototype.normal    = 100
+	new_prototype.autoplace = nil
+	lazyAPI.add_prototype(prot.type, new_prototype.name, new_prototype)
+	return prototype, new_prototype
 end
 
 
