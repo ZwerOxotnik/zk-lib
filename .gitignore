@@ -177,3 +177,6 @@ docs/_build
 
 #Hugo output (site)
 /.predocs/public
+
+# Factorio debug files
+.vscode/factorio/*

@@ -5947,6 +5947,7 @@ lazyAPI.resource.add_inf_version = function(prototype)
 
 	local new_prot = table.deepcopy(prot)
 	new_prot.name = "inf-" .. prot.name
+	new_prot.infinite_depletion_amount = 0
 	new_prot.infinite  = true
 	new_prot.minimum   = 15
 	new_prot.normal    = 100
