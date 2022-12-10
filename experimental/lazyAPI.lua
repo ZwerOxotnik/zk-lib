@@ -7,6 +7,7 @@
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 
 
+-- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
 -- lazyAPI.add_extension(function)
 -- lazyAPI.add_listener(action_name, name, types, func): boolean
@@ -62,6 +63,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.make_fake_simple_entity_with_owner(prototype)
 -- lazyAPI.find_prototypes_filtered(prototype_filter): table[]
 
+-- lazyAPI.base.override_data(table): prototype
 -- lazyAPI.base.raise_change(prototype): prototype
 -- lazyAPI.base.does_exist(prototype): boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
@@ -979,6 +981,18 @@ lazyAPI.get_mod_version = function(mod_name)
 	end
 end
 
+
+---@param data table
+---@param new_data table
+lazyAPI.override_data = function(data, new_data)
+	if type(new_data) == "table" then
+		for key, new_value in pairs(new_data) do
+			data[key] = new_value
+		end
+	else
+		error("ERROR: new_data has invalid type")
+	end
+end
 
 ---@param str string
 ---@return string
@@ -3364,6 +3378,16 @@ lazyAPI.find_prototypes_filtered = function(prototype_filter)
 		end
 	end
 	return results
+end
+
+---@param new_data table
+---@return table prototype
+lazyAPI.base.override_data = function(prototype, new_data)
+	local prot = prototype.prototype or prototype
+	lazyAPI.override_data(prot, new_data)
+	lazyAPI.base.raise_change(prototype)
+
+	return prototype
 end
 
 ---@param prototype table
