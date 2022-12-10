@@ -987,7 +987,11 @@ end
 lazyAPI.override_data = function(data, new_data)
 	if type(new_data) == "table" then
 		for key, new_value in pairs(new_data) do
-			data[key] = new_value
+			if type(new_value) == "table" then
+				data[key] = deepcopy(new_value)
+			else
+				data[key] = new_value
+			end
 		end
 	else
 		error("ERROR: new_data has invalid type")
