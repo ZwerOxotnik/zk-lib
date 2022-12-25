@@ -866,6 +866,8 @@ local listeners = {
 	on_new_prototype = {},
 	on_new_prototype_via_lazyAPI = {},
 	on_prototype_changed = {},
+	on_tag_added = {},
+	on_tag_removed = {},
 	new_alternative_prototype = {},
 	removed_alternative_prototype = {}
 }
@@ -938,14 +940,49 @@ lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 ---@param prototype table
 ---@param alt_prototype table
 local function notify_new_alternative_prototype(prototype, alt_prototype)
-	if subscriptions.new_alternative_prototype[prototype_type] then
-		for _, func in pairs(subscriptions.new_alternative_prototype[prototype_type]) do
+	local _subscriptions = subscriptions.new_alternative_prototype
+	if _subscriptions[prototype_type] then
+		for _, func in pairs(_subscriptions[prototype_type]) do
 			func(prototype, alt_prototype)
 		end
 	end
-	if subscriptions.new_alternative_prototype.all then
-		for _, func in pairs(subscriptions.new_alternative_prototype.all) do
+	if _subscriptions.all then
+		for _, func in pairs(_subscriptions.all) do
 			func(prototype, alt_prototype)
+		end
+	end
+end
+
+
+---@param prototype table
+---@param tag string
+local function notify_tag_added(prototype, tag)
+	local _subscriptions = subscriptions.on_tag_added
+	if _subscriptions[prototype_type] then
+		for _, func in pairs(_subscriptions[prototype_type]) do
+			func(prototype, tag)
+		end
+	end
+	if _subscriptions.all then
+		for _, func in pairs(_subscriptions.all) do
+			func(prototype, tag)
+		end
+	end
+end
+
+
+---@param prototype table
+---@param tag string
+local function notify_tag_removed(prototype, tag)
+	local _subscriptions = subscriptions.on_tag_removed
+	if _subscriptions[prototype_type] then
+		for _, func in pairs(_subscriptions[prototype_type]) do
+			func(prototype, tag)
+		end
+	end
+	if _subscriptions.all then
+		for _, func in pairs(_subscriptions.all) do
+			func(prototype, tag)
 		end
 	end
 end
@@ -954,13 +991,14 @@ end
 ---@param prototype table
 ---@param alt_prototype table
 local function notify_removed_alternative_prototype(prototype, alt_prototype)
-	if subscriptions.removed_alternative_prototype[prototype_type] then
-		for _, func in pairs(subscriptions.removed_alternative_prototype[prototype_type]) do
+	local _subscriptions = subscriptions.removed_alternative_prototype
+	if _subscriptions[prototype_type] then
+		for _, func in pairs(_subscriptions[prototype_type]) do
 			func(prototype, alt_prototype)
 		end
 	end
-	if subscriptions.removed_alternative_prototype.all then
-		for _, func in pairs(subscriptions.removed_alternative_prototype.all) do
+	if _subscriptions.all then
+		for _, func in pairs(_subscriptions.all) do
 			func(prototype, alt_prototype)
 		end
 	end
@@ -1620,7 +1658,31 @@ lazyAPI.base.add_tags = function(prototype, tags)
 		_tags = __data[name]
 	end
 
-	add_to_array(__data, name, tags)
+	fix_array(_tags)
+	if type(tags) ~= "table" then
+		local tag = tags
+		---@cast tag string
+		for i=1, #_tags do
+			if _tags[i] == tag then
+				return prototype
+			end
+		end
+		notify_tag_added(prototype, tag)
+		_tags[#_tags+1] = tag
+		return prototype
+	end
+
+	for i=1, #data do
+		local tag = data[i]
+		for j=1, #_tags do
+			if _tags[j] == tag then
+				goto has_data
+			end
+		end
+		notify_tag_added(prototype, tag)
+		_tags[#_tags+1] = tag
+		:: has_data ::
+	end
 
 	return prototype
 end
@@ -1641,7 +1703,37 @@ lazyAPI.base.remove_tags = function(prototype, tags)
 		return prototype
 	end
 
-	remove_from_array(__data, name, tags)
+	fix_array(_tags)
+	if type(tags) ~= "table" then
+		local tag = tags
+		---@cast tag string
+		local is_tag_removed = false
+		for i=#_tags, 1, -1 do
+			if _tags[i] == tag then
+				tremove(_tags, i)
+				is_tag_removed = true
+			end
+		end
+		if is_tag_removed then
+			notify_tag_removed(prototype, tag)
+		end
+		return prototype
+	end
+
+	for i=1, #tags do
+		local tag = tags[i]
+		local is_tag_removed = false
+		for j=#_tags, 1, -1 do
+			if _tags[j] == tag then
+				tremove(_tags, i)
+				is_tag_removed = true
+			end
+		end
+		if is_tag_removed then
+			notify_tag_removed(prototype, tag)
+		end
+	end
+
 	return prototype
 end
 
