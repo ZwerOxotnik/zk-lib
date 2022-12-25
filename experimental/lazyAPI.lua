@@ -87,6 +87,10 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.base.copy_icons(to_prototype, from_prototype): to_prototype
 -- lazyAPI.base.copy_sounds(to_prototype, from_prototype): to_prototype
 -- lazyAPI.base.copy_graphics(to_prototype, from_prototype): to_prototype
+-- lazyAPI.base.get_tags(prototype): string[]?
+-- lazyAPI.base.find_tags(prototype, string|string[]): boolean
+-- lazyAPI.base.add_tags(prototype, string|string[]): prototype
+-- lazyAPI.base.remove_tags(prototype, string|string[]): prototype
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -310,6 +314,9 @@ lazyAPI.mining_drill = {}
 lazyAPI.resource = {}
 lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
+--- type = { name = { tags }}
+---@type table<string <string, string[]>>
+lazyAPI.tags = {}
 
 ---@type table<table, table[]>
 local __all_alternative_prototypes = {}
@@ -1143,7 +1150,7 @@ local find_in_array = lazyAPI.base.find_in_array
 
 ---@param prototype table
 ---@param field any
----@param data any
+---@param data any|any[]
 ---@return boolean
 lazyAPI.base.has_in_array = function(prototype, field, data)
 	if data == nil then error("data is nil") end
@@ -1152,12 +1159,26 @@ lazyAPI.base.has_in_array = function(prototype, field, data)
 	if array == nil then return false end
 
 	fix_array(array)
-	for i=1, #array do
-		if array[i] == data then
-			return true
+	if type(data) ~= "table" then
+		for i=1, #array do
+			if array[i] == data then
+				return true
+			end
 		end
+		return false
 	end
-	return false
+
+	for i=1, #data do
+		local target_data = data[i]
+		for j=1, #array do
+			if array[j] == target_data then
+				goto has_data
+			end
+		end
+		do return false end
+		:: has_data ::
+	end
+	return true
 end
 local has_in_array = lazyAPI.base.has_in_array
 
@@ -1175,11 +1196,25 @@ lazyAPI.base.remove_from_array = function(prototype, field, data)
 	if array == nil then return prototype, 0 end
 
 	fix_array(array)
+	if type(data) ~= "table" then
+		local removed_count = 0
+		for i=#array, 1, -1 do
+			if array[i] == data then
+				tremove(array, i)
+				removed_count = removed_count + 1
+			end
+		end
+		return prototype, removed_count
+	end
+
 	local removed_count = 0
-	for i=#array, 1, -1 do
-		if array[i] == data then
-			tremove(array, i)
-			removed_count = removed_count + 1
+	for i=1, #data do
+		local target_data = data[i]
+		for j=#array, 1, -1 do
+			if array[j] == target_data then
+				tremove(array, i)
+				removed_count = removed_count + 1
+			end
 		end
 	end
 	return prototype, removed_count
@@ -1214,7 +1249,7 @@ local rename_in_array = lazyAPI.base.rename_in_array
 
 ---@param prototype table
 ---@param field any
----@param data any
+---@param data any|any[]
 ---@return table prototype, boolean
 lazyAPI.base.add_to_array = function(prototype, field, data)
 	if data == nil then error("data is nil") end
@@ -1227,14 +1262,31 @@ lazyAPI.base.add_to_array = function(prototype, field, data)
 	end
 
 	fix_array(array)
-	for i=1, #array do
-		if array[i] == data then
-			return prototype, false
+	if type(data) ~= "table" then
+		for i=1, #array do
+			if array[i] == data then
+				return prototype, false
+			end
 		end
+
+		array[#array+1] = data
+		return prototype, true
 	end
 
-	array[#array+1] = data
-	return prototype, true
+	local is_added_new_data = false
+	for i=1, #data do
+		local target_data = data[i]
+		for j=1, #array do
+			if array[j] == target_data then
+				goto has_data
+			end
+		end
+		is_added_new_data = true
+		array[#array+1] = target_data
+		:: has_data ::
+	end
+
+	return prototype, is_added_new_data
 end
 local add_to_array = lazyAPI.base.add_to_array
 
@@ -1300,7 +1352,7 @@ end)
 ---@return boolean
 lazyAPI.base.is_cheat_prototype = function(prototype)
 	local prot = prototype.prototype or prototype
-	return cheat_prototypes[prot]
+	return lazyAPI.base.find_tags(prot, "cheat") or cheat_prototypes[prot] or false
 end
 
 
@@ -1518,6 +1570,79 @@ lazyAPI.base.copy_graphics = function(to_prototype, from_prototype)
 	end
 
 	return to_prototype
+end
+
+
+---@param prototype table
+---@return string[]?
+lazyAPI.base.get_tags = function(prototype)
+	local prot = prototype.prototype or prototype
+	local __data = lazyAPI.tags[prot.type]
+	if __data then
+		return __data[prot.name]
+	end
+end
+
+
+---@param prototype table
+---@param tags string|string[]
+---@return boolean?
+lazyAPI.base.find_tags = function(prototype, tags)
+	local prot = prototype.prototype or prototype
+	local __data = lazyAPI.tags[prot.type]
+	if __data == nil then
+		return false
+	end
+	local name = prot.name
+	local _tags = __data[name]
+	if _tags == nil then
+		return false
+	end
+
+	return has_in_array(__data, name, tags)
+end
+
+
+---@param prototype table
+---@param tags string|string[]
+---@return prototype
+lazyAPI.base.add_tags = function(prototype, tags)
+	local prot = prototype.prototype or prototype
+	local __data = lazyAPI.tags[prot.type]
+	if __data == nil then
+		lazyAPI.tags[prot.type] = {}
+		__data = lazyAPI.tags[prot.type]
+	end
+	local name = prot.name
+	local _tags = __data[name]
+	if _tags == nil then
+		__data[name] = {}
+		_tags = __data[name]
+	end
+
+	add_to_array(__data, name, tags)
+
+	return prototype
+end
+
+
+---@param prototype table
+---@param tags string|string[]
+---@return prototype
+lazyAPI.base.remove_tags = function(prototype, tags)
+	local prot = prototype.prototype or prototype
+	local __data = lazyAPI.tags[prot.type]
+	if __data == nil then
+		return prototype
+	end
+	local name = prot.name
+	local _tags = __data[name]
+	if _tags == nil then
+		return prototype
+	end
+
+	remove_from_array(__data, name, tags)
+	return prototype
 end
 
 

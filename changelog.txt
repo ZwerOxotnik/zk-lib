@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.11.11
+Date: 25. 12. 2022
+  Scripting:
+    - Added lazyAPI.base.get_tags, find_tags, add_tags, remove_tags in LazyAPI (it's kinda like minecraft tags)
+    - Improved lazyAPI.base.remove_from_array, add_to_array, has_in_array to support any array
+---------------------------------------------------------------------------------------------------
 Version: 0.11.9
 Date: 08. 11. 2022
   Scripting:
