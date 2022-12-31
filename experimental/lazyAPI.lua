@@ -3712,7 +3712,16 @@ end
 ---@return boolean
 lazyAPI.base.does_exist = function(prototype)
 	local prot = prototype.prototype or prototype
-	return (data_raw[prot.type][prot.name] ~= nil)
+	local prot_in_data = data_raw[prot.type][prot.name]
+	if prot_in_data == prot then
+		return true
+	end
+	
+	local removed_prot = lazyAPI.deleted_data[prot.type][prot.name]
+	if removed_prot == nil then
+		lazyAPI.deleted_data[prot.type][prot.name] = prot
+	end
+	return false
 end
 
 
