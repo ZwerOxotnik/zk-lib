@@ -66,8 +66,8 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.base.override_data(table): prototype
 -- lazyAPI.base.raise_change(prototype): prototype
 -- lazyAPI.base.does_exist(prototype): boolean
--- lazyAPI.base.recreate_prototype(prototype): boolean
--- lazyAPI.base.force_recreate_prototype(prototype): boolean
+-- lazyAPI.base.recreate_prototype(prototype): prototype, boolean
+-- lazyAPI.base.force_recreate_prototype(prototype): prototype, boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
 -- lazyAPI.base.rename(prototype, new_name) | lazyAPI.base.rename_prototype(prototype, new_name)
 -- lazyAPI.base.set_subgroup(prototype, subgroup, order?)
@@ -3718,7 +3718,7 @@ lazyAPI.base.does_exist = function(prototype)
 	if prot_in_data == prot then
 		return true
 	end
-	
+
 	local removed_prot = lazyAPI.deleted_data[prot.type][prot.name]
 	if removed_prot == nil then
 		lazyAPI.deleted_data[prot.type][prot.name] = prot
@@ -3729,7 +3729,7 @@ end
 
 -- Adds a prototype in data.raw
 ---@param prototype table
----@return boolean
+---@return table prototype, boolean
 lazyAPI.base.recreate_prototype = function(prototype)
 	local prot = prototype.prototype or prototype
 	local prot_in_data = data_raw[prot.type][prot.name]
@@ -3740,13 +3740,13 @@ lazyAPI.base.recreate_prototype = function(prototype)
 	lazyAPI.add_prototype(nil, nil, prot) -- TODO: refactor
 
 	local is_added = (data_raw[prot.type][prot.name] == prot)
-	return is_added
+	return prototype, is_added
 end
 
 
 -- Adds a prototype in data.raw
 ---@param prototype table
----@return boolean
+---@return table prototype, boolean
 lazyAPI.base.force_recreate_prototype = function(prototype)
 	local prot = prototype.prototype or prototype
 	local prot_in_data = data_raw[prot.type][prot.name]
@@ -3757,7 +3757,7 @@ lazyAPI.base.force_recreate_prototype = function(prototype)
 	lazyAPI.add_prototype(nil, nil, prot) -- TODO: refactor
 
 	local is_added = (data_raw[prot.type][prot.name] == prot)
-	return is_added
+	return prototype, is_added
 end
 
 
