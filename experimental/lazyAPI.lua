@@ -68,6 +68,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.base.raise_change(prototype): prototype
 -- lazyAPI.base.does_exist(prototype): boolean
 -- lazyAPI.base.get_mod_source(prototype): string?
+-- lazyAPI.base.set_mod_source(prototype, string): prototype
 -- lazyAPI.base.recreate_prototype(prototype): prototype, boolean
 -- lazyAPI.base.force_recreate_prototype(prototype): prototype, boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
@@ -3758,6 +3759,16 @@ end
 lazyAPI.base.get_mod_source = function(prototype)
 	local prot = prototype.prototype or prototype
 	return lazyAPI.prototypes_mod_source[prot]
+end
+
+
+---@param prototype table
+---@param mod_name string
+---@return table prototype
+lazyAPI.base.set_mod_source = function(prototype, mod_name)
+	local prot = prototype.prototype or prototype
+	lazyAPI.prototypes_mod_source[prot] = mod_name
+	return prototype
 end
 
 
