@@ -66,6 +66,8 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.base.override_data(table): prototype
 -- lazyAPI.base.raise_change(prototype): prototype
 -- lazyAPI.base.does_exist(prototype): boolean
+-- lazyAPI.base.recreate_prototype(prototype): boolean
+-- lazyAPI.base.force_recreate_prototype(prototype): boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
 -- lazyAPI.base.rename(prototype, new_name) | lazyAPI.base.rename_prototype(prototype, new_name)
 -- lazyAPI.base.set_subgroup(prototype, subgroup, order?)
@@ -1813,9 +1815,9 @@ lazyAPI.add_listener = function(event_name, types, name, func)
 			func = func
 		}
 	)
-	for _, type in ipairs(types) do
-		subscriptions[event_name][type] = subscriptions[event_name][type] or {}
-		local subscription = subscriptions[event_name][type]
+	for _, _type in ipairs(types) do
+		subscriptions[event_name][_type] = subscriptions[event_name][_type] or {}
+		local subscription = subscriptions[event_name][_type]
 		table.insert(subscription, func)
 	end
 	return true
@@ -3722,6 +3724,40 @@ lazyAPI.base.does_exist = function(prototype)
 		lazyAPI.deleted_data[prot.type][prot.name] = prot
 	end
 	return false
+end
+
+
+-- Adds a prototype in data.raw
+---@param prototype table
+---@return boolean
+lazyAPI.base.recreate_prototype = function(prototype)
+	local prot = prototype.prototype or prototype
+	local prot_in_data = data_raw[prot.type][prot.name]
+	if prot_in_data then
+		return false
+	end
+
+	lazyAPI.add_prototype(nil, nil, prot) -- TODO: refactor
+
+	local is_added = (data_raw[prot.type][prot.name] == prot)
+	return is_added
+end
+
+
+-- Adds a prototype in data.raw
+---@param prototype table
+---@return boolean
+lazyAPI.base.force_recreate_prototype = function(prototype)
+	local prot = prototype.prototype or prototype
+	local prot_in_data = data_raw[prot.type][prot.name]
+	if prot_in_data ~= prot then
+		lazyAPI.base.remove_prototype(prot_in_data)
+	end
+
+	lazyAPI.add_prototype(nil, nil, prot) -- TODO: refactor
+
+	local is_added = (data_raw[prot.type][prot.name] == prot)
+	return is_added
 end
 
 
@@ -6415,6 +6451,14 @@ function lazyAPI.add_prototype(prototype_type, name, prototype)
 			for _, func in pairs(subscriptions.on_new_prototype_via_lazyAPI.all) do
 				func(prototype, name, prototype_type)
 			end
+		end
+	end
+
+	local is_added = (data_raw[prototype.type][prototype.name] == prototype)
+	if is_added then
+		local removed_prot = lazyAPI.deleted_data[prototype.type][prototype.name]
+		if removed_prot == prot then
+			lazyAPI.deleted_data[prototype.type][prototype.name] = nil
 		end
 	end
 
