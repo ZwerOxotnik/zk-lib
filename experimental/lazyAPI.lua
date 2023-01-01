@@ -67,6 +67,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.base.override_data(table): prototype
 -- lazyAPI.base.raise_change(prototype): prototype
 -- lazyAPI.base.does_exist(prototype): boolean
+-- lazyAPI.base.get_mod_source(prototype): string?
 -- lazyAPI.base.recreate_prototype(prototype): prototype, boolean
 -- lazyAPI.base.force_recreate_prototype(prototype): prototype, boolean
 -- lazyAPI.base.get_field(prototype, field_name): any
@@ -313,6 +314,9 @@ lazyAPI.deleted_data = {} -- Deleted prototypes
 for key in pairs(raw.data) do
 	lazyAPI.deleted_data[key] = {}
 end
+
+---@type table<table, string>
+lazyAPI.prototypes_mod_source = {}
 
 
 lazyAPI.base = {}
@@ -900,6 +904,26 @@ end
 data.extend = function(self, new_prototypes, ...)
 	add_prototypes(self, new_prototypes, ...) -- original data.extend
 	for k, prototype in pairs(new_prototypes) do
+		local prototypes_mod_source = lazyAPI.prototypes_mod_source
+		local mod_name = prototypes_mod_source[prototype]
+		if mod_name == nil then
+			-- Get mod name
+			local text = debug.traceback()
+			local i = 22
+			while true do
+				local part = text:sub(i, i+1)
+				i = i + 1
+				if part == "__" then
+					goto set_mod_name
+				end
+			end
+
+			-- WARNING: It's not reliable for all cases
+			:: set_mod_name ::
+			mod_name = text:sub(21, i-2)
+			prototypes_mod_source[prototype] = mod_name
+		end
+
 		if type(k) == "number" and type(prototype) == "table" and prototype.type then
 			local prototype_type = prototype.type
 			local name = prototype.name
@@ -3725,6 +3749,15 @@ lazyAPI.base.does_exist = function(prototype)
 		lazyAPI.deleted_data[prot.type][prot.name] = prot
 	end
 	return false
+end
+
+
+-- WARNING: It's not reliable
+---@param prototype table
+---@return string?
+lazyAPI.base.get_mod_source = function(prototype)
+	local prot = prototype.prototype or prototype
+	return lazyAPI.prototypes_mod_source[prot]
 end
 
 
