@@ -14,6 +14,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 -- lazyAPI.remove_listener(action_name, name)
 -- lazyAPI.wrap_prototype(prototype): table
 -- lazyAPI.add_prototype(prototype_type, name, prototype_data): table, table
+-- lazyAPI.add_prototype(prototype_data): table, table
 -- lazyAPI.fix_inconsistent_array(array): integer? | lazyAPI.fix_array(array): integer?
 -- lazyAPI.fix_messy_table(array): integer? | -- lazyAPI.fix_table(array): integer?
 -- lazyAPI.array_to_locale(array): table?
@@ -3737,7 +3738,7 @@ lazyAPI.base.recreate_prototype = function(prototype)
 		return false
 	end
 
-	lazyAPI.add_prototype(nil, nil, prot) -- TODO: refactor
+	lazyAPI.add_prototype(prot)
 
 	local is_added = (data_raw[prot.type][prot.name] == prot)
 	return prototype, is_added
@@ -3754,7 +3755,7 @@ lazyAPI.base.force_recreate_prototype = function(prototype)
 		lazyAPI.base.remove_prototype(prot_in_data)
 	end
 
-	lazyAPI.add_prototype(nil, nil, prot) -- TODO: refactor
+	lazyAPI.add_prototype(prot)
 
 	local is_added = (data_raw[prot.type][prot.name] == prot)
 	return prototype, is_added
@@ -6435,7 +6436,13 @@ end
 ---@param name? string
 ---@param prototype? table
 ---@return table prototype_data, table wrapped_prototype
+---@overload fun(prototype): table, table
 function lazyAPI.add_prototype(prototype_type, name, prototype)
+	if prototype == nil then
+		---@cast prototype_type? table
+		prototype = prototype_type
+		prototype_type = nil
+	end
 	prototype = prototype or {}
 	prototype.type = prototype_type or prototype.type
 	prototype.name = name or prototype.name
