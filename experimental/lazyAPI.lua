@@ -1,7 +1,12 @@
 ---@diagnostic disable: undefined-field
--- Are you lazy to change/add/remove/check some prototypes/stuff in the data stage? Use this library then.\
--- Currently, this is an experimental library, not everything is stable yet. (anything can be changed, removed, added etc.)\
--- No messy data, efficient API.
+--[[
+Are you lazy to change/add/remove/check some prototypes/stuff in the data stage? Use this library then.\
+Currently, this is an experimental library, not everything is stable yet. (anything can be changed, removed, added etc.)\
+No messy data, efficient API.
+
+Please, don't change/create/delete prototypes in data.lua file
+in order to improve and simplify mod development and mod compatibility, thanks.
+]]--
 ---@module "__zk-lib__/experimental/lazyAPI"
 ---@class lazyAPI
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
