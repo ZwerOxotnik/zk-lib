@@ -3748,10 +3748,18 @@ lazyAPI.base.raise_change = function(prototype)
 end
 
 
--- Checks its existence in data.raw by name and type
----@param prototype table
+-- Checks a prototype existence in data.raw by type and name
+---@param type_prot string
+---@param name string
+---@overload fun(table): boolean
 ---@return boolean
-lazyAPI.base.does_exist = function(prototype)
+lazyAPI.base.does_exist = function(type_prot, name)
+	if name then
+		return (data_raw[type_prot][name] ~= nil)
+	end
+
+	---@cast type_prot table
+	local prototype = type_prot
 	local prot = prototype.prototype or prototype
 	local prot_in_data = data_raw[prot.type][prot.name]
 	if prot_in_data == prot then
