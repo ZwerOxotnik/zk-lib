@@ -71,6 +71,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
 
 -- lazyAPI.base.override_data(table): prototype
 -- lazyAPI.base.raise_change(prototype): prototype
+-- lazyAPI.base.does_exist(type, name): boolean
 -- lazyAPI.base.does_exist(prototype): boolean
 -- lazyAPI.base.get_mod_source(prototype): string?
 -- lazyAPI.base.set_mod_source(prototype, string): prototype
