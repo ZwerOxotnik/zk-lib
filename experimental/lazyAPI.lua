@@ -931,17 +931,25 @@ data.extend = function(self, new_prototypes, ...)
 		end
 
 		if type(k) == "number" and type(prototype) == "table" and prototype.type then
-			local prototype_type = prototype.type
-			local name = prototype.name
-			if data_raw[prototype_type][name] then
-				if subscriptions.on_new_prototype[prototype_type] then
-					for _, func in pairs(subscriptions.on_new_prototype[prototype_type]) do
-						func(prototype, name, prototype_type)
-					end
+			local is_added = (data_raw[prototype.type][prototype.name] == prototype)
+			if is_added then
+				local removed_prot = lazyAPI.deleted_data[prototype.type][prototype.name]
+				if removed_prot == prot then
+					lazyAPI.deleted_data[prototype.type][prototype.name] = nil
 				end
-				if subscriptions.on_new_prototype.all then
-					for _, func in pairs(subscriptions.on_new_prototype.all) do
-						func(prototype, name, prototype_type)
+
+				local prototype_type = prototype.type
+				local name = prototype.name
+				if data_raw[prototype_type][name] then
+					if subscriptions.on_new_prototype[prototype_type] then
+						for _, func in pairs(subscriptions.on_new_prototype[prototype_type]) do
+							func(prototype, name, prototype_type)
+						end
+					end
+					if subscriptions.on_new_prototype.all then
+						for _, func in pairs(subscriptions.on_new_prototype.all) do
+							func(prototype, name, prototype_type)
+						end
 					end
 				end
 			end
@@ -6488,7 +6496,7 @@ end
 ---@overload fun(prototype): table, table
 function lazyAPI.add_prototype(prototype_type, name, prototype)
 	if prototype == nil then
-		---@cast prototype_type? table
+		---@cast prototype_type table?
 		prototype = prototype_type
 		prototype_type = nil
 	end
