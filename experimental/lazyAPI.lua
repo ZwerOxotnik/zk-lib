@@ -318,7 +318,7 @@ setmetatable(lazyAPI.tables_with_errors, {
 lazyAPI.all_data = {} -- Prototypes from lazyAPI.deleted_data and raw.data
 ---@type table<string, table<string, table>>
 lazyAPI.deleted_data = {} -- Deleted prototypes
-for key in pairs(raw.data) do
+for key in pairs(data.raw) do
 	lazyAPI.deleted_data[key] = {}
 end
 
