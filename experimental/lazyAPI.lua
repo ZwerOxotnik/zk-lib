@@ -1,14 +1,14 @@
 ---@diagnostic disable: undefined-field
 --[[
 Are you lazy to change/add/remove/check some prototypes/stuff in the data stage? Use this library then.\
-Currently, this is an experimental library, not everything is stable yet. (anything can be changed, removed, added etc.)\
+Currently, this is an experimental framework, not everything is stable yet. (anything can be changed, removed, added etc.)\
 No messy data, efficient API.
 
 Please, don't change/create/delete prototypes in data.lua file
 in order to improve and simplify mod development and mod compatibility, thanks.
 Please, don't use this module as a new library.
 
-Short name for this library is "LAPI".
+The short name for this framework is "LAPI".
 ]]--
 ---@class lazyAPI
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.1"}
