@@ -295,21 +295,21 @@ local mining_drills = data_raw["mining-drill"]
 
 
 ---@type table<string, integer>
-lazyAPI.warning_types = {
+lazyAPI._warning_types = {
 	mixed_array = 1, -- Don't add different keys for arrays. It's difficult to check and use messy tables.
 	element_is_nil = 2 -- Be careful with tables like: {nil, 2} because their length will be inconsistent.
 }
-local warning_types = lazyAPI.warning_types
-lazyAPI.warnings = {
+local warning_types = lazyAPI._warning_types
+lazyAPI._warnings = {
 	[warning_types.mixed_array] = "a mixed array, some keys aren't numbers",
 	[warning_types.table_has_gaps] = "an array had been initialized with nils and keeped them"
 }
 ---@type table<table, integer>
-lazyAPI.warning_for_fixed_tables = {}
-setmetatable(lazyAPI.warning_for_fixed_tables, {
+lazyAPI._warning_for_fixed_tables = {}
+setmetatable(lazyAPI._warning_for_fixed_tables, {
 	__newindex = function(self, k, v)
 		if rawget(self, k) then return end -- No multiple errors etc in the table
-		log("lazyAPI detected an inconsistency: " .. (lazyAPI.warnings[v] or 'unknown case'))
+		log("lazyAPI detected an inconsistency: " .. (lazyAPI._warnings[v] or 'unknown case'))
 		log(debug.traceback())
 		rawset(self, k, v)
 	end
@@ -1147,7 +1147,7 @@ lazyAPI.fix_inconsistent_array = function(array)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if array[i] == nil then
-				lazyAPI.warning_for_fixed_tables[array] = warning_types.table_has_gaps
+				lazyAPI._warning_for_fixed_tables[array] = warning_types.table_has_gaps
 				tremove(array, i)
 			end
 		end
@@ -1199,7 +1199,7 @@ lazyAPI.fix_messy_table = function(t)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if t[i] == nil then
-				lazyAPI.warning_for_fixed_tables[t] = warning_types.table_has_gaps
+				lazyAPI._warning_for_fixed_tables[t] = warning_types.table_has_gaps
 				tremove(t, i)
 			end
 		end
@@ -1224,7 +1224,7 @@ lazyAPI.fix_messy_table = function(t)
 			temp_arr = {v}
 			break
 		else
-			lazyAPI.warning_for_fixed_tables[t] = warning_types.mixed_array
+			lazyAPI._warning_for_fixed_tables[t] = warning_types.mixed_array
 		end
 	end
 
@@ -1237,7 +1237,7 @@ lazyAPI.fix_messy_table = function(t)
 				temp_arr[#temp_arr+1] = v
 			end
 		else
-			lazyAPI.warning_for_fixed_tables[t] = warning_types.mixed_array
+			lazyAPI._warning_for_fixed_tables[t] = warning_types.mixed_array
 		end
 	end
 	for i=1, #temp_arr do
