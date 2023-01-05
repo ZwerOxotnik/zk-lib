@@ -6,10 +6,12 @@ No messy data, efficient API.
 
 Please, don't change/create/delete prototypes in data.lua file
 in order to improve and simplify mod development and mod compatibility, thanks.
+Please, don't use this module as a new library.
+
+Short name for this library is "LAPI".
 ]]--
----@module "__zk-lib__/experimental/lazyAPI"
 ---@class lazyAPI
-local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib"}
+local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.1"}
 
 
 -- lazyAPI.override_data(data, new_data)
@@ -293,21 +295,21 @@ local mining_drills = data_raw["mining-drill"]
 
 
 ---@type table<string, integer>
-lazyAPI.error_types = {
+lazyAPI.warning_types = {
 	mixed_array = 1, -- Don't add different keys for arrays. It's difficult to check and use messy tables.
 	element_is_nil = 2 -- Be careful with tables like: {nil, 2} because their length will be inconsistent.
 }
-local error_types = lazyAPI.error_types
-lazyAPI.error_messages = {
-	[error_types.mixed_array] = "a mixed array, some keys aren't numbers",
-	[error_types.element_is_nil] = "an array had been initialized with nils and keeped them"
+local warning_types = lazyAPI.warning_types
+lazyAPI.warnings = {
+	[warning_types.mixed_array] = "a mixed array, some keys aren't numbers",
+	[warning_types.table_has_gaps] = "an array had been initialized with nils and keeped them"
 }
 ---@type table<table, integer>
-lazyAPI.tables_with_errors = {}
-setmetatable(lazyAPI.tables_with_errors, {
+lazyAPI.warning_for_fixed_tables = {}
+setmetatable(lazyAPI.warning_for_fixed_tables, {
 	__newindex = function(self, k, v)
 		if rawget(self, k) then return end -- No multiple errors etc in the table
-		log("lazyAPI detected an error: " .. (lazyAPI.error_messages[v] or 'unknown error'))
+		log("lazyAPI detected an inconsistency: " .. (lazyAPI.warnings[v] or 'unknown case'))
 		log(debug.traceback())
 		rawset(self, k, v)
 	end
@@ -316,6 +318,16 @@ setmetatable(lazyAPI.tables_with_errors, {
 
 ---@type table[]
 lazyAPI.all_data = {} -- Prototypes from lazyAPI.deleted_data and raw.data
+lazyAPI.vanilla_data = {} -- WARNING: NOT RELIABLE AT ALL (it should contain original data from raw.data and yet changable indirectly still)
+for _type, prototypes in pairs(lazyAPI.all_data) do
+	local all_prototypes = lazyAPI.all_data[_type]
+	local vanilla_prototypes = lazyAPI.vanilla_data[_type]
+	for name, prototype in pairs(prototypes) do
+		all_prototypes[name] = prototype
+		vanilla_prototypes[name] = prototype
+	end
+end
+
 ---@type table<string, table<string, table>>
 lazyAPI.deleted_data = {} -- Deleted prototypes
 for key in pairs(data_raw) do
@@ -909,7 +921,21 @@ end
 
 -- It's weird and looks wrong but it should work
 data.extend = function(self, new_prototypes, ...)
+	-- Let's check if something will be overwritten
+	for k, prototype in pairs(new_prototypes) do
+		local _type = prototype.type
+		if type(k) == "number" and type(prototype) == "table" and _type then
+			local name = prototype.name
+			local prev_instance = data_raw[_type][name]
+			-- Perhaps it should verify this case later instead
+			if prev_instance and prev_instance ~= prototype then
+				lazyAPI.base.remove_prototype(prev_instance)
+			end
+		end
+	end
+
 	add_prototypes(self, new_prototypes, ...) -- original data.extend
+
 	for k, prototype in pairs(new_prototypes) do
 		local prototypes_mod_source = lazyAPI.prototypes_mod_source
 		local mod_name = prototypes_mod_source[prototype]
@@ -1121,7 +1147,7 @@ lazyAPI.fix_inconsistent_array = function(array)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if array[i] == nil then
-				lazyAPI.tables_with_errors[array] = error_types.element_is_nil
+				lazyAPI.warning_for_fixed_tables[array] = warning_types.table_has_gaps
 				tremove(array, i)
 			end
 		end
@@ -1173,7 +1199,7 @@ lazyAPI.fix_messy_table = function(t)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if t[i] == nil then
-				lazyAPI.tables_with_errors[t] = error_types.element_is_nil
+				lazyAPI.warning_for_fixed_tables[t] = warning_types.table_has_gaps
 				tremove(t, i)
 			end
 		end
@@ -1198,7 +1224,7 @@ lazyAPI.fix_messy_table = function(t)
 			temp_arr = {v}
 			break
 		else
-			lazyAPI.tables_with_errors[t] = error_types.mixed_array
+			lazyAPI.warning_for_fixed_tables[t] = warning_types.mixed_array
 		end
 	end
 
@@ -1211,7 +1237,7 @@ lazyAPI.fix_messy_table = function(t)
 				temp_arr[#temp_arr+1] = v
 			end
 		else
-			lazyAPI.tables_with_errors[t] = error_types.mixed_array
+			lazyAPI.warning_for_fixed_tables[t] = warning_types.mixed_array
 		end
 	end
 	for i=1, #temp_arr do
@@ -3889,27 +3915,31 @@ lazyAPI.base.remove_prototype = function(prototype)
 		return prototype
 	end
 
-	if subscriptions.pre_remove_prototype[prototype_type] then
-		for _, func in pairs(subscriptions.pre_remove_prototype[prototype_type]) do
+	local subscription = subscriptions.pre_remove_prototype
+	if subscription[prototype_type] then
+		for _, func in pairs(subscription[prototype_type]) do
 			func(prot, name, prototype_type)
 		end
 	end
-	if subscriptions.pre_remove_prototype.all then
-		for _, func in pairs(subscriptions.pre_remove_prototype.all) do
+	if subscription.all then
+		for _, func in pairs(subscription.all) do
 			func(prot, name, prototype_type)
 		end
 	end
+
 	data_raw[prototype_type][name] = nil
-	if subscriptions.remove_prototype[prototype_type] then
-		for _, func in pairs(subscriptions.remove_prototype[prototype_type]) do
+	subscription = subscriptions.remove_prototype
+	if subscription[prototype_type] then
+		for _, func in pairs(subscription[prototype_type]) do
 			func(prot, name, prototype_type)
 		end
 	end
-	if subscriptions.remove_prototype.all then
-		for _, func in pairs(subscriptions.remove_prototype.all) do
+	if subscription.all then
+		for _, func in pairs(subscription.all) do
 			func(prot, name, prototype_type)
 		end
 	end
+
 	return prototype
 end
 
