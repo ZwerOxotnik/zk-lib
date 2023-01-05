@@ -14,6 +14,7 @@ Short name for this library is "LAPI".
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.1"}
 
 
+-- LazyAPI.notify_prototype_replaced(prev_prototype, new_prototype)
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
 -- lazyAPI.add_extension(function)
@@ -299,10 +300,10 @@ lazyAPI._warning_types = {
 	mixed_array = 1, -- Don't add different keys for arrays. It's difficult to check and use messy tables.
 	element_is_nil = 2 -- Be careful with tables like: {nil, 2} because their length will be inconsistent.
 }
-local warning_types = lazyAPI._warning_types
+local _warning_types = lazyAPI._warning_types
 lazyAPI._warnings = {
-	[warning_types.mixed_array] = "a mixed array, some keys aren't numbers",
-	[warning_types.table_has_gaps] = "an array had been initialized with nils and keeped them"
+	[_warning_types.mixed_array] = "a mixed array, some keys aren't numbers",
+	[_warning_types.table_has_gaps] = "an array had been initialized with nils and keeped them"
 }
 ---@type table<table, integer>
 lazyAPI._warning_for_fixed_tables = {}
@@ -905,6 +906,7 @@ local listeners = {
 	remove_prototype = {},
 	rename_prototype = {},
 	on_new_prototype = {},
+	on_prototype_replaced = {},
 	on_new_prototype_via_lazyAPI = {},
 	on_prototype_changed = {},
 	on_tag_added = {},
@@ -929,7 +931,8 @@ data.extend = function(self, new_prototypes, ...)
 			local prev_instance = data_raw[_type][name]
 			-- Perhaps it should verify this case later instead
 			if prev_instance and prev_instance ~= prototype then
-				lazyAPI.base.remove_prototype(prev_instance)
+				lazyAPI.deleted_data[prototype.type][prototype.name] = prototype -- TODO: recheck, perhaps I should use a metamethod instead
+				LazyAPI.notify_prototype_replaced(prev_instance, prototype)
 			end
 		end
 	end
@@ -1032,6 +1035,23 @@ local function notify_new_alternative_prototype(prototype, alt_prototype)
 	if _subscriptions.all then
 		for _, func in pairs(_subscriptions.all) do
 			func(prototype, alt_prototype)
+		end
+	end
+end
+
+
+---@param prev_prototype table
+---@param new_prototype table
+LazyAPI.notify_prototype_replaced = function(prev_prototype, new_prototype)
+	local _subscriptions = subscriptions.on_prototype_replaced
+	if _subscriptions[prototype_type] then
+		for _, func in pairs(_subscriptions[prototype_type]) do
+			func(prev_prototype, new_prototype)
+		end
+	end
+	if _subscriptions.all then
+		for _, func in pairs(_subscriptions.all) do
+			func(prev_prototype, new_prototype)
 		end
 	end
 end
@@ -1147,7 +1167,7 @@ lazyAPI.fix_inconsistent_array = function(array)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if array[i] == nil then
-				lazyAPI._warning_for_fixed_tables[array] = warning_types.table_has_gaps
+				lazyAPI._warning_for_fixed_tables[array] = _warning_types.table_has_gaps
 				tremove(array, i)
 			end
 		end
@@ -1199,7 +1219,7 @@ lazyAPI.fix_messy_table = function(t)
 	if len_before > 0 then
 		for i=len_before, 1, -1 do
 			if t[i] == nil then
-				lazyAPI._warning_for_fixed_tables[t] = warning_types.table_has_gaps
+				lazyAPI._warning_for_fixed_tables[t] = _warning_types.table_has_gaps
 				tremove(t, i)
 			end
 		end
@@ -1224,7 +1244,7 @@ lazyAPI.fix_messy_table = function(t)
 			temp_arr = {v}
 			break
 		else
-			lazyAPI._warning_for_fixed_tables[t] = warning_types.mixed_array
+			lazyAPI._warning_for_fixed_tables[t] = _warning_types.mixed_array
 		end
 	end
 
@@ -1237,7 +1257,7 @@ lazyAPI.fix_messy_table = function(t)
 				temp_arr[#temp_arr+1] = v
 			end
 		else
-			lazyAPI._warning_for_fixed_tables[t] = warning_types.mixed_array
+			lazyAPI._warning_for_fixed_tables[t] = _warning_types.mixed_array
 		end
 	end
 	for i=1, #temp_arr do
