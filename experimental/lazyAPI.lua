@@ -961,23 +961,25 @@ data.extend = function(self, new_prototypes, ...)
 		end
 
 		if type(k) == "number" and type(prototype) == "table" and prototype.type then
-			local is_added = (data_raw[prototype.type][prototype.name] == prototype)
+			local prototype_type = prototype.type
+			local name = prototype.name
+			local is_added = (data_raw[prototype_type][name] == prototype)
 			if is_added then
-				local removed_prot = lazyAPI.deleted_data[prototype.type][prototype.name]
+				local removed_prot = lazyAPI.deleted_data[prototype_type][name]
 				if removed_prot == prot then
-					lazyAPI.deleted_data[prototype.type][prototype.name] = nil
+					lazyAPI.deleted_data[prototype_type][name] = nil
 				end
 
-				local prototype_type = prototype.type
-				local name = prototype.name
+				-- Raise an event
+				local subscription_group = subscriptions.on_new_prototype
 				if data_raw[prototype_type][name] then
-					if subscriptions.on_new_prototype[prototype_type] then
-						for _, func in pairs(subscriptions.on_new_prototype[prototype_type]) do
+					if subscription_group[prototype_type] then
+						for _, func in pairs(subscription_group[prototype_type]) do
 							func(prototype, name, prototype_type)
 						end
 					end
-					if subscriptions.on_new_prototype.all then
-						for _, func in pairs(subscriptions.on_new_prototype.all) do
+					if subscription_group.all then
+						for _, func in pairs(subscription_group.all) do
 							func(prototype, name, prototype_type)
 						end
 					end
@@ -6564,25 +6566,34 @@ function lazyAPI.add_prototype(prototype_type, name, prototype)
 	prototype.type = prototype_type or prototype.type
 	prototype.name = name or prototype.name
 
-	add_prototypes(data, {prototype}) -- original data.extend
-	if data_raw[prototype_type][name] then
-		if subscriptions.on_new_prototype_via_lazyAPI[prototype_type] then
-			for _, func in pairs(subscriptions.on_new_prototype_via_lazyAPI[prototype_type]) do
-				func(prototype, name, prototype_type)
-			end
-		end
-		if subscriptions.on_new_prototype_via_lazyAPI.all then
-			for _, func in pairs(subscriptions.on_new_prototype_via_lazyAPI.all) do
-				func(prototype, name, prototype_type)
-			end
-		end
+	-- Let's check if something will be overwritten
+	local prev_instance = data_raw[prototype.type][prototype.name]
+	-- Perhaps it should verify this case later instead
+	if prev_instance and prev_instance ~= prototype then
+		lazyAPI.deleted_data[prototype.type][prototype.name] = prototype -- TODO: recheck, perhaps I should use a metamethod instead
+		LazyAPI.notify_prototype_replaced(prev_instance, prototype)
 	end
+
+	add_prototypes(data, {prototype}) -- original data.extend
 
 	local is_added = (data_raw[prototype.type][prototype.name] == prototype)
 	if is_added then
 		local removed_prot = lazyAPI.deleted_data[prototype.type][prototype.name]
 		if removed_prot == prot then
 			lazyAPI.deleted_data[prototype.type][prototype.name] = nil
+		end
+
+		-- Raise an event
+		local subscription_group = subscriptions.on_new_prototype_via_lazyAPI
+		if subscription_group[prototype_type] then
+			for _, func in pairs(subscription_group[prototype_type]) do
+				func(prototype, name, prototype_type)
+			end
+		end
+		if subscription_group.all then
+			for _, func in pairs(subscription_group.all) do
+				func(prototype, name, prototype_type)
+			end
 		end
 	end
 
