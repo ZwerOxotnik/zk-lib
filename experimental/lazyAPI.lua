@@ -8,6 +8,8 @@ Please, don't change/create/delete prototypes in data.lua file
 in order to improve and simplify mod development and mod compatibility, thanks.
 Please, don't use this module as a new library.
 
+Supports: simpleTiers (__zk_lib__/experimental/simpleTiers.lua)
+
 The short name for this framework is "LAPI".
 ]]--
 ---@class lazyAPI
@@ -15,6 +17,11 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 
 
 -- LazyAPI.notify_prototype_replaced(prev_prototype, new_prototype)
+-- LazyAPI.notify_on_new_tier(prototype, tier_data)
+-- LazyAPI.notify_on_tier_removed(prototype, tier_data)
+-- LazyAPI.notify_on_new_prototype_in_tier(prototype, added_prototype, tier_data)
+-- LazyAPI.notify_on_prototype_removed_in_tier(prototype, removed_prototype, tier_data)
+-- LazyAPI.notify_on_prototype_replaced_in_tier(source_prototype, old_prototype, new_prototype, tier_data)
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
 -- lazyAPI.add_extension(function)
@@ -90,10 +97,10 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.base.has_in_array(source, data): boolean
 -- lazyAPI.base.remove_from_array(source, field, data): prototype, integer
 -- lazyAPI.base.remove_from_array(source, data): prototype, integer
--- lazyAPI.base.rename_in_array(source, field, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
--- lazyAPI.base.rename_in_array(source, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
--- lazyAPI.base.replace_in_array(source, field, old_name, new_name) prototype | lazyAPI.base.replace_in_array()
--- lazyAPI.base.replace_in_array(source, old_name, new_name) prototype | lazyAPI.base.replace_in_array()
+-- lazyAPI.base.rename_in_array(source, field, old_name, new_name): prototype, boolean | lazyAPI.base.rename_in_array()
+-- lazyAPI.base.rename_in_array(source, old_name, new_name): prototype, boolean | lazyAPI.base.rename_in_array()
+-- lazyAPI.base.replace_in_array(source, field, old_name, new_name): prototype, boolean | lazyAPI.base.replace_in_array()
+-- lazyAPI.base.replace_in_array(source, old_name, new_name): prototype, boolean | lazyAPI.base.replace_in_array()
 -- lazyAPI.base.add_to_array(source, field, data): prototype, boolean
 -- lazyAPI.base.add_to_array(source, data): prototype, boolean
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
@@ -916,7 +923,12 @@ local listeners = {
 	on_tag_added = {},
 	on_tag_removed = {},
 	on_new_alternative_prototype = {},
-	on_removed_alternative_prototype = {}
+	on_removed_alternative_prototype = {},
+	on_new_tier = {},
+	on_tier_removed = {},
+	on_new_prototype_in_tier = {},
+	on_prototype_removed_in_tier = {},
+	on_prototype_replaced_in_tier = {}
 }
 -- TODO: Refactor notifying
 local subscriptions = {}
@@ -1049,15 +1061,99 @@ end
 ---@param prev_prototype table
 ---@param new_prototype table
 LazyAPI.notify_prototype_replaced = function(prev_prototype, new_prototype)
-	local subscriptio_group = subscriptions.on_prototype_replaced
-	if subscriptio_group[prototype_type] then
-		for _, func in pairs(subscriptio_group[prototype_type]) do
+	local subscription_group = subscriptions.on_prototype_replaced
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
 			func(prev_prototype, new_prototype)
 		end
 	end
-	if subscriptio_group.all then
-		for _, func in pairs(subscriptio_group.all) do
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
 			func(prev_prototype, new_prototype)
+		end
+	end
+end
+
+---@param prototype table
+---@param tier_data table
+LazyAPI.notify_on_new_tier = function(prototype, tier_data)
+	local subscription_group = subscriptions.on_prototype_replaced
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(prototype, tier_data)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(prototype, tier_data)
+		end
+	end
+end
+
+---@param prototype table
+---@param tier_data table
+LazyAPI.notify_on_tier_removed = function(prototype, tier_data)
+	local subscription_group = subscriptions.on_prototype_replaced
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(prototype, tier_data)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(prototype, tier_data)
+		end
+	end
+end
+
+---@param prototype table
+---@param added_prototype table
+---@param tier_data table
+LazyAPI.notify_on_new_prototype_in_tier = function(prototype, added_prototype, tier_data)
+	local subscription_group = subscriptions.on_prototype_replaced
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(prototype, added_prototype, tier_data)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(prototype, added_prototype, tier_data)
+		end
+	end
+end
+
+---@param prototype table
+---@param removed_prototype table
+---@param tier_data table
+LazyAPI.notify_on_prototype_removed_in_tier = function(prototype, removed_prototype, tier_data)
+	local subscription_group = subscriptions.on_prototype_replaced
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(prototype, removed_prototype, tier_data)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(prototype, removed_prototype, tier_data)
+		end
+	end
+end
+
+---@param source_prototype table
+---@param old_prototype table
+---@param new_prototype table
+---@param tier_data table
+LazyAPI.notify_on_prototype_replaced_in_tier = function(source_prototype, old_prototype, new_prototype, tier_data)
+	local subscription_group = subscriptions.on_prototype_replaced
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(source_prototype, old_prototype, new_prototype, tier_data)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(source_prototype, old_prototype, new_prototype, tier_data)
 		end
 	end
 end
@@ -1388,10 +1484,10 @@ local remove_from_array = lazyAPI.base.remove_from_array
 
 ---@param source table
 ---@param field any
----@param old_name string
----@param new_name string
----@return table prototype
----@overload fun(source, old_name, new_name): table
+---@param old_name any
+---@param new_name any
+---@return table prototype, boolean is_replaced
+---@overload fun(source, old_name, new_name): table, boolean
 ---@overload fun()
 lazyAPI.base.rename_in_array = function(source, field, old_name, new_name)
 	if field == nil then error("Second parameter is nil") end
@@ -1403,15 +1499,17 @@ lazyAPI.base.rename_in_array = function(source, field, old_name, new_name)
 		old_name = field
 		array = source
 	end
-	if array == nil then return source end
+	if array == nil then return source, false end
 
+	local is_replaced = false
 	fix_array(array)
 	for i=#array, 1, -1 do
 		if array[i] == old_name then
 			array[i] = new_name
+			is_replaced = true
 		end
 	end
-	return source
+	return source, is_replaced
 end
 local rename_in_array = lazyAPI.base.rename_in_array
 lazyAPI.base.replace_in_array = lazyAPI.base.rename_in_array
