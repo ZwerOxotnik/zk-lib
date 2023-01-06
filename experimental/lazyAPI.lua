@@ -4,11 +4,15 @@ Are you lazy to change/add/remove/check some prototypes/stuff in the data stage?
 Currently, this is an experimental framework, not everything is stable yet. (anything can be changed, removed, added etc.)\
 No messy data, efficient API.
 
+Supports:
+simpleTiers (__zk_lib__/experimental/simpleTiers.lua)
+easyTemplates (__zk_lib__/experimental/easyTemplates.lua)
+
+WARNING: perhaps, I'll change events to raise them with table data
+
 Please, don't change/create/delete prototypes in data.lua file
 in order to improve and simplify mod development and mod compatibility, thanks.
 Please, don't use this module as a new library.
-
-Supports: simpleTiers (__zk_lib__/experimental/simpleTiers.lua)
 
 The short name for this framework is "LAPI".
 ]]--
@@ -17,6 +21,9 @@ The short name for this framework is "LAPI".
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.1"}
 
 
+-- LazyAPI.notify_on_new_template(_type, name, template)
+-- LazyAPI.notify_on_pre_template_removed(_type, name, template)
+-- LazyAPI.notify_on_new_prototype_from_template(_type, name, template, new_prototype)
 -- LazyAPI.notify_prototype_replaced(prev_prototype, new_prototype)
 -- LazyAPI.notify_on_new_tier(prototype, tier_data)
 -- LazyAPI.notify_on_tier_removed(prototype, tier_data)
@@ -290,6 +297,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 
 local type, table, rawget, rawset = type, table, rawget, rawset -- There's a chance something overwrites it
 local debug, error, log = debug, error, log -- I'm pretty sure, some mod did overwrite it
+local traceback = debug.traceback
 ---@diagnostic disable-next-line: undefined-field
 local deepcopy = table.deepcopy
 local tremove = table.remove
@@ -929,7 +937,10 @@ local listeners = {
 	on_tier_removed = {},
 	on_new_prototype_in_tier = {},
 	on_prototype_removed_in_tier = {},
-	on_prototype_replaced_in_tier = {}
+	on_prototype_replaced_in_tier = {},
+	on_new_template = {},
+	on_pre_template_removed = {},
+	on_new_prototype_from_template = {}
 }
 -- TODO: Refactor notifying
 local subscriptions = {}
@@ -961,7 +972,7 @@ data.extend = function(self, new_prototypes, ...)
 		local mod_name = prototypes_mod_source[prototype]
 		if mod_name == nil then
 			-- Get mod name
-			local text = debug.traceback()
+			local text = traceback()
 			local i = 22
 			while true do
 				local part = text:sub(i, i+1)
@@ -1041,6 +1052,58 @@ lazyAPI.locale_to_array = Locale.locale_to_array
 lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 
+
+---@param _type string
+---@param name string
+---@param template easyTemplate
+lazyAPI.notify_on_new_template = function(_type, name, template)
+	local subscription_group = subscriptions.on_new_template
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(_type, name, template)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(_type, name, template)
+		end
+	end
+end
+
+---@param _type string
+---@param name string
+---@param template easyTemplate
+lazyAPI.notify_on_pre_template_removed = function(_type, name, template)
+	local subscription_group = subscriptions.on_pre_template_removed
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(_type, name, template)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(_type, name, template)
+		end
+	end
+end
+
+---@param _type string
+---@param name string
+---@param template easyTemplate
+---@param new_prototype table
+lazyAPI.notify_on_new_prototype_from_template = function(_type, name, template, new_prototype)
+	local subscription_group = subscriptions.on_new_prototype_from_template
+	if subscription_group[prototype_type] then
+		for _, func in pairs(subscription_group[prototype_type]) do
+			func(_type, name, template, new_prototype)
+		end
+	end
+	if subscription_group.all then
+		for _, func in pairs(subscription_group.all) do
+			func(_type, name, template, new_prototype)
+		end
+	end
+end
 
 ---@param prototype table
 ---@param alt_prototype table
