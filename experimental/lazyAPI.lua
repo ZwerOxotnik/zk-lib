@@ -3847,7 +3847,7 @@ lazyAPI.base.recreate_prototype = function(prototype)
 	local prot = prototype.prototype or prototype
 	local prot_in_data = data_raw[prot.type][prot.name]
 	if prot_in_data then
-		return false
+		return prototype, false
 	end
 
 	lazyAPI.add_prototype(prot)
