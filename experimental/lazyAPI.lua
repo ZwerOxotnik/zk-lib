@@ -92,6 +92,8 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.base.remove_from_array(source, data): prototype, integer
 -- lazyAPI.base.rename_in_array(source, field, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
 -- lazyAPI.base.rename_in_array(source, old_name, new_name) prototype | lazyAPI.base.rename_in_array()
+-- lazyAPI.base.replace_in_array(source, field, old_name, new_name) prototype | lazyAPI.base.replace_in_array()
+-- lazyAPI.base.replace_in_array(source, old_name, new_name) prototype | lazyAPI.base.replace_in_array()
 -- lazyAPI.base.add_to_array(source, field, data): prototype, boolean
 -- lazyAPI.base.add_to_array(source, data): prototype, boolean
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype
@@ -1412,6 +1414,7 @@ lazyAPI.base.rename_in_array = function(source, field, old_name, new_name)
 	return source
 end
 local rename_in_array = lazyAPI.base.rename_in_array
+lazyAPI.base.replace_in_array = lazyAPI.base.rename_in_array
 
 
 ---@param source table
