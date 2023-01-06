@@ -699,7 +699,7 @@ lazyAPI.all_vehicles = {
 for rolling_stock_type, prototypes in pairs(lazyAPI.all_rolling_stocks) do
 	lazyAPI.all_vehicles[rolling_stock_type] = prototypes
 end
-lazyAPI.all_surrets = {
+lazyAPI.all_turrets = {
 	["turret"] = data_raw["turret"],
 	["ammo-turret"] = data_raw["ammo-turret"],
 	["electric-turret"] = data_raw["electric-turret"],
@@ -775,7 +775,7 @@ lazyAPI.entities_with_health = {
 	["spider-leg"] = data_raw["spider-leg"],
 	["tree"] = data_raw["tree"]
 }
-for turret_type, prototypes in pairs(lazyAPI.all_surrets) do
+for turret_type, prototypes in pairs(lazyAPI.all_turrets) do
 	lazyAPI.entities_with_health[turret_type] = prototypes
 end
 for vehicle_type, prototypes in pairs(lazyAPI.all_vehicles) do
@@ -2074,7 +2074,7 @@ lazyAPI.add_listener("on_rename_prototype", "equipment-grid", "lazyAPI_rename_eq
 	end
 end)
 lazyAPI.add_listener("on_remove_prototype", "optimized-decorative", "lazyAPI_remove_optimized-decorative", function(prototype, decorative_name, decorative_type)
-	for _, prototypes in pairs(lazyAPI.all_surrets) do
+	for _, prototypes in pairs(lazyAPI.all_turrets) do
 		for _, entity in pairs(prototypes) do
 			local spawn_decoration = entity.spawn_decoration
 			if spawn_decoration then
@@ -2586,7 +2586,7 @@ end)
 
 
 lazyAPI.add_listener("on_remove_prototype", {"all"}, "lazyAPI_remove_turrets", function(prototype, turret_name, turret_type)
-	if not lazyAPI.all_surrets[turret_type] then return end
+	if not lazyAPI.all_turrets[turret_type] then return end
 
 	for _, technology in pairs(technologies) do
 		lazyAPI.tech.remove_effect_everywhere(technology, "turret-attack", turret_name)
