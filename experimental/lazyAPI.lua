@@ -13,6 +13,7 @@ Supports: simpleTiers (__zk_lib__/experimental/simpleTiers.lua)
 The short name for this framework is "LAPI".
 ]]--
 ---@class lazyAPI
+---@module "__zk-lib__/experimental/lazyAPI"
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.1"}
 
 
