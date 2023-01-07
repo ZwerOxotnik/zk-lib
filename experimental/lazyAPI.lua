@@ -321,7 +321,7 @@ local mining_drills = data_raw["mining-drill"]
 ---@type table<string, integer>
 lazyAPI._warning_types = {
 	mixed_array = 1, -- Don't add different keys for arrays. It's difficult to check and use messy tables.
-	element_is_nil = 2 -- Be careful with tables like: {nil, 2} because their length will be inconsistent.
+	table_has_gaps = 2 -- Be careful with tables like: {nil, 2} because their length will be inconsistent.
 }
 local _warning_types = lazyAPI._warning_types
 lazyAPI._warnings = {
