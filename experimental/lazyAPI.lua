@@ -916,7 +916,10 @@ for tool_type, prototypes in pairs(lazyAPI.all_tools) do
 	lazyAPI.all_items[tool_type] = prototypes
 end
 
+
+---@type ZWlocale
 local Locale = require("static-libs/lualibs/locale")
+---@type ZWversion
 local Version = require("static-libs/lualibs/version")
 
 
