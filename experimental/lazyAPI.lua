@@ -21,6 +21,11 @@ The short name for this framework is "LAPI".
 local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.1"}
 
 
+---@class LAPIWrappedPrototype
+---@field prototype table
+---@field name string
+
+
 -- LazyAPI.notify_on_new_template(_type, name, template)
 -- LazyAPI.notify_on_pre_template_removed(_type, name, template)
 -- LazyAPI.notify_on_new_prototype_from_template(_type, name, template, new_prototype)
@@ -6658,6 +6663,7 @@ prototype_mt.__newindex = function(self, key, value)
 end
 local wrapped_prototypes = {}
 tmemoize(wrapped_prototypes, function(prototype)
+	---@type string?
 	local _type = prototype.type
 	if _type == nil then
 		error("lazyAPI.wrap_prototype(prototype) got not a prototype")
@@ -6713,7 +6719,7 @@ end)
 
 
 ---@param prototype table
----@return table # wrapped prototype with lazyAPI functions
+---@return LAPIWrappedPrototype # wrapped prototype with lazyAPI functions
 lazyAPI.wrap_prototype = function(prototype)
 	return wrapped_prototypes[prototype]
 end
