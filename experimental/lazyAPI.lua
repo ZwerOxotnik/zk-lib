@@ -920,17 +920,17 @@ local extensions = {}
 
 
 local listeners = {
-	on_pre_remove_prototype = {},
-	on_remove_prototype = {},
-	on_rename_prototype = {},
+	on_pre_prototype_removed = {},
 	on_new_prototype = {},
+	on_prototype_removed = {},
+	on_prototype_renamed = {},
 	on_prototype_replaced = {},
 	on_new_prototype_via_lazyAPI = {},
 	on_prototype_changed = {},
 	on_tag_added = {},
 	on_tag_removed = {},
 	on_new_alternative_prototype = {},
-	on_removed_alternative_prototype = {},
+	on_alternative_prototype_removed = {},
 	on_new_tier = {},
 	on_tier_removed = {},
 	on_new_prototype_in_tier = {},
@@ -1258,7 +1258,7 @@ end
 ---@param prototype table
 ---@param alt_prototype table
 local function notify_removed_alternative_prototype(prototype, alt_prototype)
-	local subscription_group = subscriptions.on_removed_alternative_prototype
+	local subscription_group = subscriptions.on_alternative_prototype_removed
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
 			func(prototype, alt_prototype)
@@ -2093,7 +2093,7 @@ end)
 lazyAPI.add_listener("on_new_prototype_via_lazyAPI", "all", "lazyAPI_store_prototype", function(prototype)
 	add_to_array(lazyAPI.all_data, prototype)
 end)
-lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_store_removed_prototype", function(prototype)
+lazyAPI.add_listener("on_prototype_removed", "all", "lazyAPI_store_removed_prototype", function(prototype)
 	add_to_array(lazyAPI.all_data, prototype)
 	local all_deleted_prototypes = lazyAPI.deleted_data[prototype.type]
 	if all_deleted_prototypes then
@@ -2101,7 +2101,7 @@ lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_store_removed_protot
 	end
 end)
 -- TODO: recheck
-lazyAPI.add_listener("on_removed_alternative_prototype", "all", "lazyAPI_store_removed_prototype", function(prototype)
+lazyAPI.add_listener("on_alternative_prototype_removed", "all", "lazyAPI_store_removed_prototype", function(prototype)
 	add_to_array(lazyAPI.all_data, prototype)
 	local all_deleted_prototypes = lazyAPI.deleted_data[prototype.type]
 	if all_deleted_prototypes then
@@ -2110,7 +2110,7 @@ lazyAPI.add_listener("on_removed_alternative_prototype", "all", "lazyAPI_store_r
 end)
 
 
-lazyAPI.add_listener("on_remove_prototype", "technology", "lazyAPI_remove_technology", function(prototype, tech_name, tech_type)
+lazyAPI.add_listener("on_prototype_removed", "technology", "lazyAPI_remove_technology", function(prototype, tech_name, tech_type)
 	lazyAPI.tech.remove_contiguous_techs(prototype)
 	for _, technology in pairs(technologies) do
 		lazyAPI.tech.remove_prerequisite(technology, tech_name)
@@ -2128,7 +2128,7 @@ lazyAPI.add_listener("on_remove_prototype", "technology", "lazyAPI_remove_techno
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "recipe", "lazyAPI_remove_recipe", function(prototype, recipe_name, type)
+lazyAPI.add_listener("on_prototype_removed", "recipe", "lazyAPI_remove_recipe", function(prototype, recipe_name, type)
 	lazyAPI.remove_recipe_from_modules(recipe_name)
 
 	for _, technology in pairs(technologies) do
@@ -2148,23 +2148,23 @@ lazyAPI.add_listener("on_remove_prototype", "recipe", "lazyAPI_remove_recipe", f
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "fluid", "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
+lazyAPI.add_listener("on_prototype_removed", "fluid", "lazyAPI_remove_fluid", function(prototype, fluid_name, type)
 	lazyAPI.remove_fluid(fluid_name)
 end)
-lazyAPI.add_listener("on_remove_prototype", "tool", "lazyAPI_remove_tool", function(prototype, tool_name, type)
+lazyAPI.add_listener("on_prototype_removed", "tool", "lazyAPI_remove_tool", function(prototype, tool_name, type)
 	lazyAPI.remove_tool_everywhere(tool_name)
 end)
-lazyAPI.add_listener("on_rename_prototype", "tool", "lazyAPI_rename_tool", function(prototype, prev_name, new_name, prototype_type)
+lazyAPI.add_listener("on_prototype_renamed", "tool", "lazyAPI_rename_tool", function(prototype, prev_name, new_name, prototype_type)
 	lazyAPI.rename_tool(prev_name, prototype.name)
 end)
-lazyAPI.add_listener("on_remove_prototype", "underground-belt", "lazyAPI_remove_underground-belt", function(prototype, underground_belt_name, type)
+lazyAPI.add_listener("on_prototype_removed", "underground-belt", "lazyAPI_remove_underground-belt", function(prototype, underground_belt_name, type)
 	for _, belt in pairs(data_raw["transport-belt"]) do
 		if belt.related_underground_belt == underground_belt_name then
 			belt.related_underground_belt = nil
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "assembling-machine", "lazyAPI_remove_assembling-machine", function(prototype, machine_name, type)
+lazyAPI.add_listener("on_prototype_removed", "assembling-machine", "lazyAPI_remove_assembling-machine", function(prototype, machine_name, type)
 	for _, tt in pairs(data_raw["tips-and-tricks-item"]) do
 		if tt.trigger then
 			local triggers = tt.trigger.triggers
@@ -2180,12 +2180,12 @@ lazyAPI.add_listener("on_remove_prototype", "assembling-machine", "lazyAPI_remov
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "armor", "lazyAPI_remove_armor", function(prototype, armor_name, armor_type)
+lazyAPI.add_listener("on_prototype_removed", "armor", "lazyAPI_remove_armor", function(prototype, armor_name, armor_type)
 	for _, character in pairs(data_raw.character) do
 		lazyAPI.character.remove_armor(character, armor_name)
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "tips-and-tricks-item", "lazyAPI_remove_tips-and-tricks-item", function(prototype, tt_name, tt_type)
+lazyAPI.add_listener("on_prototype_removed", "tips-and-tricks-item", "lazyAPI_remove_tips-and-tricks-item", function(prototype, tt_name, tt_type)
 	for _, tt in pairs(data_raw["tips-and-tricks-item"]) do
 		if tt.dependencies then
 			remove_from_array(tt, "dependencies", tt_name)
@@ -2225,10 +2225,10 @@ local function remove_tile_from_action(action, tile_name)
 	end
 end
 
-lazyAPI.add_listener("on_remove_prototype", "tile", "lazyAPI_remove_tile", function(prototype, tile_name, tile_type)
+lazyAPI.add_listener("on_prototype_removed", "tile", "lazyAPI_remove_tile", function(prototype, tile_name, tile_type)
 	lazyAPI.remove_tile(tile_name)
 end)
-lazyAPI.add_listener("on_remove_prototype", "equipment-grid", "lazyAPI_remove_equipment-grid", function(prototype, EGrid_name, grid_type)
+lazyAPI.add_listener("on_prototype_removed", "equipment-grid", "lazyAPI_remove_equipment-grid", function(prototype, EGrid_name, grid_type)
 	for _, prototypes in pairs(lazyAPI.all_vehicles) do
 		for _, vehicle in pairs(prototypes) do
 			if vehicle.equipment_grid == EGrid_name then
@@ -2237,7 +2237,7 @@ lazyAPI.add_listener("on_remove_prototype", "equipment-grid", "lazyAPI_remove_eq
 		end
 	end
 end)
-lazyAPI.add_listener("on_rename_prototype", "equipment-grid", "lazyAPI_rename_equipment-grid", function(prototype, prev_name, new_name, prototype_type)
+lazyAPI.add_listener("on_prototype_renamed", "equipment-grid", "lazyAPI_rename_equipment-grid", function(prototype, prev_name, new_name, prototype_type)
 	for _, prototypes in pairs(lazyAPI.all_vehicles) do
 		for _, vehicle in pairs(prototypes) do
 			if vehicle.equipment_grid == prev_name then
@@ -2246,7 +2246,7 @@ lazyAPI.add_listener("on_rename_prototype", "equipment-grid", "lazyAPI_rename_eq
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "optimized-decorative", "lazyAPI_remove_optimized-decorative", function(prototype, decorative_name, decorative_type)
+lazyAPI.add_listener("on_prototype_removed", "optimized-decorative", "lazyAPI_remove_optimized-decorative", function(prototype, decorative_name, decorative_type)
 	for _, prototypes in pairs(lazyAPI.all_turrets) do
 		for _, entity in pairs(prototypes) do
 			local spawn_decoration = entity.spawn_decoration
@@ -2272,7 +2272,7 @@ lazyAPI.add_listener("on_remove_prototype", "optimized-decorative", "lazyAPI_rem
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "virtual-signal", "lazyAPI_remove_virtual-signal", function(prototype, vSignal_name, signal_type)
+lazyAPI.add_listener("on_prototype_removed", "virtual-signal", "lazyAPI_remove_virtual-signal", function(prototype, vSignal_name, signal_type)
 	for _, lamp in pairs(data_raw.lamp) do
 		local signal_to_color_mapping = lamp.signal_to_color_mapping
 		if signal_to_color_mapping then
@@ -2364,7 +2364,7 @@ lazyAPI.add_listener("on_remove_prototype", "virtual-signal", "lazyAPI_remove_vi
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "unit", "lazyAPI_remove_unit", function(prototype, unit_name, unit_type)
+lazyAPI.add_listener("on_prototype_removed", "unit", "lazyAPI_remove_unit", function(prototype, unit_name, unit_type)
 	for _, spawner in pairs(data_raw["unit-spawner"]) do
 		local result_units = spawner.result_units
 		if result_units then
@@ -2377,7 +2377,7 @@ lazyAPI.add_listener("on_remove_prototype", "unit", "lazyAPI_remove_unit", funct
 		end
 	end
 end)
-lazyAPI.add_listener("on_rename_prototype", "unit", "lazyAPI_rename_unit", function(prototype, prev_name, new_name, prototype_type)
+lazyAPI.add_listener("on_prototype_renamed", "unit", "lazyAPI_rename_unit", function(prototype, prev_name, new_name, prototype_type)
 	for _, spawner in pairs(data_raw["unit-spawner"]) do
 		local result_units = spawner.result_units
 		if result_units then
@@ -2391,7 +2391,7 @@ lazyAPI.add_listener("on_rename_prototype", "unit", "lazyAPI_rename_unit", funct
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "resource", "lazyAPI_remove_resource", function(prototype, resource_name, resource_type)
+lazyAPI.add_listener("on_prototype_removed", "resource", "lazyAPI_remove_resource", function(prototype, resource_name, resource_type)
 	local autoplace = data_raw["autoplace-control"][resource_name]
 	if autoplace and autoplace.category == "resource" then
 		lazyAPI.base.remove_prototype(autoplace)
@@ -2498,7 +2498,7 @@ lazyAPI.remove_entity_from_action = function(action, entity_name)
 		lazyAPI.remove_entity_from_action_delivery(action, action_delivery, entity_name)
 	end
 end
-lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_remove_explosions", function(prototype, explosion_name, explosion_type)
+lazyAPI.add_listener("on_prototype_removed", "all", "lazyAPI_remove_explosions", function(prototype, explosion_name, explosion_type)
 	if not lazyAPI.all_explosions[explosion_type] then return end
 
 	for _, prototypes in pairs(lazyAPI.all_entities) do
@@ -2509,7 +2509,7 @@ lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_remove_explosions", 
 		end
 	end
 end)
-lazyAPI.add_listener("on_rename_prototype", "all", "lazyAPI_rename_explosions", function(prototype, prev_name, new_name, prototype_type)
+lazyAPI.add_listener("on_prototype_renamed", "all", "lazyAPI_rename_explosions", function(prototype, prev_name, new_name, prototype_type)
 	if not lazyAPI.all_explosions[explosion_type] then return end
 
 	for _, prototypes in pairs(lazyAPI.all_entities) do
@@ -2520,7 +2520,7 @@ lazyAPI.add_listener("on_rename_prototype", "all", "lazyAPI_rename_explosions", 
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_remove_entities", function(prototype, entity_name, entity_type)
+lazyAPI.add_listener("on_prototype_removed", "all", "lazyAPI_remove_entities", function(prototype, entity_name, entity_type)
 	if not lazyAPI.all_entities[entity_type] then return end
 
 	lazyAPI.remove_items_by_entity(entity_name)
@@ -2744,7 +2744,7 @@ lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_remove_entities", fu
 		end
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_remove_equipments", function(prototype, equipment_name, equipment_type)
+lazyAPI.add_listener("on_prototype_removed", "all", "lazyAPI_remove_equipments", function(prototype, equipment_name, equipment_type)
 	if not lazyAPI.all_equipments[equipment_type] then return end
 
 	lazyAPI.remove_items_by_equipment(equipment_name)
@@ -2758,14 +2758,14 @@ lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_remove_equipments", 
 end)
 
 
-lazyAPI.add_listener("on_remove_prototype", {"all"}, "lazyAPI_remove_turrets", function(prototype, turret_name, turret_type)
+lazyAPI.add_listener("on_prototype_removed", {"all"}, "lazyAPI_remove_turrets", function(prototype, turret_name, turret_type)
 	if not lazyAPI.all_turrets[turret_type] then return end
 
 	for _, technology in pairs(technologies) do
 		lazyAPI.tech.remove_effect_everywhere(technology, "turret-attack", turret_name)
 	end
 end)
-lazyAPI.add_listener("on_remove_prototype", "all", "lazyAPI_remove_items", function(prototype, item_name, item_type)
+lazyAPI.add_listener("on_prototype_removed", "all", "lazyAPI_remove_items", function(prototype, item_name, item_type)
 	if not lazyAPI.all_items[item_type] then return end
 
 	lazyAPI.remove_recipes_by_item(item_name)
@@ -4073,7 +4073,7 @@ lazyAPI.base.rename = function(prototype, new_name)
 	add_prototypes(data, {prot})
 
 	prot.name = new_name
-	local subscription_group = subscriptions.on_rename_prototype
+	local subscription_group = subscriptions.on_prototype_renamed
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
 			func(prot, prev_name, new_name, prototype_type)
@@ -4114,7 +4114,7 @@ lazyAPI.base.remove_prototype = function(prototype)
 		return prototype
 	end
 
-	local subscription_group = subscriptions.on_pre_remove_prototype
+	local subscription_group = subscriptions.on_pre_prototype_removed
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
 			func(prot, name, prototype_type)
@@ -4127,7 +4127,7 @@ lazyAPI.base.remove_prototype = function(prototype)
 	end
 
 	data_raw[prototype_type][name] = nil
-	subscription_group = subscriptions.on_remove_prototype
+	subscription_group = subscriptions.on_prototype_removed
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
 			func(prot, name, prototype_type)
