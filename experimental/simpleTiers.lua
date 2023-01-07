@@ -75,14 +75,17 @@ STiers.add_to_tiers = function(prototype, source_prototype)
 		if tier == nil then
 			tier = {}
 			tiers[prot] = tier -- Perhaps, I should use metamethods instead
-			LazyAPI.notify_on_new_tier(prot, tier)
+
+			local event_data = {prototype = prot, tier = tier}
+			lazyAPI.raise_event("on_new_tier", prot.type, event_data)
 		end
 		return prototype
 	end
 
 	local _, is_added = lazyAPI.base.add_to_array(tiers, prototype)
 	if is_added then
-		LazyAPI.notify_on_new_prototype_in_tier(source_prot, prot, tier)
+		local event_data = {tier_prototype = source_prot, prototype = prot, tier = tier}
+		lazyAPI.raise_event("on_new_prototype_in_tier", prot.type, event_data)
 	end
 
 	return prototype
@@ -103,7 +106,9 @@ STiers.remove_from_tiers = function(prototype, source_prototype)
 		local tier = tiers[prot]
 		if tier then
 			tiers[prot] = nil -- Perhaps, I should use metamethods instead
-			LazyAPI.notify_on_tier_removed(prot, tier)
+
+			local event_data = {tier_prototype = prot, tier = tier}
+			lazyAPI.raise_event("on_tier_removed", prot.type, event_data)
 		end
 		return prototype
 	end
@@ -112,7 +117,8 @@ STiers.remove_from_tiers = function(prototype, source_prototype)
 	if tier then
 		local _, removed_count = lazyAPI.base.remove_from_array(tier, prot)
 		if removed_count > 0 then
-			LazyAPI.notify_on_prototype_removed_in_tier(source_prot, prot, tier)
+			local event_data = {tier_prototype = source_prot, prototype = prot, tier = tier}
+			lazyAPI.raise_event("on_prototype_removed_in_tier", prot.type, event_data)
 		end
 	end
 
@@ -131,7 +137,8 @@ STiers.replace_in_tiers = function(source_prototype, old_prototype, new_prototyp
 
 	local _, is_replaced = lazyAPI.base.replace_in_array(tier, source_prot.name, old_prot, new_prot)
 	if is_replaced then
-		LazyAPI.notify_on_prototype_replaced_in_tier(source_prot, old_prot, new_prot, tier)
+		local event_data = {tier_prototype = source_prot, old_prototype = old_prot, new_prototype = new_prot, tier = tier}
+		lazyAPI.raise_event("on_prototype_replaced_in_tier", old_prot.type, event_data) -- TODO: recheck, ambgious case for type
 	end
 end
 

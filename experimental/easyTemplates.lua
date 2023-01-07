@@ -50,7 +50,9 @@ easyTemplates.add_template = function(_type, name, prototype_data)
 	if prev_template then
 		log(("WARNING: template with type \"%s\" and name \"%s\" will be overwritten in easyTemplates"):format(_type, name))
 		log(debug.traceback())
-		lazyAPI.notify_on_pre_template_removed(_type, name, prev_template)
+
+		local event_data = {prev_template = prev_template, template_type = _type, template_name = name}
+		lazyAPI.raise_event("on_pre_template_removed", _type, event_data)
 	end
 
 	local template = {
@@ -59,7 +61,9 @@ easyTemplates.add_template = function(_type, name, prototype_data)
 		create_from_template = easyTemplates._create_from_template -- Perhaps, I should use a metatable instead
 	}
 	template_group[name] = template
-	lazyAPI.notify_on_new_template(_type, name, template)
+
+	local event_data = {template_type = _type, template_name = name, template = template}
+	lazyAPI.raise_event("on_new_template", _type, event_data)
 
 	return template
 end
@@ -102,7 +106,8 @@ easyTemplates.create_from_template = function(_type, name, new_data)
 	local _, wrapped_new_prototype = lazyAPI.add_prototype(new_prototype)
 	local _, is_added = lazyAPI.base.add_to_array(template.output_prototypes, new_prototype)
 	if is_added then
-		lazyAPI.notify_on_new_prototype_from_template(_type, name, template, new_prototype)
+		local event_data = {template = template, new_prototype = new_prototype, template_type = _type, template_name = name}
+		lazyAPI.raise_event("on_new_prototype_from_template", _type, event_data)
 	end
 
 	return new_prototype, wrapped_new_prototype
