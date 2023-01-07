@@ -83,7 +83,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.find_prototypes_filtered(prototype_filter): table[]
 
 -- lazyAPI.base.override_data(table): prototype
--- lazyAPI.base.raise_change(prototype): prototype
+-- lazyAPI.base.raise_change_event(prototype): prototype
 -- lazyAPI.base.does_exist(type, name): boolean
 -- lazyAPI.base.does_exist(prototype): boolean
 -- lazyAPI.base.get_mod_source(prototype): string?
@@ -3779,14 +3779,14 @@ end
 lazyAPI.base.override_data = function(prototype, new_data)
 	local prot = prototype.prototype or prototype
 	lazyAPI.override_data(prot, new_data)
-	lazyAPI.base.raise_change(prototype)
+	lazyAPI.base.raise_change_event(prototype)
 
 	return prototype
 end
 
 ---@param prototype table
 ---@return prototype
-lazyAPI.base.raise_change = function(prototype)
+lazyAPI.base.raise_change_event = function(prototype)
 	local prot = prototype.prototype or prototype
 	local prototype_type = prot.type
 
