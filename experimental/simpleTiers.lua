@@ -61,7 +61,7 @@ end
 
 ---@param prototype table
 ---@param source_prototype? table
----@return table prototype
+---@return prototype
 STiers.add_to_tiers = function(prototype, source_prototype)
 	local prot = prototype.prototype or prototype
 	local source_prot = source_prototype.prototype or prototype
@@ -90,7 +90,7 @@ end
 
 ---@param prototype table
 ---@param source_prototype? table
----@return table prototype
+---@return prototype
 STiers.remove_from_tiers = function(prototype, source_prototype)
 	local prot = prototype.prototype or prototype
 	local source_prot = source_prototype.prototype or prototype
