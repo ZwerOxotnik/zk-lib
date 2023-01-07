@@ -343,16 +343,6 @@ setmetatable(lazyAPI._warning_for_fixed_tables, {
 ---@type table[]
 lazyAPI.all_data = {} -- Prototypes from lazyAPI.deleted_data and raw.data
 lazyAPI.vanilla_data = {} -- WARNING: NOT RELIABLE AT ALL (it should contain original data from raw.data and yet changable indirectly still)
-for _type, prototypes in pairs(data_raw) do
-	lazyAPI.all_data[_type] = lazyAPI.all_data[_type] or {}
-	lazyAPI.vanilla_data[_type] = lazyAPI.vanilla_data[_type] or {}
-	local all_prototypes = lazyAPI.all_data[_type]
-	local vanilla_prototypes = lazyAPI.vanilla_data[_type]
-	for name, prototype in pairs(prototypes) do
-		all_prototypes[name] = prototype
-		vanilla_prototypes[name] = prototype
-	end
-end
 
 ---@type table<string, table<string, table>>
 lazyAPI.deleted_data = {} -- Deleted prototypes
@@ -1634,6 +1624,16 @@ lazyAPI.base.add_to_array = function(source, field, data)
 	return source, is_added_new_data
 end
 local add_to_array = lazyAPI.base.add_to_array
+
+
+for _type, prototypes in pairs(data_raw) do
+	lazyAPI.vanilla_data[_type] = lazyAPI.vanilla_data[_type] or {}
+	local vanilla_prototypes = lazyAPI.vanilla_data[_type]
+	for name, prototype in pairs(prototypes) do
+		add_to_array(lazyAPI.all_data, prototype)
+		vanilla_prototypes[name] = prototype
+	end
+end
 
 
 ---@param prototype table
