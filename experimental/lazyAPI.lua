@@ -26,15 +26,15 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 ---@field name string
 
 
--- LazyAPI.notify_on_new_template(_type, name, template)
--- LazyAPI.notify_on_pre_template_removed(_type, name, template)
--- LazyAPI.notify_on_new_prototype_from_template(_type, name, template, new_prototype)
--- LazyAPI.notify_prototype_replaced(prev_prototype, new_prototype)
--- LazyAPI.notify_on_new_tier(prototype, tier_data)
--- LazyAPI.notify_on_tier_removed(prototype, tier_data)
--- LazyAPI.notify_on_new_prototype_in_tier(prototype, added_prototype, tier_data)
--- LazyAPI.notify_on_prototype_removed_in_tier(prototype, removed_prototype, tier_data)
--- LazyAPI.notify_on_prototype_replaced_in_tier(source_prototype, old_prototype, new_prototype, tier_data)
+-- lazyAPI.notify_on_new_template(_type, name, template)
+-- lazyAPI.notify_on_pre_template_removed(_type, name, template)
+-- lazyAPI.notify_on_new_prototype_from_template(_type, name, template, new_prototype)
+-- lazyAPI.notify_prototype_replaced(prev_prototype, new_prototype)
+-- lazyAPI.notify_on_new_tier(prototype, tier_data)
+-- lazyAPI.notify_on_tier_removed(prototype, tier_data)
+-- lazyAPI.notify_on_new_prototype_in_tier(prototype, added_prototype, tier_data)
+-- lazyAPI.notify_on_prototype_removed_in_tier(prototype, removed_prototype, tier_data)
+-- lazyAPI.notify_on_prototype_replaced_in_tier(source_prototype, old_prototype, new_prototype, tier_data)
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
 -- lazyAPI.add_extension(function)
@@ -968,7 +968,7 @@ data.extend = function(self, new_prototypes, ...)
 			-- Perhaps it should verify this case later instead
 			if prev_instance and prev_instance ~= prototype then
 				lazyAPI.deleted_data[prototype.type][prototype.name] = prototype -- TODO: recheck, perhaps I should use a metamethod instead
-				LazyAPI.notify_prototype_replaced(prev_instance, prototype)
+				lazyAPI.notify_prototype_replaced(prev_instance, prototype)
 			end
 		end
 	end
@@ -1132,7 +1132,7 @@ end
 
 ---@param prev_prototype table
 ---@param new_prototype table
-LazyAPI.notify_prototype_replaced = function(prev_prototype, new_prototype)
+lazyAPI.notify_prototype_replaced = function(prev_prototype, new_prototype)
 	local subscription_group = subscriptions.on_prototype_replaced
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
@@ -1148,7 +1148,7 @@ end
 
 ---@param prototype table
 ---@param tier_data table
-LazyAPI.notify_on_new_tier = function(prototype, tier_data)
+lazyAPI.notify_on_new_tier = function(prototype, tier_data)
 	local subscription_group = subscriptions.on_prototype_replaced
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
@@ -1164,7 +1164,7 @@ end
 
 ---@param prototype table
 ---@param tier_data table
-LazyAPI.notify_on_tier_removed = function(prototype, tier_data)
+lazyAPI.notify_on_tier_removed = function(prototype, tier_data)
 	local subscription_group = subscriptions.on_prototype_replaced
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
@@ -1181,7 +1181,7 @@ end
 ---@param prototype table
 ---@param added_prototype table
 ---@param tier_data table
-LazyAPI.notify_on_new_prototype_in_tier = function(prototype, added_prototype, tier_data)
+lazyAPI.notify_on_new_prototype_in_tier = function(prototype, added_prototype, tier_data)
 	local subscription_group = subscriptions.on_prototype_replaced
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
@@ -1198,7 +1198,7 @@ end
 ---@param prototype table
 ---@param removed_prototype table
 ---@param tier_data table
-LazyAPI.notify_on_prototype_removed_in_tier = function(prototype, removed_prototype, tier_data)
+lazyAPI.notify_on_prototype_removed_in_tier = function(prototype, removed_prototype, tier_data)
 	local subscription_group = subscriptions.on_prototype_replaced
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
@@ -1216,7 +1216,7 @@ end
 ---@param old_prototype table
 ---@param new_prototype table
 ---@param tier_data table
-LazyAPI.notify_on_prototype_replaced_in_tier = function(source_prototype, old_prototype, new_prototype, tier_data)
+lazyAPI.notify_on_prototype_replaced_in_tier = function(source_prototype, old_prototype, new_prototype, tier_data)
 	local subscription_group = subscriptions.on_prototype_replaced
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
@@ -6748,7 +6748,7 @@ function lazyAPI.add_prototype(prototype_type, name, prototype)
 	-- Perhaps it should verify this case later instead
 	if prev_instance and prev_instance ~= prototype then
 		lazyAPI.deleted_data[prototype.type][prototype.name] = prototype -- TODO: recheck, perhaps I should use a metamethod instead
-		LazyAPI.notify_prototype_replaced(prev_instance, prototype)
+		lazyAPI.notify_prototype_replaced(prev_instance, prototype)
 	end
 
 	add_prototypes(data, {prototype}) -- original data.extend
