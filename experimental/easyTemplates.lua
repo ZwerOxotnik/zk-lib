@@ -13,7 +13,7 @@ local log, debug = log, debug
 ---@class easyTemplate
 ---@field prototype table
 ---@field output_prototypes table[]
----@field create_from_template fun(new_data: table)
+---@field create_from_template fun(self: easyTemplate, new_data: table)
 
 ---@type table<string, table<string, easyTemplate>>
 easyTemplates.templates = {}
