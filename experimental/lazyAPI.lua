@@ -947,26 +947,26 @@ local extensions = {}
 
 
 local listeners = {
-	on_pre_prototype_removed = {},
-	on_new_prototype = {},
-	on_new_prototype_via_lazyAPI = {},
-	on_prototype_removed = {},
-	on_prototype_renamed = {},
-	on_pre_prototype_replaced = {},
-	on_prototype_replaced = {},
-	on_prototype_changed = {},
-	on_tag_added = {},
-	on_tag_removed = {},
-	on_new_alternative_prototype = {},
-	on_alternative_prototype_removed = {},
-	on_new_tier = {},
-	on_tier_removed = {},
-	on_new_prototype_in_tier = {},
-	on_prototype_removed_in_tier = {},
-	on_prototype_replaced_in_tier = {},
-	on_new_template = {},
-	on_pre_template_removed = {},
-	on_new_prototype_from_template = {}
+	on_pre_prototype_removed = {}, -- returns: {prototype: table}
+	on_new_prototype = {}, -- returns: {prototype: table}
+	on_new_prototype_via_lazyAPI = {}, -- returns: {prototype: table}
+	on_prototype_removed = {}, -- returns: {prototype: table}
+	on_prototype_renamed = {}, -- returns: {prototype: table, prev_name: string}
+	on_pre_prototype_replaced = {}, -- returns: {prototype: table, prev_instance: table}
+	on_prototype_replaced = {}, -- returns: {prototype: table, prev_instance: table}
+	on_prototype_changed = {}, -- returns: {prototype: tabl
+	on_tag_added = {}, -- returns: {prototype: table, tag: string}
+	on_tag_removed = {}, -- returns: {prototype: table, tag: string}
+	on_new_alternative_prototype = {}, -- returns: {prototype: table, alt_prototype: table}
+	on_alternative_prototype_removed = {}, -- returns: {prototype: table, alt_prototype: table}
+	on_new_tier = {}, -- returns: {prototype: table, tier: table}
+	on_tier_removed = {}, -- returns: {tier_prototype: table, tier: table}
+	on_new_prototype_in_tier = {}, -- returns: {tier_prototype: table, prototype: table, tier: table}
+	on_prototype_removed_in_tier = {}, -- returns: {tier_prototype: table, prototype: table, tier: table}
+	on_prototype_replaced_in_tier = {}, -- returns: {tier_prototype: table, old_prototype: table, new_prototype: table, tier: table}
+	on_new_template = {}, -- returns: {template_type: string, template_name: string, new_prototype: table, template: easyTemplate}
+	on_pre_template_removed = {}, -- returns: {prev_template: easyTemplate, template_type: string, template_name: string}
+	on_new_prototype_from_template = {}  -- returns: {template_type: string, template_name: string, new_prototype: table, template: easyTemplate}
 }
 -- TODO: Refactor notifying
 local subscriptions = {}
