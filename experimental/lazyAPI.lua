@@ -992,10 +992,9 @@ local listeners = {
 	on_pre_template_removed = {},
 	on_new_prototype_from_template = {}
 }
--- TODO: Refactor notifying
-local subscriptions = {}
+local _subscriptions = {}
 for k in pairs(listeners) do
-	subscriptions[k] = {}
+	_subscriptions[k] = {}
 end
 
 
@@ -1098,7 +1097,7 @@ lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 ---@param prototype_type string
 ---@param event_data table
 lazyAPI.raise_event = function(event_name, prototype_type, event_data)
-	local subscription_group = subscriptions[event_name]
+	local subscription_group = _subscriptions[event_name]
 	if subscription_group[prototype_type] then
 		for _, func in pairs(subscription_group[prototype_type]) do
 			func(event_data)
@@ -1914,8 +1913,8 @@ lazyAPI.add_listener = function(event_name, types, name, func)
 		}
 	)
 	for _, _type in ipairs(types) do
-		subscriptions[event_name][_type] = subscriptions[event_name][_type] or {}
-		local subscription_group = subscriptions[event_name][_type]
+		_subscriptions[event_name][_type] = _subscriptions[event_name][_type] or {}
+		local subscription_group = _subscriptions[event_name][_type]
 		table.insert(subscription_group, func)
 	end
 	return true
@@ -2739,15 +2738,15 @@ lazyAPI.remove_listener = function(action_name, name)
 		if listener.name == name then
 			tremove(action_listeners, i)
 			for _, type in ipairs(listener.types) do
-				local funks = subscriptions[action_name][type]
+				local funks = _subscriptions[action_name][type]
 				for j=1, #funks do
 					if funks[j] == listener.func then
-						tremove(subscriptions[action_name][type], j)
+						tremove(_subscriptions[action_name][type], j)
 						break
 					end
 				end
 				if #funks == 0 then
-					subscriptions[action_name][type] = nil
+					_subscriptions[action_name][type] = nil
 				end
 			end
 			return
