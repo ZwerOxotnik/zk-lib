@@ -950,7 +950,9 @@ lazyAPI.add_listener(action_name, name, types, func): boolean
 lazyAPI.remove_listener(action_name, name)
 Each event contains:\
 	on_pre_prototype_removed: {prototype: table}\
+	on_pre_new_prototype: {prototype: table}\
 	on_new_prototype: {prototype: table}\
+	on_pre_new_prototype_via_lazyAPI: {prototype: table}\
 	on_new_prototype_via_lazyAPI: {prototype: table}\
 	on_prototype_removed: {prototype: table}\
 	on_prototype_renamed: {prototype: table, prev_name: string}\
@@ -972,7 +974,9 @@ Each event contains:\
 ]]
 local listeners = {
 	on_pre_prototype_removed = {},
+	on_pre_new_prototype = {},
 	on_new_prototype = {},
+	on_pre_new_prototype_via_lazyAPI = {},
 	on_new_prototype_via_lazyAPI = {},
 	on_prototype_removed = {},
 	on_prototype_renamed = {},
@@ -1013,6 +1017,9 @@ data.extend = function(self, new_prototypes, ...)
 
 				local event_data = {prototype = prototype, prev_instance = prev_instance}
 				lazyAPI.raise_event("on_pre_prototype_replaced", _type, event_data)
+			else
+				local event_data = {prototype = prototype}
+				lazyAPI.raise_event("on_pre_new_prototype", prototype_type, event_data)
 			end
 		end
 	end
@@ -6620,6 +6627,9 @@ function lazyAPI.add_prototype(prototype_type, name, prototype)
 		lazyAPI.raise_event("on_pre_prototype_replaced", prototype.type, event_data)
 
 		is_replaced = true
+	else
+		local event_data = {prototype = prototype}
+		lazyAPI.raise_event("on_pre_new_prototype_via_lazyAPI", prototype.type, event_data)
 	end
 
 	add_prototypes(data, {prototype}) -- original data.extend
