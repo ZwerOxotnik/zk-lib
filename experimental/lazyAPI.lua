@@ -44,6 +44,8 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 ---@field rename_in_array fun(self: LAPIWrappedPrototype, field: any, old_name: any, new_name: any): self, boolean
 ---@field replace_in_array fun(self: LAPIWrappedPrototype, field: any, old_name: any, new_name: any): self, boolean
 ---@field add_to_array fun(self: LAPIWrappedPrototype, field: any, data: any|any[]): self, boolean
+---@field insert_after_element fun(self: LAPIWrappedPrototype, field: any, data: any|any[], target_data: any|any[]): self, integer?
+---@field insert_before_element fun(self: LAPIWrappedPrototype, field: any, data: any|any[], target_data: any|any[]): self, integer?
 ---@field replace_in_prototype fun(self: LAPIWrappedPrototype, field: any, old_name: any, new_name: any): self, boolean
 ---@field is_cheat_prototype fun(self: LAPIWrappedPrototype): boolean
 ---@field get_alternative_prototypes fun(self: LAPIWrappedPrototype): table[]
@@ -146,6 +148,10 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.base.replace_in_array(source, old_name, new_name): prototype, boolean | lazyAPI.base.replace_in_array()
 -- lazyAPI.base.add_to_array(source, field, data): prototype, boolean
 -- lazyAPI.base.add_to_array(source, data): prototype, boolean
+-- lazyAPI.base.insert_after_element(source, field, data, target_data): prototype, integer?
+-- lazyAPI.base.insert_after_element(source, data, target_data): prototype, integer?
+-- lazyAPI.base.insert_before_element(source, field, data, target_data): prototype, integer?
+-- lazyAPI.base.insert_before_element(source, data, target_data): prototype, integer?
 -- lazyAPI.base.replace_in_prototype(prototype, field, old_data, new_data): prototype, boolean
 -- lazyAPI.base.is_cheat_prototype(prototype): boolean
 -- lazyAPI.base.get_alternative_prototypes(prototype): table[]?
@@ -1505,6 +1511,164 @@ lazyAPI.base.add_to_array = function(source, field, data)
 	return source, is_added_new_data
 end
 local add_to_array = lazyAPI.base.add_to_array
+
+
+---@param source table|LAPIWrappedPrototype
+---@param field any
+---@param data any|any[]
+---@param target_data any|any[]
+---@return source, integer? #source, (Last) index of new element(s)
+---@overload fun(prototype, data, target_data): table, boolean
+lazyAPI.base.insert_after_element = function(source, field, data, target_data)
+	if field == nil then error("Second parameter is nil") end
+	local array
+	if target_data then
+		array = (source.prototype or source)[field]
+		if array == nil then
+			return source
+		end
+	else
+		target_data = data
+		data = field
+		array = source
+	end
+
+	fix_array(array)
+	if type(data) ~= "table" then
+		if type(target_data) ~= "table" then
+			for i=1, #array do
+				if array[i] == target_data then
+					local iE = i+1
+					table.insert(array, iE, data)
+					return source, iE
+				end
+			end
+
+			return source
+		else
+			fix_array(target_data)
+			for i=1, #target_data do
+				local _target_data = target_data[i]
+				for j=1, #array do
+					if array[j] == _target_data then
+						local jE = j+1
+						table.insert(array, jE, data)
+						return source, jE
+					end
+				end
+			end
+
+			return source
+		end
+	end
+
+	if type(target_data) ~= "table" then
+		for i=1, #array do
+			if array[i] == target_data then
+				fix_array(data)
+				local iE = i+#data -- WARNING: perhaps I should check on element existence
+				for j=#data, 1, -1 do
+					table.insert(array, i+1, data[j])
+				end
+				return source, iE
+			end
+		end
+	else
+		for i=1, #target_data do
+			local _target_data = target_data[i]
+			for j=1, #array do
+				if array[j] == _target_data then
+					fix_array(data)
+					local jE = j+#data -- WARNING: perhaps I should check on element existence
+					for j2=#data, 1, -1 do
+						table.insert(array, j+1, data[j2])
+					end
+					return source, jE
+				end
+			end
+		end
+	end
+
+	return source
+end
+
+
+---@param source table|LAPIWrappedPrototype
+---@param field any
+---@param data any|any[]
+---@param target_data any|any[]
+---@return source, integer? #source, (Last) index of new element(s)
+---@overload fun(prototype, data, target_data): table, boolean
+lazyAPI.base.insert_before_element = function(source, field, data, target_data)
+	if field == nil then error("Second parameter is nil") end
+	local array
+	if target_data then
+		array = (source.prototype or source)[field]
+		if array == nil then
+			return source
+		end
+	else
+		target_data = data
+		data = field
+		array = source
+	end
+
+	fix_array(array)
+	if type(data) ~= "table" then
+		if type(target_data) ~= "table" then
+			for i=1, #array do
+				if array[i] == target_data then
+					table.insert(array, i, data)
+					return source, i
+				end
+			end
+
+			return source
+		else
+			fix_array(target_data)
+			for i=1, #target_data do
+				local _target_data = target_data[i]
+				for j=1, #array do
+					if array[j] == _target_data then
+						table.insert(array, j, data)
+						return source, j
+					end
+				end
+			end
+
+			return source
+		end
+	end
+
+	if type(target_data) ~= "table" then
+		for i=1, #array do
+			if array[i] == target_data then
+				fix_array(data)
+				local iE = i+#data -- WARNING: perhaps I should check on element existence
+				for j=#data, 1, -1 do
+					table.insert(array, i, data[j])
+				end
+				return source, iE
+			end
+		end
+	else
+		for i=1, #target_data do
+			local _target_data = target_data[i]
+			for j=1, #array do
+				if array[j] == _target_data then
+					fix_array(data)
+					local jE = j+#data -- WARNING: perhaps I should check on element existence
+					for j2=#data, 1, -1 do
+						table.insert(array, j, data[j2])
+					end
+					return source, jE
+				end
+			end
+		end
+	end
+
+	return source
+end
 
 
 for _type, prototypes in pairs(data_raw) do
