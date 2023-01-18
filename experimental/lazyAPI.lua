@@ -1097,7 +1097,7 @@ tmemoize(_memorized_stages_by_paths, function(str)
 		return 1
 	elseif str:find("/data%-updates%.lua") then
 		return 2
-	elseif str:find("/data%-final-fixes%.lua") then
+	elseif str:find("/data%-final%-fixes%.lua") then
 		return 3
 	else
 		return 4
