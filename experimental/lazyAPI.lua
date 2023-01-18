@@ -61,6 +61,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 ---@field remove_tags fun(self: LAPIWrappedPrototype, tags: string|string[]): boolean?
 
 
+-- lazyAPI.get_current_mod(): string
 -- lazyAPI.get_stage(): 1|2|3|4
 -- lazyAPI.raise_event(event_name, prototype_type, event_data)
 -- lazyAPI.override_data(data, new_data)
@@ -1027,28 +1028,12 @@ data.extend = function(self, new_prototypes, ...)
 
 	add_prototypes(self, new_prototypes, ...) -- original data.extend
 
+	local current_mod_name = lazyAPI.get_current_mod()
 	for k, prototype in pairs(new_prototypes) do
 		local prototypes_mod_source = lazyAPI.prototypes_mod_source
 		local mod_name = prototypes_mod_source[prototype]
 		if mod_name == nil then
-			-- Get mod name
-
-			-- Get last line
-			local text = traceback():match("[^%c]*$")
-
-			local i = 4
-			while true do
-				local part = text:sub(i, i+1)
-				i = i + 1
-				if part == "__" then
-					goto set_mod_name
-				end
-			end
-
-			-- WARNING: It's not reliable for all cases
-			:: set_mod_name ::
-			mod_name = text:sub(21, i-2)
-			prototypes_mod_source[prototype] = mod_name
+			prototypes_mod_source[prototype] = current_mod_name
 		end
 
 		if type(k) == "number" and type(prototype) == "table" and prototype.type then
@@ -1103,23 +1088,54 @@ lazyAPI.locale_to_array = Locale.locale_to_array
 lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 
-
+---@type table<string, integer>
+local _memorized_stages_by_paths = {}
+---@param str string
 ---@return integer #1|2|3|4
-lazyAPI.get_stage = function()
-	-- Get last line
-	local text = traceback():match("[^%c]*$")
-	if text:find("/data%.lua") then
+tmemoize(_memorized_stages_by_paths, function(str)
+	if str:find("/data%.lua") then
 		return 1
-	elseif text:find("/data%-updates%.lua") then
+	elseif str:find("/data%-updates%.lua") then
 		return 2
-	elseif text:find("/data%-final-fixes%.lua") then
+	elseif str:find("/data%-final-fixes%.lua") then
 		return 3
 	else
 		return 4
 	---@diagnostic disable-next-line: missing-return
 	end
+end)
+---@return integer #1|2|3|4
+lazyAPI.get_stage = function()
+	-- Get last line
+	local text = traceback():match("[^%c]*$")
+	return _memorized_stages_by_paths[text]
 end
 
+---@type table<string, string>
+local _memorized_mod_names_by_paths = {}
+---@param str string
+---@return string
+tmemoize(_memorized_mod_names_by_paths, function(str)
+	local i = 4
+	while true do
+		local part = str:sub(i, i+1)
+		i = i + 1
+		if part == "__" then
+			goto return_mod_name
+		end
+	end
+
+	---@diagnostic disable-next-line: unreachable-code
+	:: return_mod_name ::
+	return str:sub(3, i-2)
+end)
+---@return string
+lazyAPI.get_current_mod = function()
+	-- Get last line
+	---@type string
+	local text = traceback():match("[^%c]*$")
+	return _memorized_mod_names_by_paths[text]
+end
 
 ---@param event_name string
 ---@param prototype_type string
