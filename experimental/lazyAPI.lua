@@ -61,6 +61,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 ---@field remove_tags fun(self: LAPIWrappedPrototype, tags: string|string[]): boolean?
 
 
+-- lazyAPI.get_stage(): 1|2|3
 -- lazyAPI.raise_event(event_name, prototype_type, event_data)
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
@@ -1101,6 +1102,21 @@ lazyAPI.array_to_locale_as_new = Locale.array_to_locale_as_new
 lazyAPI.locale_to_array = Locale.locale_to_array
 lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
+
+
+---@return integer #1|2|3
+lazyAPI.get_stage = function()
+	-- Get last line
+	local text = traceback():match("[^%c]*$")
+	if text:find("/data.lua") then
+		return 1
+	elseif text:find("/data-updates.lua") then
+		return 2
+	elseif text:find("/data-final-fixes.lua") then
+		return 3
+	---@diagnostic disable-next-line: missing-return
+	end
+end
 
 
 ---@param event_name string
