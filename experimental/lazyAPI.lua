@@ -1106,9 +1106,8 @@ tmemoize(_memorized_stages_by_paths, function(str)
 end)
 ---@return integer #1|2|3|4
 lazyAPI.get_stage = function()
-	-- Get last line
-	local text = traceback():match("[^%c]*$")
-	return _memorized_stages_by_paths[text]
+	local last_line = traceback():match("[^%c]*$")
+	return _memorized_stages_by_paths[last_line]
 end
 
 ---@type table<string, string>
@@ -1131,10 +1130,9 @@ tmemoize(_memorized_mod_names_by_paths, function(str)
 end)
 ---@return string
 lazyAPI.get_current_mod = function()
-	-- Get last line
 	---@type string
-	local text = traceback():match("[^%c]*$")
-	return _memorized_mod_names_by_paths[text]
+	local last_line = traceback():match("[^%c]*$")
+	return _memorized_mod_names_by_paths[last_line]
 end
 
 ---@param event_name string
