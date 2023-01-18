@@ -1031,8 +1031,11 @@ data.extend = function(self, new_prototypes, ...)
 		local mod_name = prototypes_mod_source[prototype]
 		if mod_name == nil then
 			-- Get mod name
-			local text = traceback()
-			local i = 22
+
+			-- Get last line
+			local text = traceback():match("[^%c]*$")
+
+			local i = 4
 			while true do
 				local part = text:sub(i, i+1)
 				i = i + 1
