@@ -12,6 +12,8 @@ Please, don't change/create/delete prototypes in data.lua file
 in order to improve and simplify mod development and mod compatibility, thanks.
 Please, don't use this module as a new library.
 
+WARNING: some will be changed for Factorio 1.2
+
 The short name for this framework is "LAPI".
 ]]--
 ---@class lazyAPI
