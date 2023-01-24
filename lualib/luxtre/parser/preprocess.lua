@@ -254,6 +254,7 @@ local function setup_sandbox(name)
         -- filename = filename .. ".lua"
 		local fulltxt = require(filename)
         local count = 0
+        ---@diagnostic disable-next-line: need-check-nil
         for line in fulltxt:gmatch("[^\r\n]+") do
             count = count + 1
             local position = sandbox.__count + count
@@ -298,34 +299,78 @@ local function multiline_status(line, in_string, eqs)
     return in_string, eqs
 end
 
-local function check_conditional(line, hanging_conditional)
+local function find_invalid_block_positions(input)
+    local cache = {}
+    local s, e = 0, nil -- uniline
+    repeat
+        s, e = string.find(input, "(['\"])[^\n]-[^\\]%1", s)
+        if s then
+            table.insert(cache, {s, e})
+            s = e
+        end
+    until s == nil
+
+    s, e = 0, nil -- multiline
+    repeat
+        s, e = string.find(input, "%[(=-)%[.-%]%1%]", s)
+        if s then
+            table.insert(cache, {s, e})
+            s = e
+        end
+    until s == nil
+    s, e = 0, nil -- comments
+    repeat
+        s, e = string.find(input, "-%-[^\n]*\n?", s)
+        -- print("cm", s, e)
+        if s then
+            table.insert(cache, {s, e})
+            s = e
+        end
+    until s == nil
+    return cache
+end
+
+local function is_block_pos_invalid(position, invalid_pos_map)
+    for i,v in ipairs(invalid_pos_map) do
+        local is_in = (position >= v[1]) and (position <= v[2])
+        if is_in == true then
+            return true
+        end
+    end
+    return false
+end
+
+local function check_conditional(line, hanging_conditional, invalid_pos_map, sline_cols)
     local s = 1
     repeat
         local had_result = false
         local r1 = {line:find("then", s)}
-        local r2 = {line:find("else", s)}
+        -- local r2 = {line:find("else", s)}
         local r3 = {line:find("do", s)}
         local r4 = {line:find("repeat", s)}
         local r5 = {line:find("function%s+[%d%a_%.:]-%s-%b()", s)}
-        local result = (r1[1] and r1)
-                    or (r2[1] and r2)
-                    or (r3[1] and r3)
-                    or (r4[1] and r4)
-                    or (r5[1] and r5)
-                    or nil
-        if result then
-            hanging_conditional = hanging_conditional + 1
-            s = result[2]
-            had_result = true
-        end
+        local r6 = {line:find("end", s)}
+        local r7 = {line:find("until", s)}
 
-        local r1 = {line:find("end", s)}
-        local r2 = {line:find("until", s)}
-        local result = (r1[1] and r1)
-                    or (r2[1] and r2)
-                    or nil
+        local results_tab = {}
+        if r1[1] then table.insert(results_tab, r1) end
+        -- if r2[1] then table.insert(results_tab, r2) end
+        if r3[1] then table.insert(results_tab, r3) end
+        if r4[1] then table.insert(results_tab, r4) end
+        if r5[1] then table.insert(results_tab, r5) end
+        if r6[1] then table.insert(results_tab, r6) end
+        if r7[1] then table.insert(results_tab, r7) end
+        table.sort(results_tab, function(a, b) return a[1] < b[1] end)
+        local result = results_tab[1]
+
         if result then
-            hanging_conditional = hanging_conditional - 1
+            if is_block_pos_invalid(result[1] + sline_cols, invalid_pos_map) == false then
+                if (result ~= r6) and (result ~= r7) then
+                    hanging_conditional = hanging_conditional + 1
+                else
+                    hanging_conditional = hanging_conditional - 1
+                end
+            end
             s = result[2]
             had_result = true
         end
@@ -343,6 +388,8 @@ function export.compile_lines(text, name, path)
     local in_string, eqs = false, ""
     local hanging_conditional = 0
     local direc_lines = {}
+    local sline_colcount = 0
+    local invalid_pos_map = find_invalid_block_positions(text)
 
     ppenv.__lines = {}
 	for line in (text .. "\n"):gmatch(".-\n") do
@@ -375,7 +422,7 @@ function export.compile_lines(text, name, path)
             line = line:gsub("^%s*#%s*define%s+([^%s]+%b())%s*$", "macros[\"%1\"] = ''")
 
             -- if-elseif-else chain handling
-            hanging_conditional = check_conditional(line, hanging_conditional)
+            hanging_conditional = check_conditional(line, hanging_conditional, invalid_pos_map, sline_colcount)
             local stripped = line:gsub("^%s*#", "")
             table.insert(direc_lines, stripped)
             table.insert(ppenv._output, "")
@@ -408,6 +455,7 @@ function export.compile_lines(text, name, path)
             end
         end
         ppenv.__count = ppenv.__count + 1
+        sline_colcount = sline_colcount + string.len(line) + 1
     end
     return ppenv
 end

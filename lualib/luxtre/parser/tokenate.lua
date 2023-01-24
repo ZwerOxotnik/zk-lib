@@ -368,6 +368,8 @@ function tokenstream_base:tokenate_stream(inpstr, grammar)
 
         elseif next_char:match("[%d.]") then -- Numbers
             local postdecimal = false
+            local exponent = false
+            local poste = false
             local has_numbers = false
             if next_char:match("%.") then
                 postdecimal = true
@@ -375,6 +377,11 @@ function tokenstream_base:tokenate_stream(inpstr, grammar)
                 has_numbers = true
             end
             local pos = 1
+            local is_hexadecimal = false
+            if inpstr:peekTo(pos+1) == "0x" then
+                is_hexadecimal = true
+                pos = 2
+            end
             local continue = true
             local malformed = false
             while continue do
@@ -382,16 +389,32 @@ function tokenstream_base:tokenate_stream(inpstr, grammar)
                 local char = inpstr:peek(pos)
                 if char == nil then
                     break
+                elseif is_hexadecimal then
+                    if not char:match("%x") then
+                        break
+                    end
                 elseif char == "." then
-                    if postdecimal == false then
+                    if postdecimal == false or exponent == true then
                         postdecimal = true
                     else
                         malformed = true
                     end
                 elseif char:match("%d") then
                     has_numbers = true
-                elseif not char:match("%d") then
-                    break
+                elseif char:match("[eE]") then
+                    exponent = true
+                    poste = true
+                else
+                    if (not exponent) or (exponent == true and poste == false) then
+                        if not char:match("%d") then
+                            break
+                        end
+                    elseif exponent == true and poste == true then
+                        poste = false
+                        if not char:match("[%deE+-]") then
+                            break
+                        end
+                    end
                 end
             end
             if malformed and has_numbers then  -- malformed number error

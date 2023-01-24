@@ -72,7 +72,9 @@ local function generic_compile(inputstream, grammar)
 
     local f_ast = ast.earley_extract(res)
     local output = new_output()
+    grammar:runSetup(output)
     f_ast:print(output)
+    grammar:runCleanup(output)
     --print(output:print())
     return output:print()
 end
@@ -112,13 +114,14 @@ local function load_chunk(compiled_text, linemap, filename, env)
     return safe_chunk
 end
 
-local function filepath_search(filepath, filetype)
-    for path in package.path:gmatch("[^;]+") do
-        local fixed_path = path:gsub("%.lua", filetype):gsub("%?", (filepath:gsub("%.", "/")))
-        local file = io.open(fixed_path)
-        if file then file:close() return fixed_path end
-    end
-end
+-- local function filepath_search(filepath, filetype)
+--     for path in package.path:gmatch("[^;]+") do
+--         local fixed_path = path:gsub("%.lua", filetype):gsub("%?", (filepath:gsub("%.", "/")))
+--         -- local file = fs.open(fixed_path)
+--         -- if file then file:close() return fixed_path end
+--         if fs.exists(fixed_path) then return fixed_path end
+--     end
+-- end
 
 ---@param filetype string
 ---The file extension (including dot) to search for.
@@ -254,7 +257,7 @@ local function create_loaders(filetype, grammars)
                 if status == true then
                     return res(modulepath)
                 else
-                    error("error loading module '" .. modulepath .. "'\n" .. res, 3)
+                    error("error loading module '" .. modulepath .. "'\n" .. tostring(res), 3)
                 end
             end
         else

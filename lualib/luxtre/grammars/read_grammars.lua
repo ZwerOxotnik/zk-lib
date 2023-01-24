@@ -27,7 +27,9 @@ local keys = {
     "reset",
     "remove",
     "import",
-    "eof"
+    "eof",
+    "setup",
+    "cleanup"
 }
 local ops = {
     "->",
@@ -142,6 +144,8 @@ end
     {"statement", "reserve_kws"},
     {"statement", "reserve_ops"},
     {"statement", "import_grammar"},
+    {"statement", "add_setup"},
+    {"statement", "add_cleanup"},
 
     {"reset_prod", "'@' reset Name", function(self, out)
         local ln = out:push_header()
@@ -292,6 +296,20 @@ end
     {"rule_item", "Keyword", function(self, out) return self.children[1].value end},
     {"rule_item", "'<' eof '>'", function(self, out) return "<eof>" end},
 
+    {"add_setup", "'@' setup functext", function(self, out)
+        local ln = out:line()
+        ln:append("grammar:addSetup( function(out) ")
+        self.children[3]:print(out)
+        ln:append("end)")
+    end},
+
+    {"add_cleanup", "'@' cleanup functext", function(self, out)
+        local ln = out:line()
+        ln:append("grammar:addCleanup( function(out) ")
+        self.children[3]:print(out)
+        ln:append("end)")
+    end},
+
     {"functext", "'{%' grab_any '%}'", function(self, out)
         self.children[2]:print(out)
 
@@ -337,10 +355,10 @@ local function wrap_errors(linemap, outputchunk)
     return check_err
 end
 
-local function make_grammar_function(filename, env, print_out)
+local function make_grammar_function(filename, modulename, env, print_out)
     -- local ppenv = preprocess(table.concat(concat, "\n"), filename)
     local fulltxt = require(filename)
-    local status, res = pcall(preprocess, fulltxt, filename)
+    local status, res = pcall(preprocess, fulltxt, modulename)
     if status == false then
         error(res, 0)
     end
@@ -401,7 +419,7 @@ function module.load_grammar(name, print_out)
         sandbox.__load_grammar = module.load_grammar
         sandbox.__filepath = name
         sandbox.__rootpath = name:gsub("[.\\/]?[^.\\/]-$", "")
-        local status, res = pcall(make_grammar_function, fixedname, sandbox, print_out)
+        local status, res = pcall(make_grammar_function, fixedname, name, sandbox, print_out)
         if status == false then
             error(res, 2)
         else

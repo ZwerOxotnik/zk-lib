@@ -173,11 +173,6 @@ function output:_push(line, index)
     return line
 end
 
-function output:pop()
-    table.remove(self._stack)
-    return self._stack[#self._stack]
-end
-
 function output:line()
     return self._stack[#self._stack]
 end
@@ -187,6 +182,24 @@ function output:flush()
     self._array = {}
     self._stack = {}
     self:_push()
+end
+
+local function ch_append(self, text)
+    table.insert(self, text)
+end
+
+function output:push_catch()
+    local line = { append = ch_append }
+    table.insert(self._stack, line)
+end
+
+function output:pop()
+    local ln = table.remove(self._stack)
+    if ln.append == ch_append then
+        return table.concat(ln, " ")
+    else
+        return self._stack[#self._stack]
+    end
 end
 
 local function do_lines(line, concat, last_num, linemap)

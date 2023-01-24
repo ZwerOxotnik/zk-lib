@@ -80,6 +80,8 @@ grammar:
 ---@field _list table
 ---@field _nullable table
 ---@field _used table
+---@field _before_funcs table
+---@field _after_funcs table
 local grammar_core = {}
 grammar_core.__index = grammar_core
 
@@ -90,6 +92,26 @@ grammar_core.__index = grammar_core
 --     end
 --     return table.concat(concat, "")
 -- end
+
+function grammar_core:addSetup(func)
+  table.insert(self._before_funcs, func)
+end
+
+function grammar_core:runSetup(...)
+  for i = 1, #self._before_funcs do
+    self._before_funcs[i](...)
+  end
+end
+
+function grammar_core:addCleanup(func)
+  table.insert(self._after_funcs, func)
+end
+
+function grammar_core:runCleanup(...)
+  for i = 1, #self._after_funcs do
+    self._after_funcs[i](...)
+  end
+end
 
 local generic_post = function(self, outp)
   local ln = outp:line()
@@ -276,6 +298,9 @@ local function newGrammar()
   output._list = {}
   output._nullable = {}
   output._used = {}
+  output._before_funcs = {}
+  output._after_funcs = {}
+
 
   return output
 end
