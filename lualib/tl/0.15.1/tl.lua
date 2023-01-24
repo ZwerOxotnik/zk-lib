@@ -4526,7 +4526,7 @@ local function search_for(module_name, suffix, path, tried)
 end
 
 local function filename_to_module_name(filename)
-   local path = package.path
+   local path = package._current_path_in_package
    for entry in path:gmatch("[^;]+") do
       entry = entry:gsub("%.", "%%.")
       local lua_pat = "^" .. entry:gsub("%?", ".+") .. "$"
@@ -4549,7 +4549,7 @@ function tl.search_module(module_name, search_dtl)
    local found
    local fd
    local tried = {}
-   local path = package.path
+   local path = package._current_path_in_package
    if search_dtl then
       found, fd, tried = search_for(module_name, ".d.tl", path, tried)
       if found then
