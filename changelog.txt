@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.12.0
+Date: 24. 01. 2023
+  Scripting:
+    - Updated libraries: lazyAPI, luxtre, tl
+    - Added new libraries: easyTemplates, simpleTiers
+    - lazyAPI is a framework now.
+  Changes:
+    - Removed 1 message on start
+---------------------------------------------------------------------------------------------------
 Version: 0.11.12
 Date: 25. 12. 2022
   Scripting:

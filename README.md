@@ -183,7 +183,7 @@ Artwork
 License
 -------
 
-This project is copyright © 2018-2022 ZwerOxotnik \<zweroxotnik@gmail.com\>.
+This project is copyright © 2018-2023 ZwerOxotnik \<zweroxotnik@gmail.com\>.
 
 This project is licensed under the [European Union Public License v. 1.2 only](/LICENCE).
 
