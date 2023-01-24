@@ -10,8 +10,8 @@ local function on_player_joined_or_created(event)
 end
 
 module.events = {
-    [defines.events.on_player_joined_game] = on_player_joined_or_created,
-    [defines.events.on_player_created] = on_player_joined_or_created
+    -- [defines.events.on_player_joined_game] = on_player_joined_or_created,
+    -- [defines.events.on_player_created] = on_player_joined_or_created
 }
 
 return module
