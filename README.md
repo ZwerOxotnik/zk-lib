@@ -73,7 +73,7 @@
 `local bitwise = require("__zk-lib__/lualib/bitwise")`
 - [fun](/lualib/fun.lua) - a functional programming library ([documentation](https://luafun.github.io/), [source](https://github.com/luafun/luafun/blob/master/fun.lua))\
 `local fun = require("__zk-lib__/lualib/fun")` or `require "__zk-lib__/lualib/fun" ()`
-- [candran](/lualib/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran/tree/1e118381f8276fe66a2cad02f1b9f4535e7e253e)) (**WARNING:** this modified version has some bugs and some functions were removed due to technical limitations, please report in this repository if you have any issues with it)\
+- [candran](/lualib/candran/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran/tree/1e118381f8276fe66a2cad02f1b9f4535e7e253e)) (**WARNING:** this modified version has some bugs and some functions were removed due to technical limitations, please report in this repository if you have any issues with it)\
 `local candran = require("__zk-lib__/lualib/candran/candran")`
 - [LuLPeg](/lualib/LuLPeg) - A port of LPeg 100% written in Lua. ([source](https://github.com/pygy/LuLPeg/tree/f07f5be09d0461b1e83a8f811ca2c9cb79a69ab2)) (use with cautious)\
 `local lpeg = require("__zk-lib__/lualib/LuLPeg/lulpeg")`
