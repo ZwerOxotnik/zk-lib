@@ -1,4 +1,8 @@
-local candran = { ["VERSION"] = "1.0.0" }
+local candran = {
+  VERSION = "1.0.0",
+  DOCUMENTATION_LINK = "https://github.com/Reuh/candran/tree/1e118381f8276fe66a2cad02f1b9f4535e7e253e",
+  ORIGINAL_SOURCE_LINK = "https://github.com/Reuh/candran/tree/1e118381f8276fe66a2cad02f1b9f4535e7e253e"
+}
 package["loaded"]["candran"] = candran
 local function _()
   local candran = require("candran")
