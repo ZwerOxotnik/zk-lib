@@ -15,7 +15,11 @@ local path = (...):gsub("init", "")
 local create_loaders = require(path .. "grammars/generate_loaders")
 local data = require(path .. "utils/data")
 
-local module = {VERSION = "0.6.1"}
+local module = {
+	VERSION = "0.6.1",
+	DOCUMENTATION_LINK = "https://github.com/DimitriBarronmore/luxtre/tree/a2854ef166b71b0e74252a55b0ec245cbc45f947/docs",
+	ORIGINAL_SOURCE_LINK = "https://github.com/DimitriBarronmore/luxtre/tree/a2854ef166b71b0e74252a55b0ec245cbc45f947"
+}
 
 local default_loaders = create_loaders( ".lux", {data.__binary_prefix .. path .. "grammars/luxtre_standard" })
 

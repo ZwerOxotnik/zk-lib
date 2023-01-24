@@ -25,7 +25,11 @@ local Parser   = require '__zk-lib__/lualib/lal/lang/parser'
 local Compiler = require '__zk-lib__/lualib/lal/lang/compiler'
 local util     = require '__zk-lib__/lualib/lal/lang/util'
 
-local lal = {VERSION = "05.20.2017" }
+local lal = {
+	VERSION = "05.20.2017",
+	DOCUMENTATION_LINK = "https://github.com/WeirdConstructor/lal/tree/38aaa0c426a9b52cd8d74d375f9a11e117be2007/doc",
+	ORIGINAL_SOURCE_LINK = "https://github.com/WeirdConstructor/lal/tree/38aaa0c426a9b52cd8d74d375f9a11e117be2007"
+}
 
 function lal.eval(lal_code, input_file)
     local lua_code = Compiler.compile_lal_code(lal_code, nil, input_file)
