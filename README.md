@@ -82,8 +82,8 @@
 - [lal](/lualib/lal/) is the implementation of a Compiler for a Scheme like dialect of Lisp that compiles to Lua. ([documentation](/lualib/lal/doc/), [source](https://github.com/WeirdConstructor/lal/tree/38aaa0c426a9b52cd8d74d375f9a11e117be2007)) (expect bugs (I should fix some of them), can't be used outside of control.lua parsing yet)\
 `# FAIL LAL-Compiler (74 OF 82 OK, 82 of 82 were run)`\
 `local lal = require("__zk-lib__/lualib/lal/lal")`
-- [tl](/lualib/tl/) is compiler for Teal, a typed dialect of Lua. ([tutorial](https://github.com/teal-language/tl/blob/v0.14.1/docs/tutorial.md), [source](https://github.com/teal-language/tl/tree/v0.14.1)) (not fully tested)\
-`local tl = require("__zk-lib__/lualib/tl/0.14.1/tl")`
+- [tl](/lualib/tl/) is compiler for Teal, a typed dialect of Lua. ([tutorial](https://github.com/teal-language/tl/tree/a10fb2c69827c1b0f8e1b8a5c848a06d6da5d3be/docs/tutorial.md), [source](https://github.com/teal-language/tl/tree/a10fb2c69827c1b0f8e1b8a5c848a06d6da5d3be)) (not fully tested)\
+`local tl = require("__zk-lib__/lualib/tl/0.15.1/tl")`
 - [moonscript](/lualib/moonscript/) is a programmer friendly language that compiles into Lua. ([source](https://github.com/leafo/moonscript/tree/b7efcd131046ed921ae1075d7c0f6a3b64a570f7)) (not fully tested)\
 `local moonscript = require("__zk-lib__/lualib/moonscript/base")`
 - [std](/lualib/std/) is collection of Lua libraries. ([source](https://github.com/lua-stdlib/lua-stdlib/tree/a632078f216ac6b9994449b7f1435a419172b44f)) (not fully tested, some stuff were removed)
