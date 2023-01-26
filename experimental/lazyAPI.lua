@@ -89,6 +89,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.remove_entity_from_action(action, entity_name)
 -- lazyAPI.get_barrel_recipes(name): recipe, recipe
 -- lazyAPI.create_trigger_capsule(tool_data): capsule, projectile
+-- lazyAPI.create_invisible_mine(name, trigger_radius = 1): prototype, LAPIWrappedPrototype
 -- lazyAPI.create_techs(name, max_level = 1, tech_data): tech, techs
 -- lazyAPI.attach_custom_input_event(name): CustomInput
 -- lazyAPI.make_empty_sprite(frame_count): table
@@ -408,6 +409,7 @@ lazyAPI.mining_drill = {}
 lazyAPI.resource = {}
 lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
+
 --- type = { name = { tags }}
 ---@type table<string <string, string[]>>
 lazyAPI.tags = {}
@@ -3143,6 +3145,40 @@ lazyAPI.create_trigger_capsule = function(tool_data)
 	return data_raw.capsule[name], data_raw.projectile[name]
 end
 
+---@param name string
+---@param trigger_radius number?
+lazyAPI.create_invisible_mine = function(name, trigger_radius)
+	trigger_radius = trigger_radius or 1
+	local prototype_data = {
+		icon = "__base__/graphics/icons/land-mine.png",
+		icon_size = 64, icon_mipmaps = 4,
+		flags = {
+			"placeable-enemy",
+			"placeable-off-grid",
+			"not-on-map",
+			"hidden",
+			"not-selectable-in-game",
+			"not-in-kill-statistics",
+			"not-in-made-in",
+			"not-blueprintable",
+			"not-deconstructable",
+			"hide-alt-info",
+			"not-flammable"
+		},
+		max_health = 15,
+		trigger_radius = trigger_radius,
+		picture_safe = {
+			filename = "__core__/graphics/empty.png",
+			width = 1, height = 1
+		},
+		picture_set = {
+			filename = "__core__/graphics/empty.png",
+			width = 1, height = 1
+		}
+	}
+
+	return lazyAPI.add_prototype("land-mine", name, prototype_data)
+end
 
 ---@param name string
 ---@param max_level integer?
