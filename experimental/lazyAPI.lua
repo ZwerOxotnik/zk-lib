@@ -70,6 +70,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.raise_event(event_name, prototype_type, event_data)
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
+-- lazyAPI.get_sprite_by_path(string): Sprite?
 -- lazyAPI.add_extension(function)
 -- lazyAPI.add_listener(action_name, name, types, func): boolean
 -- lazyAPI.remove_listener(action_name, name)
@@ -376,6 +377,15 @@ setmetatable(lazyAPI._warning_for_fixed_tables, {
 		rawset(self, k, v)
 	end
 })
+
+
+---@type Sprite[]
+lazyAPI.sprite_by_path = {
+	{
+		filename = "__core__/graphics/empty.png",
+		width = 1, height = 1
+	}
+}
 
 
 ---@type table[]
@@ -1207,6 +1217,14 @@ lazyAPI.format_special_symbols = function(str)
 	return strings_for_patterns[str]
 end
 
+---@param path string
+---@return Sprite?
+lazyAPI.lazyAPI.get_sprite_by_path = function(path)
+	local sprite_data = lazyAPI.sprite_by_path[path]
+	if sprite_data then
+		return table.deepcopy(sprite_data)
+	end
+end
 
 ---@param func function #your function
 lazyAPI.add_extension = function(func)
@@ -3167,14 +3185,8 @@ lazyAPI.create_invisible_mine = function(name, trigger_radius)
 		},
 		max_health = 15,
 		trigger_radius = trigger_radius,
-		picture_safe = {
-			filename = "__core__/graphics/empty.png",
-			width = 1, height = 1
-		},
-		picture_set = {
-			filename = "__core__/graphics/empty.png",
-			width = 1, height = 1
-		}
+		picture_safe = lazyAPI.get_sprite_by_path("__core__/graphics/empty.png"),
+		picture_set = lazyAPI.get_sprite_by_path("__core__/graphics/empty.png")
 	}
 
 	return lazyAPI.add_prototype("land-mine", name, prototype_data)
