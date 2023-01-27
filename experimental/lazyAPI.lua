@@ -1219,7 +1219,7 @@ end
 
 ---@param path string
 ---@return Sprite?
-lazyAPI.lazyAPI.get_sprite_by_path = function(path)
+lazyAPI.get_sprite_by_path = function(path)
 	local sprite_data = lazyAPI.sprite_by_path[path]
 	if sprite_data then
 		return table.deepcopy(sprite_data)
