@@ -379,9 +379,9 @@ setmetatable(lazyAPI._warning_for_fixed_tables, {
 })
 
 
----@type Sprite[]
+---@type table<string, Sprite>
 lazyAPI.sprite_by_path = {
-	{
+	["__core__/graphics/empty.png"] = {
 		filename = "__core__/graphics/empty.png",
 		width = 1, height = 1
 	}
