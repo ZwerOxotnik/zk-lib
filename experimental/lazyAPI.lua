@@ -1032,6 +1032,10 @@ data.extend = function(self, new_prototypes, ...)
 		local _type = prototype.type
 		if type(k) == "number" and type(prototype) == "table" and _type then
 			local name = prototype.name
+			if data_raw[_type] == nil then -- Fix for https://mods.factorio.com/mod/Better-TrainHorn
+				data_raw[_type] = {}
+				lazyAPI.deleted_data[_type] = lazyAPI.deleted_data[_type] or {}
+			end
 			local prev_instance = data_raw[_type][name]
 			-- Perhaps it should verify this case later instead
 			if prev_instance and prev_instance ~= prototype then
