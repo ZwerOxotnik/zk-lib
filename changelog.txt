@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.12.1
+Date: 27. 01. 2023
+  Scripting:
+    - Added lazyAPI.get_sprite_by_path(string): Sprite?
+    - Added lazyAPI.create_invisible_mine(name, trigger_radius = 1): prototype, LAPIWrappedPrototype
+  Bugfixes:
+    - Fixed crash in lazyAPI because of undocumented types in data.raw
+---------------------------------------------------------------------------------------------------
 Version: 0.12.0
 Date: 24. 01. 2023
   Scripting:
