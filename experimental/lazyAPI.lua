@@ -1156,7 +1156,11 @@ end)
 lazyAPI.get_current_mod = function()
 	---@type string
 	local last_line = traceback():match("[^%c]*$")
-	return _memorized_mod_names_by_paths[last_line]
+	if last_line:find("(%.%.%.tail calls%.%.%.)") then -- Fix for precompiled chunks
+		return "?"
+	else
+		return _memorized_mod_names_by_paths[last_line]
+	end
 end
 
 ---@param event_name string
