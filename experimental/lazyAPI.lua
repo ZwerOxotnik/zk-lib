@@ -1029,8 +1029,8 @@ end
 data.extend = function(self, new_prototypes, ...)
 	-- Let's check if something will be overwritten
 	for k, prototype in pairs(new_prototypes) do
-		local _type = prototype.type
-		if type(k) == "number" and type(prototype) == "table" and _type then
+		if type(k) == "number" and type(prototype) == "table" and prototype.type then
+			local _type = prototype.type
 			local name = prototype.name
 			if data_raw[_type] == nil then -- Fix for https://mods.factorio.com/mod/Better-TrainHorn
 				data_raw[_type] = {}
@@ -1054,13 +1054,13 @@ data.extend = function(self, new_prototypes, ...)
 
 	local current_mod_name = lazyAPI.get_current_mod()
 	for k, prototype in pairs(new_prototypes) do
-		local prototypes_mod_source = lazyAPI.prototypes_mod_source
-		local mod_name = prototypes_mod_source[prototype]
-		if mod_name == nil then
-			prototypes_mod_source[prototype] = current_mod_name
-		end
-
 		if type(k) == "number" and type(prototype) == "table" and prototype.type then
+			local prototypes_mod_source = lazyAPI.prototypes_mod_source
+			local mod_name = prototypes_mod_source[prototype]
+			if mod_name == nil then
+				prototypes_mod_source[prototype] = current_mod_name
+			end
+
 			local prototype_type = prototype.type
 			local name = prototype.name
 			local is_added = (data_raw[prototype_type][name] == prototype)
