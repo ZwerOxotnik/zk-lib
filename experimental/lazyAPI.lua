@@ -1117,11 +1117,11 @@ local _memorized_stages_by_paths = {}
 ---@param str string
 ---@return integer #1|2|3|4
 tmemoize(_memorized_stages_by_paths, function(str)
-	if str:find("/data%.lua") then
+	if str:find("/data%..+") then
 		return 1
-	elseif str:find("/data%-updates%.lua") then
+	elseif str:find("/data%-updates%..+") then
 		return 2
-	elseif str:find("/data%-final%-fixes%.lua") then
+	elseif str:find("/data%-final%-fixes%..+") then
 		return 3
 	else
 		return 4
@@ -1130,7 +1130,20 @@ tmemoize(_memorized_stages_by_paths, function(str)
 end)
 ---@return integer #1|2|3|4
 lazyAPI.get_stage = function()
-	local last_line = traceback():match("[^%c]*$")
+	local trace = traceback()
+	local last_line
+	local last_second_line
+	for s in trace:gmatch("[^%c]*") do
+		if last_line then
+			last_second_line = last_line
+		end
+		last_line = s
+	end
+
+	if last_line == "(...tail calls...)" then -- Fix for precompiled chunks
+		last_line = last_second_line
+	end
+
 	return _memorized_stages_by_paths[last_line]
 end
 
@@ -1145,6 +1158,8 @@ tmemoize(_memorized_mod_names_by_paths, function(str)
 		i = i + 1
 		if part == "__" then
 			goto return_mod_name
+		elseif i >= #str then
+			return "?"
 		end
 	end
 
@@ -1155,12 +1170,21 @@ end)
 ---@return string
 lazyAPI.get_current_mod = function()
 	---@type string
-	local last_line = traceback():match("[^%c]*$")
-	if last_line:find("(%.%.%.tail calls%.%.%.)") then -- Fix for precompiled chunks
-		return "?"
-	else
-		return _memorized_mod_names_by_paths[last_line]
+	local trace = traceback()
+	local last_line
+	local last_second_line
+	for s in trace:gmatch("[^%c]*") do
+		if last_line then
+			last_second_line = last_line
+		end
+		last_line = s
 	end
+
+	if last_line == "(...tail calls...)" then -- Fix for precompiled chunks
+		last_line = last_second_line
+	end
+
+	return _memorized_mod_names_by_paths[last_line]
 end
 
 ---@param event_name string
