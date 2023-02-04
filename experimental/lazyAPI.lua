@@ -66,7 +66,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 
 
 -- lazyAPI.get_current_mod(): string
--- lazyAPI.get_stage(): 1|2|3|1.5|2.5|3.5
+-- lazyAPI.get_stage(): 1|1.5|2|2.5|3
 -- lazyAPI.raise_event(event_name, prototype_type, event_data)
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
@@ -1116,20 +1116,26 @@ lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 
 local _current_stage = 1
 if not IS_SETTING_STAGE then
-	---@return 1|2|3|1.5|2.5|3.5 # 1: data, 2: data-updates, 3: data-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
+	---@return 1|1.5|2|2.5|3 # 1: data, 2: data-updates, 3: data-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
 	---[View Factorio lifecycle](https://lua-api.factorio.com/latest/Data-Lifecycle.html)
 	lazyAPI.get_stage = function()
 		local source = _lauxlib.get_first_lua_func_info().source
 		-- must start with an @ which indicates that it is a file name
 		if not source:find("^@") then
-			return _current_stage + 0.5
+			if _current_stage == 3 then
+				return 3
+			else
+				return _current_stage + 0.5
+			end
 		end
 
 		-- %f[^/\0] is a frontier pattern matching anywhere
 		-- right past a / or at the beginning of the string
 		-- extra non escaped dot at the end to make sure
 		-- the file has any extension
-		if _current_stage < 2 and source:find("%f[^/\0]data%..") then
+		if _current_stage == 3 then
+			return 3
+		elseif _current_stage < 2 and source:find("%f[^/\0]data%..") then
 			_current_stage = 1
 			return 1
 		elseif _current_stage < 3 and source:find("%f[^/\0]data%-updates%..") then
@@ -1144,21 +1150,26 @@ if not IS_SETTING_STAGE then
 		-- patterns by JanSharp (https://github.com/JanSharp/phobos/issues/4)
 	end
 else
-	---@return 1|2|3|1.5|2.5|3.5 # 1: settings, 2: settings-updates, 3: settings-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
+	---@return 1|1.5|2|2.5|3 # 1: settings, 2: settings-updates, 3: settings-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
 	---[View Factorio lifecycle](https://lua-api.factorio.com/latest/Data-Lifecycle.html)
 	lazyAPI.get_stage = function()
 		local source = _lauxlib.get_first_lua_func_info().source
 		-- must start with an @ which indicates that it is a file name
 		if not source:find("^@") then
-			return _current_stage + 0.5
+			if _current_stage == 3 then
+				return 3
+			else
+				return _current_stage + 0.5
+			end
 		end
 
 		-- %f[^/\0] is a frontier pattern matching anywhere
 		-- right past a / or at the beginning of the string
 		-- extra non escaped dot at the end to make sure
 		-- the file has any extension
-		if _current_stage < 2 and source:find("%f[^/\0]settings%..") then
-			_current_stage = 1
+		if _current_stage == 3 then
+			return 3
+		elseif _current_stage < 2 and source:find("%f[^/\0]settings%..") then
 			return 1
 		elseif _current_stage < 3 and source:find("%f[^/\0]settings%-updates%..") then
 			_current_stage = 2
