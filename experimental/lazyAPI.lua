@@ -66,7 +66,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 
 
 -- lazyAPI.get_current_mod(): string
--- lazyAPI.get_stage(): 1|2|3|4
+-- lazyAPI.get_stage(): 1|2|3|1.5|2.5|3.5
 -- lazyAPI.raise_event(event_name, prototype_type, event_data)
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
@@ -960,6 +960,8 @@ end
 local Locale = require("static-libs/lualibs/locale")
 ---@type ZWversion
 local Version = require("static-libs/lualibs/version")
+---@type MFlauxlib
+local _lauxlib = require("static-libs/lualibs/lauxlib")
 
 
 -- Add your functions in lazyAPI.add_extension(function) and
@@ -1112,79 +1114,71 @@ lazyAPI.locale_to_array = Locale.locale_to_array
 lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 
----@type table<string, integer>
-local _memorized_stages_by_paths = {}
----@param str string
----@return integer #1|2|3|4
-tmemoize(_memorized_stages_by_paths, function(str)
-	if str:find("/data%..+") then
-		return 1
-	elseif str:find("/data%-updates%..+") then
-		return 2
-	elseif str:find("/data%-final%-fixes%..+") then
-		return 3
-	else
-		return 4
-	---@diagnostic disable-next-line: missing-return
-	end
-end)
----@return integer #1|2|3|4
-lazyAPI.get_stage = function()
-	local trace = traceback()
-	local last_line
-	local last_second_line
-	for s in trace:gmatch("[^%c]*") do
-		if last_line then
-			last_second_line = last_line
+local _current_stage = 1
+if not IS_SETTING_STAGE then
+	---@return 1|2|3|1.5|2.5|3.5 # 1: data, 2: data-updates, 3: data-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
+	---[View Factorio lifecycle](https://lua-api.factorio.com/latest/Data-Lifecycle.html)
+	lazyAPI.get_stage = function()
+		local source = _lauxlib.get_first_lua_func_info().source
+		-- must start with an @ which indicates that it is a file name
+		if not source:find("^@") then
+			return _current_stage + 0.5
 		end
-		last_line = s
-	end
 
-	if last_line == "(...tail calls...)" then -- Fix for precompiled chunks
-		last_line = last_second_line
+		-- %f[^/\0] is a frontier pattern matching anywhere
+		-- right past a / or at the beginning of the string
+		-- extra non escaped dot at the end to make sure
+		-- the file has any extension
+		if _current_stage < 2 and source:find("%f[^/\0]data%..") then
+			_current_stage = 1
+			return 1
+		elseif _current_stage < 3 and source:find("%f[^/\0]data%-updates%..") then
+			_current_stage = 2
+			return 2
+		elseif _current_stage < 4 and source:find("%f[^/\0]data%-final%-fixes%..") then
+			_current_stage = 3
+			return 3
+		else
+			return _current_stage + 0.5
+		end
+		-- patterns by JanSharp (https://github.com/JanSharp/phobos/issues/4)
 	end
+else
+	---@return 1|2|3|1.5|2.5|3.5 # 1: settings, 2: settings-updates, 3: settings-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
+	---[View Factorio lifecycle](https://lua-api.factorio.com/latest/Data-Lifecycle.html)
+	lazyAPI.get_stage = function()
+		local source = _lauxlib.get_first_lua_func_info().source
+		-- must start with an @ which indicates that it is a file name
+		if not source:find("^@") then
+			return _current_stage + 0.5
+		end
 
-	return _memorized_stages_by_paths[last_line]
+		-- %f[^/\0] is a frontier pattern matching anywhere
+		-- right past a / or at the beginning of the string
+		-- extra non escaped dot at the end to make sure
+		-- the file has any extension
+		if _current_stage < 2 and source:find("%f[^/\0]settings%..") then
+			_current_stage = 1
+			return 1
+		elseif _current_stage < 3 and source:find("%f[^/\0]settings%-updates%..") then
+			_current_stage = 2
+			return 2
+		elseif _current_stage < 4 and source:find("%f[^/\0]settings%-final%-fixes%..") then
+			_current_stage = 3
+			return 3
+		else
+			return _current_stage + 0.5
+		end
+		-- patterns by JanSharp (https://github.com/JanSharp/phobos/issues/4)
+	end
 end
 
----@type table<string, string>
-local _memorized_mod_names_by_paths = {}
----@param str string
----@return string
-tmemoize(_memorized_mod_names_by_paths, function(str)
-	local i = 4
-	while true do
-		local part = str:sub(i, i+1)
-		i = i + 1
-		if part == "__" then
-			goto return_mod_name
-		elseif i >= #str then
-			return "?"
-		end
-	end
-
-	---@diagnostic disable-next-line: unreachable-code
-	:: return_mod_name ::
-	return str:sub(3, i-2)
-end)
 ---@return string
 lazyAPI.get_current_mod = function()
-	---@type string
-	local trace = traceback()
-	local last_line
-	local last_second_line
-	for s in trace:gmatch("[^%c]*") do
-		if last_line then
-			last_second_line = last_line
-		end
-		last_line = s
-	end
-
-	if last_line == "(...tail calls...)" then -- Fix for precompiled chunks
-		last_line = last_second_line
-	end
-
-	return _memorized_mod_names_by_paths[last_line]
+	local f_info = _lauxlib.get_first_lua_func_info()
+  	-- spaces in mod names for legacy support
+	return f_info.source:match("^@__([a-zA-Z0-9 _-]-)__") or "?"
+	-- Got some help from JanSharp (https://github.com/JanSharp/phobos/issues/4)
 end
 
 ---@param event_name string

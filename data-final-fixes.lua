@@ -1,3 +1,5 @@
+lazyAPI.get_stage() -- in order to get this stage internally
+
 local container = zk_SPD.containers["important-no-cheat-recipes"]
 if #container.functions > 0 then
 	local _data = container.data
