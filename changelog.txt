@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.12.4
+Date: 05. 02. 2023
+  Changes:
+    - Slightly improved performance for the data stage
+  Scripting:
+    - Improved lazyAPI.get_stage and lazyAPI.get_current_mod (thanks to JanSharp https://github.com/JanSharp )
+    - Added lazyAPI to the settings stage
+    - Added lauxlib.lua in __zk-lib__/static-libs/lualibs
+---------------------------------------------------------------------------------------------------
 Version: 0.12.3
 Date: 01. 02. 2023
   Bugfixes:
