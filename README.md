@@ -61,10 +61,11 @@
 
 | Settings stage | Data stage | Control stage |
 | -------------- | ---------- | ------------- |
-| [ZKSettings](/experimental/ZKSettings.lua) - libary with new features for settings | [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua) |
-| | [fakes](/data-api/fakes.lua) - creates fake entitites | ["Static libs"](#static-libs) for embedding |
+| [ZKSettings](/experimental/ZKSettings.lua) - libary with new features for settings | [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua)
+| ["Static libs"](#static-libs) | ["Static libs"](#static-libs) | ["Static libs"](#static-libs) |
 | [lazyAPI](/experimental/lazyAPI.lua) | [lazyAPI](/experimental/lazyAPI.lua) - Are you lazy to change/add/remove/check some prototypes in the data stage? Use this library then. | [Event listener][event-listener] (not important, currently) |
 | | [SPD](/experimental/SPD.lua) - Simple postdate data (WIP) | [event_handler_vZO](/static-libs/lualibs/event_handler_vZO.lua) - improved version of Factorio event_handler |
+| | [fakes](/data-api/fakes.lua) - creates fake entitites |
 
 **3rd party libraries**:
 - [basexx](/lualib/basexx.lua) - library for base2, base16, base32, base64, base85 decoding and encoding of data strings. ([source](https://github.com/aiq/basexx))\
