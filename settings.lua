@@ -1,4 +1,5 @@
 IS_SETTING_STAGE = true
+lazyAPI = require("experimental/lazyAPI")
 local addons_api = require("addons/core/addons_api")
 ZKSettings = require("__zk-lib__/experimental/ZKSettings")
 local ZKSettings = ZKSettings
