@@ -1272,11 +1272,9 @@ end
 ---@param value number
 ---@return BoundingBox
 lazyAPI.expand_bounding_box = function(box, value)
-	if value == 0 then return box end
-
 	local leftTop = box[1]
 	local rightBottom = box[2]
-	value = value / 2
+	value = value * 0.5
 	leftTop[1] = leftTop[1] + value
 	leftTop[2] = leftTop[2] + value
 	rightBottom[1] = rightBottom[1] + value
@@ -1290,11 +1288,9 @@ lazyAPI.increase_bounding_box = lazyAPI.expand_bounding_box
 ---@param value number
 ---@return BoundingBox
 lazyAPI.decrease_bounding_box = function(box, value)
-	if value == 0 then return box end
-
 	local leftTop = box[1]
 	local rightBottom = box[2]
-	value = value / 2
+	value = value * 0.5
 	leftTop[1] = leftTop[1] - value
 	leftTop[2] = leftTop[2] - value
 	rightBottom[1] = rightBottom[1] - value
