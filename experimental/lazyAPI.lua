@@ -386,6 +386,11 @@ lazyAPI.sprite_by_path = {
 		width = 1, height = 1
 	}
 }
+local _sprite_by_path_mt = {}
+_sprite_by_path_mt.__index = function(t,k)
+	return table.deepcopy(rawget(t, k))
+end
+setmetatable(lazyAPI.sprite_by_path, _sprite_by_path_mt)
 
 
 ---@type table[]
@@ -1257,10 +1262,7 @@ end
 ---@param path string
 ---@return Sprite?
 lazyAPI.get_sprite_by_path = function(path)
-	local sprite_data = lazyAPI.sprite_by_path[path]
-	if sprite_data then
-		return table.deepcopy(sprite_data)
-	end
+	return lazyAPI.sprite_by_path[path]
 end
 
 ---@param func function #your function
