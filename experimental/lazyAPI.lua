@@ -71,6 +71,9 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.override_data(data, new_data)
 -- lazyAPI.format_special_symbols(string): string
 -- lazyAPI.get_sprite_by_path(string): Sprite?
+-- lazyAPI.expand_bounding_box(BoundingBox, value): BoundingBox
+-- lazyAPI.increase_bounding_box(BoundingBox, value): BoundingBox
+-- lazyAPI.decrease_bounding_box(BoundingBox, value): BoundingBox
 -- lazyAPI.add_extension(function)
 -- lazyAPI.add_listener(action_name, name, types, func): boolean
 -- lazyAPI.remove_listener(action_name, name)
@@ -1263,6 +1266,41 @@ end
 ---@return Sprite?
 lazyAPI.get_sprite_by_path = function(path)
 	return lazyAPI.sprite_by_path[path]
+end
+
+---@param box BoundingBox
+---@param value number
+---@return BoundingBox
+lazyAPI.expand_bounding_box = function(box, value)
+	if value == 0 then return box end
+
+	local leftTop = box[1]
+	local rightBottom = box[2]
+	value = value / 2
+	leftTop[1] = leftTop[1] + value
+	leftTop[2] = leftTop[2] + value
+	rightBottom[1] = rightBottom[1] + value
+	rightBottom[2] = rightBottom[2] + value
+
+	return box
+end
+lazyAPI.increase_bounding_box = lazyAPI.expand_bounding_box
+
+---@param box BoundingBox
+---@param value number
+---@return BoundingBox
+lazyAPI.decrease_bounding_box = function(box, value)
+	if value == 0 then return box end
+
+	local leftTop = box[1]
+	local rightBottom = box[2]
+	value = value / 2
+	leftTop[1] = leftTop[1] - value
+	leftTop[2] = leftTop[2] - value
+	rightBottom[1] = rightBottom[1] - value
+	rightBottom[2] = rightBottom[2] - value
+
+	return box
 end
 
 ---@param func function #your function
