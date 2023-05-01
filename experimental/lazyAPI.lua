@@ -4370,7 +4370,7 @@ lazyAPI.resistance.set = function(prototype, _type, percent, decrease)
 	local prot = prototype.prototype or prototype
 	local resistances = prot.resistances
 	if resistances == nil then
-		prot.resistances = {{type = ty_typepe, percent = percent, decrease = decrease}}
+		prot.resistances = {{type = _type, percent = percent, decrease = decrease}}
 		return prototype
 	end
 
