@@ -68,6 +68,7 @@
 | | [easyTemplates](/experimental/easyTemplates.lua) | |
 | | [SPD](/experimental/SPD.lua) - Simple postdate data (WIP) | [event_handler_vZO](/static-libs/lualibs/event_handler_vZO.lua) - improved version of Factorio event_handler |
 | | [fakes](/data-api/fakes.lua) - creates fake entitites |
+| | [sprite list](/.scripts/create_zk_sprite_list.sh) - creates sprite list and zk-lib adds them (new) |
 
 **3rd party libraries**:
 - [basexx](/lualib/basexx.lua) - library for base2, base16, base32, base64, base85 decoding and encoding of data strings. ([source](https://github.com/aiq/basexx))\
