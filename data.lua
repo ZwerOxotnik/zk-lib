@@ -1,3 +1,4 @@
+IS_DATA_STAGE=true
 lazyAPI = require("experimental/lazyAPI")
 local lazyAPI = lazyAPI
 simpleTiers = require("experimental/simpleTiers")
@@ -37,4 +38,16 @@ if data.raw["speech-bubble"]["speech-bubble-no-fade"] == nil then
 		fade_in_out_ticks = 5,
 		flags = {"not-on-map", "placeable-off-grid"}
 	}})
+end
+
+
+-- Add sprites from zk_sprite_list.lua
+for mod_name in pairs(mods) do
+	local is_ok, decal_list = pcall(require, string.format("__%s__/zk_sprite_list", mod_name))
+	if is_ok then
+		for _, _data in pairs(decal_list) do
+			---@diagnostic disable-next-line: redundant-parameter
+			lazyAPI.add_prototype(table.deepcopy(_data))
+		end
+	end
 end

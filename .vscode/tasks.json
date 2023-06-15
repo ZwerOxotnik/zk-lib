@@ -12,6 +12,13 @@
 			}
 		},
 		{
+			"label": "Create sprite list for zk-lib",
+			"type": "shell",
+			"command": "bash",
+			"args": [".scripts/create_zk_sprite_list.sh"],
+			"group": "test",
+		},
+		{
 			"label": "Handle sounds",
 			"type": "shell",
 			"command": "bash",

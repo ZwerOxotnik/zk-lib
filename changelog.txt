@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.0
+Date: 15. 06. 2023
+  Scripting:
+    - Updated my static libraries
+    - This mod auto-requires "create_zk_sprite_list.lua" from all mods, use /.script/create_zk_sprite_list.sh to generate lua file and add list of sprites.
+---------------------------------------------------------------------------------------------------
 Version: 0.12.5
 Date: 01. 05. 2023
   Scripting:
