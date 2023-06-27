@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.1
+Date: 27. 06. 2023
+  Scripting:
+    - Refactored some stuff in lazyAPI
+    - Added lazyAPI.multiply_bounding_box(BoundingBox, value): BoundingBox
+    - Added lazyAPI.base.scale_sprite(prototype, string|string[], size): prototype
+    - Added lazyAPI.base.scale_Animation4Way(prototype, string|string[], size): prototype
+    - Added lazyAPI.entity.scale(prototype, size): prototype (has a lot of bugs)
+---------------------------------------------------------------------------------------------------
 Version: 0.13.0
 Date: 15. 06. 2023
   Scripting:

@@ -73,7 +73,11 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.get_sprite_by_path(string): Sprite?
 -- lazyAPI.expand_bounding_box(BoundingBox, value): BoundingBox
 -- lazyAPI.increase_bounding_box(BoundingBox, value): BoundingBox
+-- lazyAPI.increase_bounding_box(nil, value)
 -- lazyAPI.decrease_bounding_box(BoundingBox, value): BoundingBox
+-- lazyAPI.decrease_bounding_box(nil, value)
+-- lazyAPI.multiply_bounding_box(BoundingBox, value): BoundingBox
+-- lazyAPI.multiply_bounding_box(nil, value)
 -- lazyAPI.add_extension(function)
 -- lazyAPI.add_listener(action_name, name, types, func): boolean
 -- lazyAPI.remove_listener(action_name, name)
@@ -174,6 +178,8 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 -- lazyAPI.base.find_tags(prototype, string|string[]): boolean
 -- lazyAPI.base.add_tags(prototype, string|string[]): prototype
 -- lazyAPI.base.remove_tags(prototype, string|string[]): prototype
+-- lazyAPI.base.scale_sprite(prototype, string|string[], size): prototype
+-- lazyAPI.base.scale_Animation4Way(prototype, string|string[], size): prototype
 
 -- lazyAPI.flags.add_flag(prototype, flag): prototype
 -- lazyAPI.flags.remove_flag(prototype, flag): prototype
@@ -217,6 +223,8 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 
 
 -- lazyAPI.entity.has_item(entity): boolean
+-- lazyAPI.entity.scale(prototype, size): prototype
+-- TODO: add lazyAPI.entity.copy_bounding_size or something like that
 
 
 -- lazyAPI.EntityWithHealth.find_resistance(prototype, type)
@@ -520,7 +528,7 @@ lazyAPI.all_RenderLayer_fields = {
 	"secondary_render_layer", "structure_render_layer", "base_render_layer",
 	"gun_animation_render_layer"
 }
--- https://wiki.factorio.com/Types/Animation4Way
+-- https://wiki.factorio.com/Types/Sprite4Way
 -- Perhaps, it's not all of them
 -- Actually, "pictures" can be an misleading or exception https://wiki.factorio.com/Prototype/Wall
 lazyAPI.all_Sprite4Way_fields = {
@@ -539,10 +547,16 @@ lazyAPI.all_Sprite4Way_fields = {
 	"plus_symbol_sprites", "power_symbol_sprites",
 	"right_shift_symbol_sprites", "xor_symbol_sprites"
 }
--- https://wiki.factorio.com/Types/Animation4Way
+-- https://wiki.factorio.com/Types/Sprite4Way
 -- Perhaps, it should be named differently
 lazyAPI.all_unique_Sprite4Way_fields = {
 	"structure", "light1", "light2"
+}
+-- https://wiki.factorio.com/Types/Animation4Way
+-- Perhaps, it's not all of them
+lazyAPI.all_Animation4Way_fields = {
+	"animation", "animations", "idle_animation", "base_picture", "structure_patch",
+	"structure", "rail_overlay_animations", "top_animations", "fluid_animation",
 }
 -- https://wiki.factorio.com/Types/SpriteVariations
 lazyAPI.all_spriteVariations_fields = {
@@ -1122,69 +1136,90 @@ lazyAPI.locale_to_array = Locale.locale_to_array
 lazyAPI.merge_locales = Locale.merge_locales
 lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
 
+
+lazyAPI.setting_stages = {
+	["settings"] = 1,
+	["settings-updates"] = 2,
+	["settings-final-fixes"] = 3,
+}
+lazyAPI.data_stages = {
+	["data"] = 1,
+	["data-updates"] = 2,
+	["data-final-fixes"] = 3,
+}
 local _current_stage = 1
 if not IS_SETTING_STAGE then
-	---@return 1|1.5|2|2.5|3 # 1: data, 2: data-updates, 3: data-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
+	---@return 1|1.5|2|2.5|3 # (by default) 1: data, 2: data-updates, 3: data-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
 	---[View Factorio lifecycle](https://lua-api.factorio.com/latest/Data-Lifecycle.html)
 	lazyAPI.get_stage = function()
 		local source = _lauxlib.get_first_lua_func_info().source
 		-- must start with an @ which indicates that it is a file name
 		if not source:find("^@") then
-			if _current_stage == 3 then
-				return 3
-			else
-				return _current_stage + 0.5
+			if _current_stage == lazyAPI.data_stages["data-final-fixes"] then
+				return _current_stage
 			end
+			return _current_stage + 0.5
 		end
 
 		-- %f[^/\0] is a frontier pattern matching anywhere
 		-- right past a / or at the beginning of the string
 		-- extra non escaped dot at the end to make sure
 		-- the file has any extension
-		if _current_stage == 3 then
-			return 3
-		elseif _current_stage < 2 and source:find("%f[^/\0]data%..") then
-			_current_stage = 1
-			return 1
-		elseif _current_stage < 3 and source:find("%f[^/\0]data%-updates%..") then
-			_current_stage = 2
-			return 2
-		elseif _current_stage < 4 and source:find("%f[^/\0]data%-final%-fixes%..") then
-			_current_stage = 3
-			return 3
+		if _current_stage == lazyAPI.data_stages["data-final-fixes"] then
+			return lazyAPI.data_stages["data-final-fixes"]
+		elseif _current_stage < lazyAPI.data_stages["data-updates"]
+			and source:find("%f[^/\0]data%..")
+		then
+			_current_stage = lazyAPI.data_stages["data"]
+			return _current_stage
+		elseif _current_stage < lazyAPI.data_stages["data-final-fixes"]
+			and source:find("%f[^/\0]data%-updates%..")
+		then
+			_current_stage = lazyAPI.data_stages["data-updates"]
+			return _current_stage
+		elseif _current_stage < lazyAPI.data_stages["data-final-fixes"] + 1
+			and source:find("%f[^/\0]data%-final%-fixes%..")
+		then
+			_current_stage = lazyAPI.data_stages["data-final-fixes"]
+			return _current_stage
 		else
 			return _current_stage + 0.5
 		end
 		-- patterns by JanSharp (https://github.com/JanSharp/phobos/issues/4)
 	end
 else
-	---@return 1|1.5|2|2.5|3 # 1: settings, 2: settings-updates, 3: settings-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
+	---@return 1|1.5|2|2.5|3 # (by default) 1: settings, 2: settings-updates, 3: settings-final-fixes, 1.5, 2.5, 3.5 etc: for undetermined cases between stages
 	---[View Factorio lifecycle](https://lua-api.factorio.com/latest/Data-Lifecycle.html)
 	lazyAPI.get_stage = function()
 		local source = _lauxlib.get_first_lua_func_info().source
 		-- must start with an @ which indicates that it is a file name
 		if not source:find("^@") then
-			if _current_stage == 3 then
-				return 3
-			else
-				return _current_stage + 0.5
+			if _current_stage == lazyAPI.setting_stages["settings-final-fixes"] then
+				return _current_stage
 			end
+			return _current_stage + 0.5
 		end
 
 		-- %f[^/\0] is a frontier pattern matching anywhere
 		-- right past a / or at the beginning of the string
 		-- extra non escaped dot at the end to make sure
 		-- the file has any extension
-		if _current_stage == 3 then
-			return 3
-		elseif _current_stage < 2 and source:find("%f[^/\0]settings%..") then
-			return 1
-		elseif _current_stage < 3 and source:find("%f[^/\0]settings%-updates%..") then
-			_current_stage = 2
-			return 2
-		elseif _current_stage < 4 and source:find("%f[^/\0]settings%-final%-fixes%..") then
-			_current_stage = 3
-			return 3
+		if _current_stage == lazyAPI.setting_stages["settings-final-fixes"] then
+			return _current_stage
+		elseif _current_stage < lazyAPI.setting_stages["settings-updates"]
+			and source:find("%f[^/\0]settings%..")
+		then
+			return lazyAPI.setting_stages["settings"]
+		elseif _current_stage < lazyAPI.setting_stages["settings-final-fixes"]
+			and source:find("%f[^/\0]settings%-updates%..")
+		then
+			_current_stage = lazyAPI.setting_stages["settings-updates"]
+			return _current_stage
+		elseif _current_stage < lazyAPI.setting_stages["settings-final-fixes"] + 1
+			and source:find("%f[^/\0]settings%-final%-fixes%..")
+		then
+			_current_stage = lazyAPI.setting_stages["settings-final-fixes"]
+			return _current_stage
 		else
 			return _current_stage + 0.5
 		end
@@ -1268,10 +1303,12 @@ lazyAPI.get_sprite_by_path = function(path)
 	return lazyAPI.sprite_by_path[path]
 end
 
----@param box BoundingBox
+---@param box BoundingBox?
 ---@param value number
----@return BoundingBox
+---@return BoundingBox?
 lazyAPI.expand_bounding_box = function(box, value)
+	if box == nil then return end
+
 	local leftTop = box[1]
 	local rightBottom = box[2]
 	value = value * 0.5
@@ -1284,10 +1321,12 @@ lazyAPI.expand_bounding_box = function(box, value)
 end
 lazyAPI.increase_bounding_box = lazyAPI.expand_bounding_box
 
----@param box BoundingBox
+---@param box BoundingBox?
 ---@param value number
----@return BoundingBox
+---@return BoundingBox?
 lazyAPI.decrease_bounding_box = function(box, value)
+	if box == nil then return end
+
 	local leftTop = box[1]
 	local rightBottom = box[2]
 	value = value * 0.5
@@ -1295,6 +1334,22 @@ lazyAPI.decrease_bounding_box = function(box, value)
 	leftTop[2] = leftTop[2] - value
 	rightBottom[1] = rightBottom[1] - value
 	rightBottom[2] = rightBottom[2] - value
+
+	return box
+end
+
+---@param box BoundingBox?
+---@param value number
+---@return BoundingBox?
+lazyAPI.multiply_bounding_box = function(box, value)
+	if box == nil then return end
+
+	local leftTop = box[1]
+	local rightBottom = box[2]
+	leftTop[1] = leftTop[1] * value
+	leftTop[2] = leftTop[2] * value
+	rightBottom[1] = rightBottom[1] * value
+	rightBottom[2] = rightBottom[2] * value
 
 	return box
 end
@@ -2030,8 +2085,9 @@ lazyAPI.base.copy_graphics = function(to_prototype, from_prototype)
 		"all_common_sprite_fields", "all_utility_sprite_fields",
 		"all_utility_animations_fields", "all_unique_sprite_fields",
 		"all_spriteVariations_fields", "all_RenderLayer_fields",
-		"all_unique_animation_fields", "all_Sprite4Way_fields",
-		"all_unique_Sprite4Way_fields", "all_LightDefinition_fields"
+		"all_unique_animation_fields", "all_Animation4Way_fields",
+		"all_unique_Sprite4Way_fields", "all_LightDefinition_fields",
+		"all_Sprite4Way_fields" --etc...
 	}
 	for _, main_field_name in ipairs(all_main_fields) do
 		for _, field_name in ipairs(lazyAPI[main_field_name]) do
@@ -2175,6 +2231,93 @@ lazyAPI.base.remove_tags = function(prototype, tags)
 		if is_tag_removed then
 			local event_data = {prototype = prototype, tag = tag}
 			lazyAPI.raise_event("on_tag_removed", prototype.type, event_data)
+		end
+	end
+
+	return prototype
+end
+
+
+---@param prototype table|LAPIWrappedPrototype
+---@param sprite_fields string|string[]
+---@param size number
+---@return table|LAPIWrappedPrototype
+lazyAPI.base.scale_sprite = function(prototype, sprite_fields, size)
+	if sprite_fields == nil then
+		error("sprite_name is nil")
+		return prototype
+	end
+	if size == nil then
+		error("size is nil")
+		return prototype
+	end
+
+	if type(sprite_fields) == "string" then
+		sprite_fields = {sprite_fields}
+	end
+
+	local prot = prototype.prototype or prototype
+
+	for _, sprite_field in pairs(sprite_fields) do
+		local sprite_data = prot[sprite_field]
+		-- TODO: refactor
+		if sprite_data then
+			sprite_data.scale = (sprite_data.scale and sprite_data.scale * size) or size
+			local shift = sprite_data.shift
+			if shift then
+				shift[1] = shift[1] * size
+				shift[2] = shift[2] * size
+			end
+		end
+	end
+
+	return prototype
+end
+
+
+---@param prototype table|LAPIWrappedPrototype
+---@param sprite_fields string|string[]
+---@param size number
+---@return table|LAPIWrappedPrototype
+lazyAPI.base.scale_Animation4Way = function(prototype, sprite_fields, size)
+	if sprite_fields == nil then
+		error("sprite_name is nil")
+		return prototype
+	end
+	if size == nil then
+		error("size is nil")
+		return prototype
+	end
+
+	if type(sprite_fields) == "string" then
+		sprite_fields = {sprite_fields}
+	end
+
+	local prot = prototype.prototype or prototype
+
+	for _, sprite_field in pairs(sprite_fields) do
+		local animation_data = prot[sprite_field]
+		if animation_data then
+			if animation_data.layers then
+				for _, layer in pairs(animation_data.layers) do
+					-- TODO: refactor
+					layer.scale = (layer.scale and layer.scale * size) or size
+					local shift = layer.shift
+					if shift then
+						shift[1] = shift[1] * size
+						shift[2] = shift[2] * size
+					end
+					local hr_version = layer.hr_version
+					if hr_version then
+						hr_version.scale = (hr_version.scale and hr_version.scale * size) or size
+						local shift = hr_version.shift
+						if shift then
+							shift[1] = shift[1] * size
+							shift[2] = shift[2] * size
+						end
+					end
+				end
+			end
 		end
 	end
 
@@ -5182,6 +5325,55 @@ lazyAPI.entity.has_item = function(entity)
 		end
 	end
 	return false
+end
+
+
+-- WARNING: WIP, doesn't scale everything properly, doesn't scale some images yet
+---@param prototype table|LAPIWrappedPrototype
+---@param size number
+---@return table|LAPIWrappedPrototype
+lazyAPI.entity.scale = function(prototype, size)
+	if size == nil then
+		error("size is nil")
+		return prototype
+	end
+
+	-- TODO: fix smoke from energy_source, circuit_wire_connection_point,
+	--		graphics_set, Animation, RotatedAnimation4Way, working_visualisations, circuit_connector_sprites etc.
+
+	local prot = prototype.prototype or prototype
+
+	lazyAPI.multiply_bounding_box(prot.hit_visualization_box, size)
+	lazyAPI.multiply_bounding_box(prot.collision_box, size)
+	lazyAPI.multiply_bounding_box(prot.selection_box, size)
+	lazyAPI.multiply_bounding_box(prot.drawing_box,   size)
+	lazyAPI.multiply_bounding_box(prot.sticker_box,   size)
+
+	-- Scale sprites (perhaps, it's wrong)
+	lazyAPI.base.scale_sprite(prot, lazyAPI.all_spriteVariations_fields, size)
+	lazyAPI.base.scale_Animation4Way(prot, lazyAPI.all_Animation4Way_fields, size)
+
+	-- Scale fluid_boxes
+	for _, fluid_box in pairs(prot.fluid_boxes or {}) do
+		for _, pipe_connection in pairs(fluid_box.pipe_connections or {}) do
+			-- TODO: fix pipe_picture and pipe_covers
+			if pipe_connection.position then
+				lazyAPI.multiply_bounding_box(pipe_connection.position, size)
+			end
+		end
+	end
+
+	-- Scale circuit_wire_connection_point
+	for _, points in pairs(prot.circuit_wire_connection_point or {}) do
+		for _, point in pairs(points or {}) do
+			if point[1] then
+				point[1] = point[1] * size
+				point[2] = point[2] * size
+			end
+		end
+	end
+
+	return prototype
 end
 
 
