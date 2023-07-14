@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.3
+Date: 14. 07. 2023
+  Scripting:
+    - Improved lazyAPI.entity.scale
+    - Added lazyAPI.scale_pipes(prototype, fluid_box, size, string|string[]?): prototype
+    - Added lazyAPI.scale_pipe_sprite(table?, size, cardinal_direction)
+---------------------------------------------------------------------------------------------------
 Version: 0.13.2
 Date: 14. 07. 2023
   Scripting:

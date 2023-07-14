@@ -140,7 +140,9 @@ lazyAPI.make_fake_simple_entity_with_owner(prototype)
 lazyAPI.find_prototypes_filtered(prototype_filter): table[]
 lazyAPI.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
 lazyAPI.scale_sprite(table?, size)
+lazyAPI.scale_pipes(prototype, fluid_box, size, string|string[]?): prototype
 lazyAPI.scale_vector(table?, size)
+lazyAPI.scale_pipe_sprite(table?, size, cardinal_direction)
 
 
 lazyAPI.base.override_data(table): prototype
@@ -1464,6 +1466,88 @@ lazyAPI.fix_messy_table = function(t)
 end
 lazyAPI.fix_table = lazyAPI.fix_messy_table
 local fix_messy_table = lazyAPI.fix_messy_table
+
+
+-- TODO: refactor
+---@param prot table
+---@param fluid_box table
+---@param scale number
+---@param prev_collision_box table
+---@param sprite_fields string|string[]?
+lazyAPI.scale_pipes = function(prot, fluid_box, scale, prev_collision_box, sprite_fields)
+	if scale == nil then
+		error("scale is nil")
+		return
+	end
+
+	if sprite_fields == nil then
+		sprite_fields = {"pipe_picture", "pipe_covers"}
+	else
+		if type(sprite_fields) == "string" then
+			sprite_fields = {sprite_fields} -- TODO: refactor
+			---@cast sprite_fields string[]
+		end
+	end
+
+	for _, sprite_field in pairs(sprite_fields) do
+		local _data = fluid_box[sprite_field]
+		if _data then
+			_data = table.deepcopy(_data)
+			fluid_box[sprite_field] = _data
+
+			for _, direction in ipairs(lazyAPI.cardinal_directions) do
+				if _data[direction] then
+					_data[direction] = table.deepcopy(_data[direction])
+					lazyAPI.scale_pipe_sprite(_data[direction], scale, direction)
+				end
+			end
+			if _data.sheet then
+				_data.sheet = table.deepcopy(_data.sheet)
+				lazyAPI.scale_sprite(_data.sheet, scale)
+			end
+			if _data.sheets then
+				_data.sheets = table.deepcopy(_data.sheets)
+				for _, sprite in pairs(_data.sheets) do
+					lazyAPI.scale_sprite(sprite, scale)
+				end
+			end
+		end
+	end
+
+	local function change_pipe_position(position)
+		local left_top_x_diff = position[1] + prev_collision_box[1][1]
+		local left_top_y_diff = position[2] - prev_collision_box[1][2]
+		local right_down_x_diff = position[1] + prev_collision_box[2][1]
+		local right_down_y_diff = position[2] - prev_collision_box[2][2]
+		if position[1] < 0 and position[1] < prev_collision_box[1][1] then
+			position[1] = prot.collision_box[1][1] + left_top_x_diff
+		elseif position[1] > prev_collision_box[2][1] then
+			position[1] = prot.collision_box[2][1] + right_down_x_diff
+		else
+			position[1] = position[1] * scale
+		end
+		if position[2] < 0 and position[2] < prev_collision_box[1][2] then
+			position[2] = prot.collision_box[1][2] + left_top_y_diff
+		elseif position[2] > prev_collision_box[2][2] then
+			position[2] = prot.collision_box[2][2] + right_down_y_diff
+		else
+			position[2] = position[2] * scale
+		end
+	end
+
+	local pipe_connections = fluid_box.pipe_connections
+	for _, pipe_connection in pairs(pipe_connections) do
+		local position = pipe_connection.position
+		if position then
+			change_pipe_position(position)
+		end
+		if pipe_connection.positions then
+			for _, position in pairs(pipe_connection.positions) do
+				change_pipe_position(position)
+			end
+		end
+	end
+end
 
 
 ---@param source table|LAPIWrappedPrototype
@@ -4353,6 +4437,13 @@ lazyAPI.scale_sprite = function(image_data, size)
 		return
 	end
 
+	---@params shift table # https://wiki.factorio.com/Types/vector
+	local function scale_shift(shift)
+		if not shift then return end
+		shift[1] = shift[1] * size
+		shift[2] = shift[2] * size
+	end
+
 	local function scale(_image_data)
 		if _image_data == nil then return end
 
@@ -4360,19 +4451,11 @@ lazyAPI.scale_sprite = function(image_data, size)
 			_image_data.scale = (_image_data.scale and _image_data.scale * size) or size
 		end
 		-- https://wiki.factorio.com/Types/vector
-		local shift = _image_data.shift
-		if shift then
-			shift[1] = shift[1] * size
-			shift[2] = shift[2] * size
-		end
+		scale_shift(_image_data.shift)
 		local hr_version = _image_data.hr_version
 		if hr_version then
 			hr_version.scale = (hr_version.scale and hr_version.scale * size) or size
-			local hr_shift = hr_version.shift
-			if hr_shift then
-				hr_shift[1] = hr_shift[1] * size
-				hr_shift[2] = hr_shift[2] * size
-			end
+			scale_shift(hr_version.shift)
 		end
 	end
 
@@ -4386,6 +4469,67 @@ lazyAPI.scale_sprite = function(image_data, size)
 	if image_data.pictures then
 		for _, _data in pairs(image_data.pictures) do
 			scale(_data)
+		end
+	end
+end
+
+
+---@param image_data table?
+---@param size number
+---@param cardinal_direction string?
+lazyAPI.scale_pipe_sprite = function(image_data, size, cardinal_direction)
+	if image_data == nil then return end
+	if size == nil then
+		error("size is nil")
+		return
+	end
+
+	---@params shift table # https://wiki.factorio.com/Types/vector
+	local function scale_shift(_data)
+		if _data.shift then
+			local shift = _data.shift
+			shift[1] = shift[1] * size
+			shift[2] = shift[2] * size
+			return
+		end
+		if not _data.height then return end
+
+		-- WARNING: it's wrong \/, not fully tested
+		if cardinal_direction == "north" then
+			_data.shift = util.by_pixel(0, -_data.height / (size * 2))
+		elseif cardinal_direction == "south" then
+			_data.shift = util.by_pixel(0,  _data.height / size)
+		elseif cardinal_direction == "west" then
+			_data.shift = util.by_pixel(-_data.height / (size * 1.65), 0)
+		elseif cardinal_direction == "east" then
+			_data.shift = util.by_pixel( _data.height / (size * 1.65), 0)
+		end
+	end
+
+	local function _scale(_image_data)
+		if _image_data == nil then return end
+
+		if _image_data.filename or _image_data.filenames or _image_data.stripes then
+			_image_data.scale = (_image_data.scale and _image_data.scale * size) or size
+		end
+		scale_shift(_image_data)
+		local hr_version = _image_data.hr_version
+		if hr_version then
+			hr_version.scale = (hr_version.scale and hr_version.scale * size) or size
+			scale_shift(hr_version)
+		end
+	end
+
+	_scale(image_data)
+	_scale(image_data.picture)
+	if image_data.layers then
+		for _, _data in pairs(image_data.layers) do
+			_scale(_data)
+		end
+	end
+	if image_data.pictures then
+		for _, _data in pairs(image_data.pictures) do
+			_scale(_data)
 		end
 	end
 end
@@ -5443,7 +5587,7 @@ lazyAPI.entity.scale = function(prototype, size)
 
 	local prot = prototype.prototype or prototype
 
-	local initial_collision_box = table.deepcopy(prot.collision_box)
+	local prev_collision_box = table.deepcopy(prot.collision_box)
 	lazyAPI.multiply_bounding_box(prot.map_generator_bounding_box, size)
 	lazyAPI.multiply_bounding_box(prot.hit_visualization_box, size)
 	lazyAPI.multiply_bounding_box(prot.collision_box, size)
@@ -5507,46 +5651,13 @@ lazyAPI.entity.scale = function(prototype, size)
 		lazyAPI.scale_vector(ccs.red_green_led_light_offset, size)
 	end
 
-	local function change_pipe_position(position)
-		local left_top_x_diff = position[1] + initial_collision_box[1][1]
-		local left_top_y_diff = position[2] - initial_collision_box[1][2]
-		local right_down_x_diff = position[1] + initial_collision_box[2][1]
-		local right_down_y_diff = position[2] - initial_collision_box[2][2]
-		if position[1] < 0 and position[1] < initial_collision_box[1][1] then
-			position[1] = prot.collision_box[1][1] + left_top_x_diff
-		elseif position[1] > initial_collision_box[2][1] then
-			position[1] = prot.collision_box[2][1] + right_down_x_diff
-		else
-			position[1] = position[1] * size
-		end
-		if position[2] < 0 and position[2] < initial_collision_box[1][2] then
-			position[2] = prot.collision_box[1][2] + left_top_y_diff
-		elseif position[2] > initial_collision_box[2][2] then
-			position[2] = prot.collision_box[2][2] + right_down_y_diff
-		else
-			position[2] = position[2] * size
-		end
-	end
 
 	local function scale_fluid_box(fluid_box)
 		if not (fluid_box and type(fluid_box) == "table" and fluid_box.pipe_connections) then
 			return
 		end
 
-		local pipe_connections = fluid_box.pipe_connections
-		-- TODO: change shift for pipe sprites
-		lazyAPI.base.scale_Sprite4Way(fluid_box, size, {"pipe_picture", "pipe_covers"})
-		for _, pipe_connection in pairs(pipe_connections) do
-			local position = pipe_connection.position
-			if position then
-				change_pipe_position(position)
-			end
-			if pipe_connection.positions then
-				for _, position in pairs(pipe_connection.positions) do
-					change_pipe_position(position)
-				end
-			end
-		end
+		lazyAPI.scale_pipes(prot, fluid_box, size, prev_collision_box)
 	end
 
 	-- Scale fluid_boxes
