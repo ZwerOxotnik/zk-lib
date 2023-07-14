@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.2
+Date: 14. 07. 2023
+  Scripting:
+    - Improved lazyAPI.entity.scale
+    - Added lazyAPI.scale_sprite(table?, size)
+    - Added lazyAPI.scale_vector(table?, size)
+    - Added lazyAPI.base.scale_Sprite4Way(prototype, size, string|string[]?): prototype
+    - Changed lazyAPI.base.scale_sprite(prototype, size, string|string[]?): prototype
+    - Changed lazyAPI.base.scale_Animation4Way(prototype, size, string|string[]?): prototype
+---------------------------------------------------------------------------------------------------
 Version: 0.13.1
 Date: 27. 06. 2023
   Scripting:
