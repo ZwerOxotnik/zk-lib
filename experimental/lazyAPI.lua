@@ -142,7 +142,7 @@ lazyAPI.replace_in_prototypes(prototypes, field, old_data, new_data): prototypes
 lazyAPI.scale_sprite(table?, size)
 lazyAPI.scale_pipes(prototype, fluid_box, size, string|string[]?): prototype
 lazyAPI.scale_vector(table?, size)
-lazyAPI.scale_pipe_sprite(table?, size, cardinal_direction)
+lazyAPI.scale_pipe_sprite(table?, size)
 
 
 lazyAPI.base.override_data(table): prototype
@@ -1498,7 +1498,7 @@ lazyAPI.scale_pipes = function(prot, fluid_box, scale, prev_collision_box, sprit
 			for _, direction in ipairs(lazyAPI.cardinal_directions) do
 				if _data[direction] then
 					_data[direction] = table.deepcopy(_data[direction])
-					lazyAPI.scale_pipe_sprite(_data[direction], scale, direction)
+					lazyAPI.scale_pipe_sprite(_data[direction], scale)
 				end
 			end
 			if _data.sheet then
@@ -1537,9 +1537,8 @@ lazyAPI.scale_pipes = function(prot, fluid_box, scale, prev_collision_box, sprit
 
 	local pipe_connections = fluid_box.pipe_connections
 	for _, pipe_connection in pairs(pipe_connections) do
-		local position = pipe_connection.position
-		if position then
-			change_pipe_position(position)
+		if pipe_connection.position then
+			change_pipe_position(pipe_connection.position)
 		end
 		if pipe_connection.positions then
 			for _, position in pairs(pipe_connection.positions) do
@@ -4474,48 +4473,91 @@ lazyAPI.scale_sprite = function(image_data, size)
 end
 
 
+-- WARNING: it's wrong \/, not fully tested
+lazyAPI.pipe_scales = {
+	["__base__/graphics/entity/pipe-covers/pipe-cover-north.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-north.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+	end,
+	["__base__/graphics/entity/pipe-covers/pipe-cover-north-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-north-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+	end,
+	["__base__/graphics/entity/pipe-covers/pipe-cover-south.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, (5.5 * scale * scale))
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-south.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, (6 * scale * scale))
+	end,
+	["__base__/graphics/entity/pipe-covers/pipe-cover-south-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, (5.5 * scale * scale))
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-south-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(0, (6 * scale * scale))
+	end,
+	["__base__/graphics/entity/pipe-covers/pipe-cover-west.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(-4 * scale * scale, 0)
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-west.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(-4.5 * scale * scale, 0)
+	end,
+	["__base__/graphics/entity/pipe-covers/pipe-cover-west-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(-4 * scale * scale, 0)
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-west-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(-4.5 * scale * scale, 0)
+	end,
+	["__base__/graphics/entity/pipe-covers/pipe-cover-east.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(4 * scale * scale, 0)
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-east.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(4.5 * scale * scale, 0)
+	end,
+	["__base__/graphics/entity/pipe-covers/pipe-cover-east-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(4 * scale * scale, 0)
+	end,
+	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-east-shadow.png"] = function(image_data, scale)
+		image_data.shift = util.by_pixel(4.5 * scale * scale, 0)
+	end,
+}
+
+
 ---@param image_data table?
----@param size number
----@param cardinal_direction string?
-lazyAPI.scale_pipe_sprite = function(image_data, size, cardinal_direction)
+---@param scale number
+lazyAPI.scale_pipe_sprite = function(image_data, scale)
 	if image_data == nil then return end
-	if size == nil then
+	if scale == nil then
 		error("size is nil")
 		return
 	end
 
 	---@params shift table # https://wiki.factorio.com/Types/vector
-	local function scale_shift(_data)
-		if _data.shift then
-			local shift = _data.shift
-			shift[1] = shift[1] * size
-			shift[2] = shift[2] * size
+	local function scale_shift(_image_data)
+		if _image_data.shift then
+			local shift = _image_data.shift
+			shift[1] = shift[1] * scale
+			shift[2] = shift[2] * scale
 			return
 		end
-		if not _data.height then return end
 
-		-- WARNING: it's wrong \/, not fully tested
-		if cardinal_direction == "north" then
-			_data.shift = util.by_pixel(0, -_data.height / (size * 2))
-		elseif cardinal_direction == "south" then
-			_data.shift = util.by_pixel(0,  _data.height / size)
-		elseif cardinal_direction == "west" then
-			_data.shift = util.by_pixel(-_data.height / (size * 1.65), 0)
-		elseif cardinal_direction == "east" then
-			_data.shift = util.by_pixel( _data.height / (size * 1.65), 0)
-		end
+		local f = lazyAPI.pipe_scales[_image_data.filename]
+		if f then f(_image_data, scale) end
 	end
 
 	local function _scale(_image_data)
 		if _image_data == nil then return end
 
 		if _image_data.filename or _image_data.filenames or _image_data.stripes then
-			_image_data.scale = (_image_data.scale and _image_data.scale * size) or size
+			_image_data.scale = (_image_data.scale and _image_data.scale * scale) or scale
 		end
 		scale_shift(_image_data)
 		local hr_version = _image_data.hr_version
 		if hr_version then
-			hr_version.scale = (hr_version.scale and hr_version.scale * size) or size
+			hr_version.scale = (hr_version.scale and hr_version.scale * scale) or scale
 			scale_shift(hr_version)
 		end
 	end
@@ -5580,7 +5622,7 @@ lazyAPI.entity.scale = function(prototype, size)
 
 	-- TODO: fix smoke from energy_source, circuit_wire_connection_point,
 	--	graphics_set, Animation, RotatedAnimation4Way,
-	--	working_visualisations,
+	--	working_visualisations, circuit points seems wrong
 	--	circuit_wire_max_distance
 	--	https://wiki.factorio.com/Prototype/TrainStop#light2
 	--	etc.
