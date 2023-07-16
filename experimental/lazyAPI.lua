@@ -4476,52 +4476,117 @@ end
 -- WARNING: it's wrong \/, not fully tested
 lazyAPI.pipe_scales = {
 	["__base__/graphics/entity/pipe-covers/pipe-cover-north.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+		-- WARNING: it's wrong for sure
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0, -8 * scale * (scale / 1.95))
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0,  8 / scale / (scale * 1.95))
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-north.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+		-- WARNING: it's wrong for sure
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0, -8 * scale * (scale / 1.95))
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0,  8 / scale / (scale * 1.95))
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/pipe-cover-north-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+		-- WARNING: it's wrong for sure
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0, -8 * scale * (scale / 1.95))
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0,  8 / scale / (scale * 1.95))
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-north-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, -8 * scale * (scale / 2)) -- WARNING: it's wrong for sure
+		 -- WARNING: it's wrong for sure
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0, -8 * scale * (scale / 1.95))
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0,  8 / scale / (scale * 1.95))
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/pipe-cover-south.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, (5.5 * scale * scale))
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0,  5.5 * scale * scale)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0, -5.5 / scale / scale)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-south.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, (6 * scale * scale))
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0,  6 * scale * scale)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0, -6 / scale / scale)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/pipe-cover-south-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, (5.5 * scale * scale))
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0,  5.5 * scale * scale)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0, -5.5 / scale / scale)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-south-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(0, (6 * scale * scale))
+		if scale > 1 then
+			image_data.shift = util.by_pixel(0,  6 * scale * scale)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(0, -6 / scale / scale)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/pipe-cover-west.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(-4 * scale * scale, 0)
+		if scale > 1 then
+			image_data.shift = util.by_pixel(-4 * scale * scale, 0)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel( 4 / scale / scale, 0)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-west.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(-4.5 * scale * scale, 0)
+		if scale > 1 then
+			image_data.shift = util.by_pixel(-4.5 * scale * scale, 0)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel( 4.5 / scale / scale, 0)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/pipe-cover-west-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(-4 * scale * scale, 0)
+		if scale > 1 then
+			image_data.shift = util.by_pixel(-4 * scale * scale, 0)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel( 4 / scale / scale, 0)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-west-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(-4.5 * scale * scale, 0)
+		if scale > 1 then
+			image_data.shift = util.by_pixel(-4.5 * scale * scale, 0)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel( 4.5 / scale / scale, 0)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/pipe-cover-east.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(4 * scale * scale, 0)
+		if scale > 1 then
+			image_data.shift = util.by_pixel( 4 * scale * scale, 0)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(-4 / scale / scale, 0)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-east.png"] = function(image_data, scale)
 		image_data.shift = util.by_pixel(4.5 * scale * scale, 0)
 	end,
 	["__base__/graphics/entity/pipe-covers/pipe-cover-east-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(4 * scale * scale, 0)
+		if scale > 1 then
+			image_data.shift = util.by_pixel( 4 * scale * scale, 0)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(-4 / scale / scale, 0)
+		end
 	end,
 	["__base__/graphics/entity/pipe-covers/hr-pipe-cover-east-shadow.png"] = function(image_data, scale)
-		image_data.shift = util.by_pixel(4.5 * scale * scale, 0)
+
+		if scale > 1 then
+			image_data.shift = util.by_pixel( 4.5 * scale * scale, 0)
+		elseif scale < 1 then
+			image_data.shift = util.by_pixel(-4.5 / scale / scale, 0)
+		end
 	end,
 }
 
@@ -4537,15 +4602,18 @@ lazyAPI.scale_pipe_sprite = function(image_data, scale)
 
 	---@params shift table # https://wiki.factorio.com/Types/vector
 	local function scale_shift(_image_data)
+		local f = lazyAPI.pipe_scales[_image_data.filename]
+		if f then
+			f(_image_data, scale)
+			return
+		end
+
 		if _image_data.shift then
 			local shift = _image_data.shift
 			shift[1] = shift[1] * scale
 			shift[2] = shift[2] * scale
 			return
 		end
-
-		local f = lazyAPI.pipe_scales[_image_data.filename]
-		if f then f(_image_data, scale) end
 	end
 
 	local function _scale(_image_data)
@@ -5622,7 +5690,7 @@ lazyAPI.entity.scale = function(prototype, size)
 
 	-- TODO: fix smoke from energy_source, circuit_wire_connection_point,
 	--	graphics_set, Animation, RotatedAnimation4Way,
-	--	working_visualisations, circuit points seems wrong
+	--	working_visualisations
 	--	circuit_wire_max_distance
 	--	https://wiki.factorio.com/Prototype/TrainStop#light2
 	--	etc.
@@ -5726,10 +5794,8 @@ lazyAPI.entity.scale = function(prototype, size)
 	if prot.circuit_wire_connection_point then
 		prot.circuit_wire_connection_point = table.deepcopy(prot.circuit_wire_connection_point)
 		for _, points in pairs(prot.circuit_wire_connection_point) do
-			if points then
-				for _, point in pairs(points) do
-					lazyAPI.scale_vector(point.position, size)
-				end
+			for _, point in pairs(points) do
+				lazyAPI.scale_vector(point, size)
 			end
 		end
 	end

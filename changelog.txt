@@ -1,21 +1,28 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.5
+Date: 15. 07. 2023
+  Scripting:
+    - Improved lazyAPI.entity.scale(prototype, size): prototype
+    - Imrpoved lazyAPI.scale_pipe_sprite(table?, size)
+    - Updated static libs
+---------------------------------------------------------------------------------------------------
 Version: 0.13.4
 Date: 15. 07. 2023
   Scripting:
-    - Improved lazyAPI.entity.scale
+    - Improved lazyAPI.entity.scale(prototype, size): prototype
     - Changed lazyAPI.scale_pipe_sprite(table?, size)
 ---------------------------------------------------------------------------------------------------
 Version: 0.13.3
 Date: 14. 07. 2023
   Scripting:
-    - Improved lazyAPI.entity.scale
+    - Improved lazyAPI.entity.scale(prototype, size): prototype
     - Added lazyAPI.scale_pipes(prototype, fluid_box, size, string|string[]?): prototype
     - Added lazyAPI.scale_pipe_sprite(table?, size, cardinal_direction)
 ---------------------------------------------------------------------------------------------------
 Version: 0.13.2
 Date: 14. 07. 2023
   Scripting:
-    - Improved lazyAPI.entity.scale
+    - Improved lazyAPI.entity.scale(prototype, size): prototype
     - Added lazyAPI.scale_sprite(table?, size)
     - Added lazyAPI.scale_vector(table?, size)
     - Added lazyAPI.base.scale_Sprite4Way(prototype, size, string|string[]?): prototype
