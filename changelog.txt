@@ -1,10 +1,15 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.6
+Date: 17. 07. 2023
+  Scripting:
+    - Updated ZwerOxotnik's static libs
+---------------------------------------------------------------------------------------------------
 Version: 0.13.5
 Date: 15. 07. 2023
   Scripting:
     - Improved lazyAPI.entity.scale(prototype, size): prototype
     - Imrpoved lazyAPI.scale_pipe_sprite(table?, size)
-    - Updated static libs
+    - Updated ZwerOxotnik's static libs
 ---------------------------------------------------------------------------------------------------
 Version: 0.13.4
 Date: 15. 07. 2023
@@ -41,7 +46,7 @@ Date: 27. 06. 2023
 Version: 0.13.0
 Date: 15. 06. 2023
   Scripting:
-    - Updated my static libraries
+    - Updated ZwerOxotnik's static libs
     - This mod auto-requires "create_zk_sprite_list.lua" from all mods, use /.script/create_zk_sprite_list.sh to generate lua file and add list of sprites.
 ---------------------------------------------------------------------------------------------------
 Version: 0.12.5

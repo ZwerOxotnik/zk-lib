@@ -976,10 +976,10 @@ for tool_type, prototypes in pairs(lazyAPI.all_tools) do
 end
 
 
----@type ZWlocale
-local Locale = require("static-libs/lualibs/locale")
----@type ZWversion
-local Version = require("static-libs/lualibs/version")
+---@type ZOlocale_util
+local locale_util = require("static-libs/lualibs/locale")
+---@type ZOversion_util
+local version_util = require("static-libs/lualibs/version")
 ---@type MFlauxlib
 local _lauxlib = require("static-libs/lualibs/lauxlib")
 
@@ -1128,11 +1128,11 @@ tmemoize(strings_for_patterns, function(str)
 end)
 
 
-lazyAPI.array_to_locale = Locale.array_to_locale
-lazyAPI.array_to_locale_as_new = Locale.array_to_locale_as_new
-lazyAPI.locale_to_array = Locale.locale_to_array
-lazyAPI.merge_locales = Locale.merge_locales
-lazyAPI.merge_locales_as_new = Locale.merge_locales_as_new
+lazyAPI.array_to_locale = locale_util.array_to_locale
+lazyAPI.array_to_locale_as_new = locale_util.array_to_locale_as_new
+lazyAPI.locale_to_array = locale_util.locale_to_array
+lazyAPI.merge_locales = locale_util.merge_locales
+lazyAPI.merge_locales_as_new = locale_util.merge_locales_as_new
 
 
 lazyAPI.setting_stages = {
@@ -1253,7 +1253,7 @@ end
 
 ---@type table<string, integer>
 local memorized_versions = {}
-tmemoize(memorized_versions, Version.string_to_version)
+tmemoize(memorized_versions, version_util.string_to_version)
 -- Supports strings like: "5", "5.5", "5.5.5"
 ---@param str string
 ---@return integer #version

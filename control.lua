@@ -1,7 +1,7 @@
 local addons_api = require("addons/core/addons_api")
 event_listener = require("__zk-lib__/event-listener/branch-1/stable-version")
-random_items = require("static-libs/lualibs/random_items")
-LuaEntity = require("static-libs/lualibs/LuaEntity")
+random_items = require("static-libs/lualibs/control_stage/random_items")
+LuaEntity = require("static-libs/lualibs/control_stage/entity-util")
 
 local insecure_addons_list = require("addons/core/insecure-addons-list")
 local safe_addons_list = require("addons/core/safe-addons-list")
