@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.13.8
+Date: 19. 07. 2023
+  Scripting:
+    - Added lazyAPI.base.scale_SpriteVariations(prototype, size, sprite_fields): prototype
+    - Changed lazyAPI.entity.scale(prototype, size): prototype?
+---------------------------------------------------------------------------------------------------
 Version: 0.13.7
 Date: 19. 07. 2023
   Bugfixes:

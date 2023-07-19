@@ -191,6 +191,7 @@ lazyAPI.base.remove_tags(prototype, string|string[]): prototype
 lazyAPI.base.scale_sprite(prototype, size, string|string[]?): prototype
 lazyAPI.base.scale_Animation4Way(prototype, size, string|string[]?): prototype
 lazyAPI.base.scale_Sprite4Way(prototype, size, string|string[]?): prototype
+lazyAPI.base.scale_SpriteVariations(prototype, size, string|string[]?): prototype
 lazyAPI.flags.add_flag(prototype, flag): prototype
 lazyAPI.flags.remove_flag(prototype, flag): prototype
 lazyAPI.flags.find_flag(prototype, flag): integer?
@@ -225,7 +226,7 @@ lazyAPI.loot.set_if_exist(prototype, item, count_min?, count_max? percent?, decr
 lazyAPI.loot.remove(prototype, item): prototype
 lazyAPI.loot.remove_non_existing_loot(prototype): prototype
 lazyAPI.entity.has_item(entity): boolean
-lazyAPI.entity.scale(prototype, size): prototype
+lazyAPI.entity.scale(prototype, size): prototype?
 -- TODO: add lazyAPI.entity.copy_bounding_size or something like that
 lazyAPI.EntityWithHealth.find_resistance(prototype, type)
 lazyAPI.EntityWithHealth.set_resistance(prototype, type, percent, decrease)
@@ -741,6 +742,13 @@ lazyAPI.all_common_sprite_fields = {
 	"rocket_sprite", "disabled_icon", "disabled_small_icon",
 	"icon", "small_icon", "picture", "hr_version", "layers", "texture",
 	"integration", "underground_remove_belts_sprite", "underground_sprite"
+}
+
+-- https://wiki.factorio.com/Types/SpriteVariations
+lazyAPI.all_SpriteVariations_fields = {
+	"single", "straight_vertical", "straight_horizontal", "corner_right_down",
+	"corner_left_down", "t_up", "ending_right", "ending_left", "filling",
+	"water_connection_patch", "gate_connection_patch"
 }
 
 
@@ -1482,11 +1490,9 @@ lazyAPI.scale_pipes = function(prot, fluid_box, scale, prev_collision_box, sprit
 
 	if sprite_fields == nil then
 		sprite_fields = {"pipe_picture", "pipe_covers"}
-	else
-		if type(sprite_fields) == "string" then
-			sprite_fields = {sprite_fields} -- TODO: refactor
-			---@cast sprite_fields string[]
-		end
+	elseif type(sprite_fields) == "string" then
+		sprite_fields = {sprite_fields} -- TODO: refactor
+		---@cast sprite_fields string[]
 	end
 
 	for _, sprite_field in pairs(sprite_fields) do
@@ -2329,21 +2335,19 @@ lazyAPI.base.scale_sprite = function(prototype, size, sprite_fields)
 
 	if sprite_fields == nil then
 		sprite_fields = lazyAPI.all_spriteVariations_fields
-	else
-		if type(sprite_fields) == "string" then
-			sprite_fields = {sprite_fields} -- TODO: refactor
-			---@cast sprite_fields string[]
-		end
+	elseif type(sprite_fields) == "string" then
+		sprite_fields = {sprite_fields} -- TODO: refactor
+		---@cast sprite_fields string[]
 	end
 
 	local prot = prototype.prototype or prototype
 
 	for _, sprite_field in pairs(sprite_fields) do
-		local _data = prot[sprite_field]
-		if _data then
-			_data = table.deepcopy(_data)
-			prot[sprite_field] = _data
-			lazyAPI.scale_sprite(prot[sprite_field], size)
+		local sprite = prot[sprite_field]
+		if sprite then
+			sprite = table.deepcopy(sprite)
+			prot[sprite_field] = sprite
+			lazyAPI.scale_sprite(sprite, size)
 		end
 	end
 
@@ -2363,11 +2367,9 @@ lazyAPI.base.scale_Animation4Way = function(prototype, size, sprite_fields)
 
 	if sprite_fields == nil then
 		sprite_fields = lazyAPI.all_Animation4Way_fields
-	else
-		if type(sprite_fields) == "string" then
-			sprite_fields = {sprite_fields} -- TODO: refactor
-			---@cast sprite_fields string[]
-		end
+	elseif type(sprite_fields) == "string" then
+		sprite_fields = {sprite_fields} -- TODO: refactor
+		---@cast sprite_fields string[]
 	end
 
 	local prot = prototype.prototype or prototype
@@ -2405,11 +2407,9 @@ lazyAPI.base.scale_Sprite4Way = function(prototype, size, sprite_fields)
 
 	if sprite_fields == nil then
 		sprite_fields = lazyAPI.all_Sprite4Way_fields
-	else
-		if type(sprite_fields) == "string" then
-			sprite_fields = {sprite_fields} -- TODO: refactor
-			---@cast sprite_fields string[]
-		end
+	elseif type(sprite_fields) == "string" then
+		sprite_fields = {sprite_fields} -- TODO: refactor
+		---@cast sprite_fields string[]
 	end
 
 	local prot = prototype.prototype or prototype
@@ -2436,6 +2436,41 @@ lazyAPI.base.scale_Sprite4Way = function(prototype, size, sprite_fields)
 					lazyAPI.scale_sprite(sprite, size)
 				end
 			end
+		end
+	end
+
+	return prototype
+end
+
+
+---@param prototype table|LAPIWrappedPrototype
+---@param size number
+---@param sprite_fields string|string[]?
+---@return table|LAPIWrappedPrototype
+function lazyAPI.base.scale_SpriteVariations(prototype, size, sprite_fields)
+	if size == nil then
+		error("size is nil")
+		return prototype
+	end
+
+	local prot = prototype.prototype or prototype
+	local pictures = prot.pictures
+	if pictures == nil then return prototype end
+
+	if sprite_fields == nil then
+		sprite_fields = lazyAPI.all_SpriteVariations_fields
+	elseif type(sprite_fields) == "string" then
+		sprite_fields = {sprite_fields} -- TODO: refactor
+		---@cast sprite_fields string[]
+	end
+
+
+	for _, sprite_field in pairs(sprite_fields) do
+		local sprite = pictures[sprite_field]
+		if sprite then
+			sprite = table.deepcopy(sprite)
+			prot[sprite_field] = sprite
+			lazyAPI.scale_sprite(sprite, size)
 		end
 	end
 
@@ -4428,10 +4463,10 @@ local replace_in_prototypes = lazyAPI.replace_in_prototypes
 
 
 ---@param image_data table?
----@param size number
-lazyAPI.scale_sprite = function(image_data, size)
+---@param scale_size number
+lazyAPI.scale_sprite = function(image_data, scale_size)
 	if image_data == nil then return end
-	if size == nil then
+	if scale_size == nil then
 		error("size is nil")
 		return
 	end
@@ -4439,21 +4474,21 @@ lazyAPI.scale_sprite = function(image_data, size)
 	---@params shift table # https://wiki.factorio.com/Types/vector
 	local function scale_shift(shift)
 		if not shift then return end
-		shift[1] = shift[1] * size
-		shift[2] = shift[2] * size
+		shift[1] = shift[1] * scale_size
+		shift[2] = shift[2] * scale_size
 	end
 
 	local function scale(_image_data)
 		if _image_data == nil then return end
 
 		if _image_data.filename or _image_data.filenames or _image_data.stripes then
-			_image_data.scale = (_image_data.scale and _image_data.scale * size) or size
+			_image_data.scale = (_image_data.scale and _image_data.scale * scale_size) or scale_size
 		end
 		-- https://wiki.factorio.com/Types/vector
 		scale_shift(_image_data.shift)
 		local hr_version = _image_data.hr_version
 		if hr_version then
-			hr_version.scale = (hr_version.scale and hr_version.scale * size) or size
+			hr_version.scale = (hr_version.scale and hr_version.scale * scale_size) or scale_size
 			scale_shift(hr_version.shift)
 		end
 	end
@@ -5681,8 +5716,12 @@ end
 -- WARNING: WIP, doesn't scale everything properly, doesn't scale some images yet
 ---@param prototype table|LAPIWrappedPrototype
 ---@param size number
----@return table|LAPIWrappedPrototype
+---@return table|LAPIWrappedPrototype?
 lazyAPI.entity.scale = function(prototype, size)
+	if prototype == nil then
+		log("prototype is nil")
+		return
+	end
 	if size == nil then
 		error("size is nil")
 		return prototype
@@ -5725,6 +5764,7 @@ lazyAPI.entity.scale = function(prototype, size)
 	lazyAPI.base.scale_sprite(prot, size)
 	lazyAPI.base.scale_Animation4Way(prot, size)
 	lazyAPI.base.scale_Sprite4Way(prot, size)
+	lazyAPI.base.scale_SpriteVariations(prot, size)
 	for _, field_name in pairs(lazyAPI.directory_animation_fields) do
 		local data = prot[field_name]
 		if data then
