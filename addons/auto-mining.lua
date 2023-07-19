@@ -19,7 +19,7 @@ limitations under the License.
 -- Mod portal: https://mods.factorio.com/mod/auto-mining
 -- Homepage: https://forums.factorio.com/viewtopic.php?f=190&t=73117
 
-local am_util = require("static-libs/lualibs/LuaPlayer")
+local am_util = require("static-libs/lualibs/control_stage/player-util")
 local module = {}
 
 local function clear_player_data(event)
