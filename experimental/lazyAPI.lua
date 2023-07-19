@@ -67,6 +67,7 @@ local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "
 ---@field scale_sprite fun(self: LAPIWrappedPrototype, size: number, sprite_fields: string|string[]?): self
 ---@field scale_Animation4Way fun(self: LAPIWrappedPrototype, size: number, sprite_fields: string|string[]?): self
 ---@field scale_Sprite4Way fun(self: LAPIWrappedPrototype, size: number, sprite_fields: string|string[]?): self
+---@field scale_SpriteVariations fun(self: LAPIWrappedPrototype, size: number, sprite_fields: string|string[]?): self
 
 --[[
 
@@ -2469,7 +2470,7 @@ function lazyAPI.base.scale_SpriteVariations(prototype, size, sprite_fields)
 		local sprite = pictures[sprite_field]
 		if sprite then
 			sprite = table.deepcopy(sprite)
-			prot[sprite_field] = sprite
+			pictures[sprite_field] = sprite
 			lazyAPI.scale_sprite(sprite, size)
 		end
 	end
@@ -5740,7 +5741,7 @@ lazyAPI.entity.scale = function(prototype, size)
 	lazyAPI.multiply_bounding_box(prot.map_generator_bounding_box, size)
 	lazyAPI.multiply_bounding_box(prot.hit_visualization_box, size)
 	lazyAPI.multiply_bounding_box(prot.collision_box, size)
-	lazyAPI.multiply_bounding_box(prot.selection_box, size)
+	lazyAPI.multiply_bounding_box(prot.selection_box, size) -- TODO: change, it should depend on collision_box
 	lazyAPI.multiply_bounding_box(prot.drawing_box,   size)
 	lazyAPI.multiply_bounding_box(prot.sticker_box,   size)
 	if prot.drawing_boxes then
