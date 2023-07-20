@@ -46,6 +46,9 @@ for mod_name in pairs(mods) do
 	local is_ok, decal_list = pcall(require, string.format("__%s__/zk_sprite_list", mod_name))
 	if is_ok then
 		for _, _data in pairs(decal_list) do
+			if _data.filename:sub(1,1) ~= "_" and _data.filename:sub(2,2) ~= "_" then
+				_data.filename = string.format("__%s__/%s", mod_name, _data.filename)
+			end
 			---@diagnostic disable-next-line: redundant-parameter
 			lazyAPI.add_prototype(table.deepcopy(_data))
 		end
