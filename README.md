@@ -61,7 +61,7 @@
 
 | Settings stage | Data stage | Control stage |
 | -------------- | ---------- | ------------- |
-| [ZKSettings](/experimental/ZKSettings.lua) - libary with new features for settings | [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN api](/data-api/puan_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua)
+| [ZKSettings](/experimental/ZKSettings.lua) - libary with new features for settings | [sound auto-handling](https://github.com/ZwerOxotnik/Mod-generator) + [PUAN2 api](/data-api/puan2_api.lua) | ["zk-lib" - remote interface of libs](/zk-lib/control.lua)
 | ["Static libs"](#static-libs) | ["Static libs"](#static-libs) | ["Static libs"](#static-libs) |
 | [lazyAPI](/experimental/lazyAPI.lua) | [lazyAPI](/experimental/lazyAPI.lua) - Are you lazy to change/add/remove/check some prototypes in the data stage? Use this library then. | [Event listener][event-listener] (not important, currently) |
 | | [simpleTiers](/experimental/simpleTiers.lua) | |

@@ -4,6 +4,7 @@ local lazyAPI = lazyAPI
 simpleTiers = require("experimental/simpleTiers")
 easyTemplates = require("experimental/easyTemplates")
 puan_api = require("data-api/puan_api")
+puan2_api = require("data-api/puan2_api")
 fakes = require("data-api/fakes")
 zk_lib = require("data-api/zk_lib")
 zk_SPD = require("experimental/SPD")
