@@ -12,6 +12,10 @@ zk_SPD.create_container("important-no-cheat-recipes")
 require("sound/sounds_list")
 
 
+compat = require("__zk-lib__/lualib/Penlight/lua/pl/compat")
+warn "@on"
+
+
 require("prototypes/utility-sprites")
 require("prototypes/styles")
 

@@ -1409,24 +1409,6 @@ function oT:testMacro()
     ]])
 end
 
-function oT:testImport()
-    local fh = io.open("test_output_macro_def.lal", "w")
-    os.remove("test_output_macro_def_out.lua")
-    fh:write([[{
-        macro-add: (define-macro (macro-add a b) `(+ ,a ,@b))
-        func-mul: (lambda (a b) (* a b 10))
-    }]])
-    fh:close()
-    assert_lal('44', [[
-        (import (test_output_macro_def))
-        (test_output_macro_def-macro-add 12 32)
-    ]]);
-    assert_lal('3630', [[
-        (import (test_output_macro_def))
-        (test_output_macro_def-func-mul 11 33)
-    ]]);
-end
-
 function oT:testAndOr()
     assert_lal('93', [[
         (let ((x 10))
@@ -2429,8 +2411,6 @@ end
 --oT:run { 'testExceptions' }
 --oT:run { 'testDefBuiltin' }
 --oT:run { 'testCyclicStructs' }
-
---oT:run { 'testImport' }
 
 -- WITHOUT ERROR CHECKING:
 --oT:run { 'testSideeffectIgnore' }

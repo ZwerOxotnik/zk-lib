@@ -93,6 +93,26 @@
 - [std](/lualib/std/) is collection of Lua libraries. ([source](https://github.com/lua-stdlib/lua-stdlib/tree/a632078f216ac6b9994449b7f1435a419172b44f)) (not fully tested, some stuff were removed)
 - [vivid](/lualib/vivid.lua) is simple color manipulation library. Used for color conversion and math. ([source](https://github.com/WetDesertRock/vivid/blob/55cb54578949f74534ab89e75e72a3f013292fda/vivid.lua), [documentation](https://github.com/WetDesertRock/vivid/tree/55cb54578949f74534ab89e75e72a3f013292fda))\
 `local vivid = require("__zk-lib__/lualib/vivid")`
+- [Penlight](/lualib/Penlight) brings together a set of generally useful pure Lua modules. ([source](https://github.com/lunarmodules/Penlight/tree/dc6d19c5c1e1b4ac55b14df17b7645af6b410140)) (not tested, some stuff were removed)
+```lua
+compat = require("lualib/Penlight/lua/pl/compat")
+warn "@on"
+```
+`local tablex = require("__zk-lib__/lualib/Penlight/lua/pl/tablex")`\
+`local array2d = require("__zk-lib__/lualib/Penlight/lua/pl/array2d")`\
+`local Map = require("__zk-lib__/lualib/Penlight/lua/pl/Map")`\
+`local List = require("__zk-lib__/lualib/Penlight/lua/pl/List")`\
+`local Set = require("__zk-lib__/lualib/Penlight/lua/pl/Set")`\
+`local MultiMap = require("__zk-lib__/lualib/Penlight/lua/pl/MultiMap")`\
+`local OrderedMap = require("__zk-lib__/lualib/Penlight/lua/pl/OrderedMap")`\
+etc.
+- [Allen](/lualib/allen.lua) is a Lua library which provides a set of utilities and helpers for strings operations.\
+Allen can be considered as an extension of the built-in Lua string library. ([source](https://github.com/Yonaba/Allen/tree/9abdcd0330d7007d77d67a97b0c4627a46a7f278), [documentation](https://yonaba.github.com/Allen))\
+`local allen = require("__zk-lib__/lualib/allen")`
+- [Guard](/lualib/guard.lua) Minimalistic library providing [Elixir](https://elixir-lang.org/crash-course.html)-style guards for Lua. ([source](https://github.com/Yonaba/guard.lua/tree/cc38583241195209f2af7c92cd97eb42a82f6514), [documentation](https://github.com/Yonaba/guard.lua/wiki))\
+`local guard = require("__zk-lib__/lualib/guard")`
+- Lua Class System ([LCS](/lualib/LCS.lua)) is a small library which offers a clean, minimalistic but powerful API for (Pseudo) Object Oriented programming style using Lua. ([source](https://github.com/Yonaba/Lua-Class-System/tree/7c8b7c816eee282770bdf206e253d38d348bc732))\
+`local LCS = require("__zk-lib__/lualib/LCS")`
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 

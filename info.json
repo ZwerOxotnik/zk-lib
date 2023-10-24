@@ -1,10 +1,10 @@
 {
     "name": "zk-lib",
-    "version": "0.13.11",
+    "version": "0.13.12",
     "factorio_version": "1.1",
     "title": "ZwerOxotnik's extendable mod with 8 addons",
     "author": "ZwerOxotnik",
-    "contact": "zweroxotnik@gmail.com, discord:ZwerOxotnik#7117",
+    "contact": "zweroxotnik@gmail.com, discord:ZwerOxotnik",
     "source": "https://github.com/ZwerOxotnik/zk-lib",
     "homepage": "https://reddit.com/r/ZwerOxotnik",
     "description": "",

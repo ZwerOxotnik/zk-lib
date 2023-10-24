@@ -1,7 +1,5 @@
 local ipairs, pairs, print, setmetatable
     = ipairs, pairs, print, setmetatable
-
---[[DBG]] local debug = require "debug"
 local u = require"util"
 
 local   id,   nop,   setify,   weakkey
