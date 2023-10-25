@@ -185,10 +185,10 @@ lazyAPI.base.remove_alternative_prototype(prototype, alternative_prototype): pro
 lazyAPI.base.copy_icons(to_prototype, from_prototype): to_prototype
 lazyAPI.base.copy_sounds(to_prototype, from_prototype): to_prototype
 lazyAPI.base.copy_graphics(to_prototype, from_prototype): to_prototype
-lazyAPI.base.get_tags(prototype): string[]?
-lazyAPI.base.find_tags(prototype, string|string[]): boolean
-lazyAPI.base.add_tags(prototype, string|string[]): prototype
-lazyAPI.base.remove_tags(prototype, string|string[]): prototype
+lazyAPI.base.get_tags(prototype?): string[]?
+lazyAPI.base.find_tags(prototype?, string|string[]): boolean
+lazyAPI.base.add_tags(prototype?, string|string[]): prototype
+lazyAPI.base.remove_tags(prototype?, string|string[]): prototype
 lazyAPI.base.scale_sprite(prototype, size, string|string[]?): prototype
 lazyAPI.base.scale_Animation4Way(prototype, size, string|string[]?): prototype
 lazyAPI.base.scale_Sprite4Way(prototype, size, string|string[]?): prototype
@@ -2189,9 +2189,10 @@ lazyAPI.base.copy_graphics = function(to_prototype, from_prototype)
 end
 
 
----@param prototype table|LAPIWrappedPrototype
+---@param prototype table|LAPIWrappedPrototype?
 ---@return string[]?
 lazyAPI.base.get_tags = function(prototype)
+	if not prototype then return end
 	local prot = prototype.prototype or prototype
 	local __data = lazyAPI.tags[prot.type]
 	if __data then
@@ -2200,10 +2201,11 @@ lazyAPI.base.get_tags = function(prototype)
 end
 
 
----@param prototype table|LAPIWrappedPrototype
+---@param prototype table|LAPIWrappedPrototype?
 ---@param tags string|string[]
 ---@return boolean?
 lazyAPI.base.find_tags = function(prototype, tags)
+	if not prototype then return false end
 	local prot = prototype.prototype or prototype
 	local __data = lazyAPI.tags[prot.type]
 	if __data == nil then
@@ -2219,10 +2221,11 @@ lazyAPI.base.find_tags = function(prototype, tags)
 end
 
 
----@param prototype table|LAPIWrappedPrototype
+---@param prototype table|LAPIWrappedPrototype?
 ---@param tags string|string[]
----@return table|LAPIWrappedPrototype
+---@return table|LAPIWrappedPrototype?
 lazyAPI.base.add_tags = function(prototype, tags)
+	if not prototype then return end
 	local prot = prototype.prototype or prototype
 	local __data = lazyAPI.tags[prot.type]
 	if __data == nil then
@@ -2272,10 +2275,11 @@ lazyAPI.base.add_tags = function(prototype, tags)
 end
 
 
----@param prototype table|LAPIWrappedPrototype
+---@param prototype table|LAPIWrappedPrototype?
 ---@param tags string|string[]
----@return table|LAPIWrappedPrototype
+---@return table|LAPIWrappedPrototype?
 lazyAPI.base.remove_tags = function(prototype, tags)
+	if not prototype then return end
 	local prot = prototype.prototype or prototype
 	local __data = lazyAPI.tags[prot.type]
 	if __data == nil then
