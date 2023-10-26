@@ -18,7 +18,7 @@ The short name for this framework is "LAPI".
 ]]--
 ---@class lazyAPI
 ---@module "__zk-lib__/experimental/lazyAPI"
-local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.1"}
+local lazyAPI = {_SOURCE = "https://github.com/ZwerOxotnik/zk-lib", _VERSION = "0.0.2"}
 
 
 --- Perhaps, I should auto generate annotations like LAPIWrappedPrototype etc.
@@ -419,6 +419,15 @@ lazyAPI.mining_drill = {}
 lazyAPI.resource = {}
 lazyAPI["mining-drill"] = lazyAPI.mining_drill
 lazyAPI.character = {}
+
+lazyAPI.materials = {"iron", "steel", "copper", "gold", "brass", "tin", "invar",
+	"chromium", "nickel", "carbon", "titanium", "lead", "bronze", "diamond",
+	"stone", "coal", "wood", "uranium", "ruby", "rubber", "sulphur", "electrum",
+	"plastic", "silicon", "charcoal", "coal", "glass", "manganese", "bismuth",
+	"silver", "platinum", "platinum", "palladium", "zirconium", "tungsten",
+	"silica", "quartz", "sand", "salt", "chlorine", "graphite", "aluminum",
+	"alumina", "zircon", "zink"
+}
 
 --- type = { name = { tags }}
 ---@type table<string <string, string[]>>

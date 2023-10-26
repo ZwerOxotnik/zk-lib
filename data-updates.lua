@@ -2,15 +2,10 @@ lazyAPI.get_stage() -- in order to get this stage internally
 
 
 --#region set tags
-local materials = {"iron", "steel", "copper", "gold", "brass", "tin", "invar",
-	"chromium", "nickel", "carbon", "titanium", "lead", "bronze", "diamond",
-	"stone", "coal", "wood", "uranium", "ruby", "rubber", "sulphur", "electrum",
-	"plastic", "silicon", "charcoal", "coal", "glass"
-}
 local add_tags = lazyAPI.base.add_tags
 local recipes = data.raw.recipe
 local items = data.raw.item
-for _, v in pairs(materials) do
+for _, v in pairs(lazyAPI.materials) do
 	local name = v .. "-gear-wheel"
 	add_tags(recipes[name], "gear")
 	add_tags(items[name],   "gear")
