@@ -27,12 +27,50 @@ lazyAPI.attach_custom_input_event("move-up")
 lazyAPI.attach_custom_input_event("mine")
 lazyAPI.attach_custom_input_event("toggle-map")
 
+
+local GRAPHICS_PATH = "__zk-lib__/graphics/"
+data:extend{
+	{
+		type = "sprite", name = "plus_white",
+		filename = GRAPHICS_PATH .. "plus_white.png",
+		priority = "extra-high-no-scale",
+		width = 32, height = 32,
+		scale = 0.5,
+		flags = {"gui-icon"}
+	}, {
+		type = "sprite", name = "plus",
+		filename = GRAPHICS_PATH .. "plus.png",
+		priority = "extra-high-no-scale",
+		width = 32, height = 32,
+		scale = 0.5,
+		flags = {"gui-icon"}
+	}, {
+		type = "sprite", name = "lua_snippet_tool_icon_white",
+		filename = GRAPHICS_PATH .. "run-snippet-tool-white.png",
+		priority = "medium",
+		width = 64, height = 64,
+		mipmap_count = 3,
+		flags = {"gui-icon"},
+		scale = 0.5
+	}, {
+		type = "sprite", name = "map_exchange_string_white",
+		filename = GRAPHICS_PATH .. "map-exchange-string-white.png",
+		priority = "extra-high-no-scale",
+		width = 32, height = 32,
+		mipmap_count = 3,
+		flags = {"gui-icon"},
+		scale = 0.5
+	}
+}
+
+
 -- TODO: create special scripts
 -- lazyAPI.create_trigger_capsule({
 --   name = "zk-select", -- this is fake cursor to find cursor position via https://lua-api.factorio.com/latest/events.html#on_script_trigger_effect
 --   icon = "__zk-lib__/graphics/select.png", --"__core__/graphics/mouse-cursor.png",
 --   radius_color = {0, 0, 0, 0}
 -- })
+
 
 if data.raw["speech-bubble"]["speech-bubble-no-fade"] == nil then
 	data:extend({{
