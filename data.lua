@@ -16,7 +16,7 @@ compat = require("__zk-lib__/lualib/Penlight/lua/pl/compat")
 warn "@on"
 
 
-require("prototypes/utility-sprites")
+require("prototypes/sprites")
 require("prototypes/styles")
 
 
@@ -26,42 +26,6 @@ lazyAPI.attach_custom_input_event("move-right")
 lazyAPI.attach_custom_input_event("move-up")
 lazyAPI.attach_custom_input_event("mine")
 lazyAPI.attach_custom_input_event("toggle-map")
-
-
-local GRAPHICS_PATH = "__zk-lib__/graphics/"
-data:extend{
-	{
-		type = "sprite", name = "plus_white",
-		filename = GRAPHICS_PATH .. "plus_white.png",
-		priority = "extra-high-no-scale",
-		width = 32, height = 32,
-		scale = 0.5,
-		flags = {"gui-icon"}
-	}, {
-		type = "sprite", name = "plus",
-		filename = GRAPHICS_PATH .. "plus.png",
-		priority = "extra-high-no-scale",
-		width = 32, height = 32,
-		scale = 0.5,
-		flags = {"gui-icon"}
-	}, {
-		type = "sprite", name = "lua_snippet_tool_icon_white",
-		filename = GRAPHICS_PATH .. "run-snippet-tool-white.png",
-		priority = "medium",
-		width = 64, height = 64,
-		mipmap_count = 3,
-		flags = {"gui-icon"},
-		scale = 0.5
-	}, {
-		type = "sprite", name = "map_exchange_string_white",
-		filename = GRAPHICS_PATH .. "map-exchange-string-white.png",
-		priority = "extra-high-no-scale",
-		width = 32, height = 32,
-		mipmap_count = 3,
-		flags = {"gui-icon"},
-		scale = 0.5
-	}
-}
 
 
 -- TODO: create special scripts

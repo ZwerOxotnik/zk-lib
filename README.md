@@ -180,7 +180,8 @@ This project contains work from multiple sources + [addons](#overview).
 * [zk-factorio-static-lib](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
 * [Sounds from other authors](/sound/README.txt)
 
-Also, this project used [Mod generator](https://github.com/ZwerOxotnik/Mod-generator)
+Also, this project used [Mod generator](https://github.com/ZwerOxotnik/Mod-generator).\
+Some images were copied from the game "Factorio" and changed, please, read terms of service: https://www.factorio.com/terms-of-service.
 
 Artwork
 -------

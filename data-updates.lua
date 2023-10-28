@@ -6,7 +6,10 @@ local add_tags = lazyAPI.base.add_tags
 local recipes = data.raw.recipe
 local items = data.raw.item
 for _, v in pairs(lazyAPI.materials) do
-	local name = v .. "-gear-wheel"
+	local name = v .. "-wire"
+	add_tags(recipes[name], "wire")
+	add_tags(items[name],   "wire")
+	name = v .. "-gear-wheel"
 	add_tags(recipes[name], "gear")
 	add_tags(items[name],   "gear")
 	name = v .. "-plate"
