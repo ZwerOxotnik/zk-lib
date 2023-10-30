@@ -9,6 +9,9 @@ for _, v in pairs(lazyAPI.materials) do
 	local name = v .. "-wire"
 	add_tags(recipes[name], "wire")
 	add_tags(items[name],   "wire")
+	name = v .. "-cable"
+	add_tags(recipes[name], "cable")
+	add_tags(items[name],   "cable")
 	name = v .. "-gear-wheel"
 	add_tags(recipes[name], "gear")
 	add_tags(items[name],   "gear")
@@ -58,6 +61,8 @@ for _, v in pairs(lazyAPI.materials) do
 	add_tags(recipes[name], "circuit") -- perhaps wrong
 	add_tags(items[name],   "circuit") -- perhaps wrong
 end
+add_tags(recipes["copper-cable"], "wire")
+add_tags(items["copper-cable"],   "wire")
 
 for _, v in pairs{"advanced", "electronic"} do
 	local name = v .. "-circuit"
