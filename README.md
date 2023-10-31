@@ -83,7 +83,7 @@ local bitwise = require(require("__zk-lib__/defines").modules.bitwise)
 ```lua
 local fun = require(require("__zk-lib__/defines").modules.fun)
 --- or
-local fun = require(require("__zk-lib__/defines").modules.fun)()
+require(require("__zk-lib__/defines").modules.fun)()
 ```
 - [candran](/lualib/candran/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran/tree/1e118381f8276fe66a2cad02f1b9f4535e7e253e)) (**WARNING:** this modified version has some bugs and some functions were removed due to technical limitations, please report in this repository if you have any issues with it)\
 ```lua
