@@ -397,6 +397,9 @@ lazyAPI.deleted_data = {} -- Deleted prototypes
 for key in pairs(data_raw) do
 	lazyAPI.deleted_data[key] = {}
 end
+lazyAPI.deleted_data.sound     = lazyAPI.deleted_data.sound or {}
+lazyAPI.deleted_data.animation = lazyAPI.deleted_data.animation or {}
+
 
 ---@type table<table, string>
 lazyAPI.prototypes_mod_source = {}
@@ -1071,11 +1074,10 @@ data.extend = function(self, new_prototypes, ...)
 	for k, prototype in pairs(new_prototypes) do
 		if type(k) == "number" and type(prototype) == "table" and prototype.type then
 			local _type = prototype.type
-			local name = prototype.name
-			if data_raw[_type] == nil then -- Fix for https://mods.factorio.com/mod/Better-TrainHorn
-				data_raw[_type] = {}
-				lazyAPI.deleted_data[_type] = lazyAPI.deleted_data[_type] or {}
-			end
+			local name  = prototype.name
+			data_raw[_type] = data_raw[_type] or {}
+			lazyAPI.deleted_data[_type] = lazyAPI.deleted_data[_type] or {}
+
 			local prev_instance = data_raw[_type][name]
 			-- Perhaps it should verify this case later instead
 			if prev_instance and prev_instance ~= prototype then
