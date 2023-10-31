@@ -1,4 +1,5 @@
 
+--- Use https://github.com/ZwerOxotnik/zk-factorio-static-lib/blob/master/lualibs/control_stage/GuiTemplater.lua instead
 local module = {}
 
 

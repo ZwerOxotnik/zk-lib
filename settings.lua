@@ -1,7 +1,8 @@
 IS_SETTING_STAGE = true
-lazyAPI = require("experimental/lazyAPI")
+ZKLIB_DEFINES = require("defines")
+lazyAPI = require(ZKLIB_DEFINES.modules.lazyAPI)
 local addons_api = require("addons/core/addons_api")
-ZKSettings = require("__zk-lib__/experimental/ZKSettings")
+ZKSettings = require(ZKLIB_DEFINES.modules.ZKSettings)
 local ZKSettings = ZKSettings
 
 ZKSettings.create_bool_setting("zk-lib-warn-about-addons")

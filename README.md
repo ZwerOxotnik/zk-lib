@@ -72,47 +72,114 @@
 
 **3rd party libraries**:
 - [basexx](/lualib/basexx.lua) - library for base2, base16, base32, base64, base85 decoding and encoding of data strings. ([source](https://github.com/aiq/basexx))\
-`local basexx = require("__zk-lib__/lualib/basexx")`
+```lua
+local basexx = require(require("__zk-lib__/defines").modules.basexx)
+```
 - [bitwise](/lualib/bitwise.lua) - Bitwise operations. ([source](https://github.com/davidm/lua-bit-numberlua/blob/master/lmod/bit/numberlua.lua))\
-`local bitwise = require("__zk-lib__/lualib/bitwise")`
+```lua
+local bitwise = require(require("__zk-lib__/defines").modules.bitwise)
+```
 - [fun](/lualib/fun.lua) - a functional programming library ([documentation](https://luafun.github.io/), [source](https://github.com/luafun/luafun/blob/master/fun.lua))\
-`local fun = require("__zk-lib__/lualib/fun")` or `require "__zk-lib__/lualib/fun" ()`
+```lua
+local fun = require(require("__zk-lib__/defines").modules.fun)
+--- or
+local fun = require(require("__zk-lib__/defines").modules.fun)()
+```
 - [candran](/lualib/candran/candran.lua) - a Lua dialect and simple preprocessor ([source](https://github.com/Reuh/candran/tree/1e118381f8276fe66a2cad02f1b9f4535e7e253e)) (**WARNING:** this modified version has some bugs and some functions were removed due to technical limitations, please report in this repository if you have any issues with it)\
-`local candran = require("__zk-lib__/lualib/candran/candran")`
+```lua
+local candran = require(require("__zk-lib__/defines").modules.candran)
+```
 - [LuLPeg](/lualib/LuLPeg) - A port of LPeg 100% written in Lua. ([source](https://github.com/pygy/LuLPeg/tree/f07f5be09d0461b1e83a8f811ca2c9cb79a69ab2)) (use with cautious)\
-`local lpeg = require("__zk-lib__/lualib/LuLPeg/lulpeg")`
+```lua
+local lpeg = require(require("__zk-lib__/defines").modules.lulpeg)
+```
 - [Luxtre](/lualib/luxtre/) is a fully portable dialect of Lua 5.2 which compiles back into native code, written entirely in native Lua. It adds helpful additions and changes to Lua's default syntax and enables useful macros and preprocessing. ([documentation](https://github.com/DimitriBarronmore/luxtre/tree/a2854ef166b71b0e74252a55b0ec245cbc45f947/docs), [source](https://github.com/DimitriBarronmore/luxtre/tree/a2854ef166b71b0e74252a55b0ec245cbc45f947)) (not fully tested, can't be used outside of control.lua parsing yet)\
-`local luxtre = require("__zk-lib__/lualib/luxtre/init")`
+```lua
+local luxtre = require(require("__zk-lib__/defines").modules.luxtre)
+```
 - [lal](/lualib/lal/) is the implementation of a Compiler for a Scheme like dialect of Lisp that compiles to Lua. ([documentation](/lualib/lal/doc/), [source](https://github.com/WeirdConstructor/lal/tree/38aaa0c426a9b52cd8d74d375f9a11e117be2007)) (expect bugs (I should fix some of them), can't be used outside of control.lua parsing yet)\
 `# FAIL LAL-Compiler (74 OF 82 OK, 82 of 82 were run)`\
-`local lal = require("__zk-lib__/lualib/lal/lal")`
+```lua
+local lal = require(require("__zk-lib__/defines").modules.lal)
+```
 - [tl](/lualib/tl/) is compiler for Teal, a typed dialect of Lua. ([tutorial](https://github.com/teal-language/tl/tree/a10fb2c69827c1b0f8e1b8a5c848a06d6da5d3be/docs/tutorial.md), [source](https://github.com/teal-language/tl/tree/a10fb2c69827c1b0f8e1b8a5c848a06d6da5d3be)) (not fully tested)\
-`local tl = require("__zk-lib__/lualib/tl/0.15.1/tl")`
+```lua
+local tl = require(require("__zk-lib__/defines").modules.tl)
+```
 - [moonscript](/lualib/moonscript/) is a programmer friendly language that compiles into Lua. ([source](https://github.com/leafo/moonscript/tree/b7efcd131046ed921ae1075d7c0f6a3b64a570f7)) (not fully tested)\
-`local moonscript = require("__zk-lib__/lualib/moonscript/base")`
+```lua
+local moonscript = require(require("__zk-lib__/defines").modules.moonscript)
+```
 - [std](/lualib/std/) is collection of Lua libraries. ([source](https://github.com/lua-stdlib/lua-stdlib/tree/a632078f216ac6b9994449b7f1435a419172b44f)) (not fully tested, some stuff were removed)
+```lua
+local std_modules = require("__zk-lib__/defines").modules.std
+local init    = require(std_modules.init)
+local _base   = require(std_modules._base)
+local package = require(std_modules.package)
+local debug   = require(std_modules.debug)
+local string  = require(std_modules.string)
+local table   = require(std_modules.string)
+local math    = require(std_modules.math)
+```
 - [vivid](/lualib/vivid.lua) is simple color manipulation library. Used for color conversion and math. ([source](https://github.com/WetDesertRock/vivid/blob/55cb54578949f74534ab89e75e72a3f013292fda/vivid.lua), [documentation](https://github.com/WetDesertRock/vivid/tree/55cb54578949f74534ab89e75e72a3f013292fda))\
-`local vivid = require("__zk-lib__/lualib/vivid")`
+```lua
+local vivid = require(require("__zk-lib__/defines").modules.vivid)
+```
 - [Penlight](/lualib/Penlight) brings together a set of generally useful pure Lua modules. ([source](https://github.com/lunarmodules/Penlight/tree/dc6d19c5c1e1b4ac55b14df17b7645af6b410140)) (not tested, some stuff were removed)
 ```lua
-compat = require("lualib/Penlight/lua/pl/compat")
+compat = require("__zk-lib__/lualib/Penlight/lua/pl/compat")
 warn "@on"
 ```
-`local tablex = require("__zk-lib__/lualib/Penlight/lua/pl/tablex")`\
-`local array2d = require("__zk-lib__/lualib/Penlight/lua/pl/array2d")`\
-`local Map = require("__zk-lib__/lualib/Penlight/lua/pl/Map")`\
-`local List = require("__zk-lib__/lualib/Penlight/lua/pl/List")`\
-`local Set = require("__zk-lib__/lualib/Penlight/lua/pl/Set")`\
-`local MultiMap = require("__zk-lib__/lualib/Penlight/lua/pl/MultiMap")`\
-`local OrderedMap = require("__zk-lib__/lualib/Penlight/lua/pl/OrderedMap")`\
-etc.
+```lua
+local PL_modules = require("__zk-lib__/defines").modules.penlight
+require(PL_modules.init) -- Entry point for loading all PL libraries only on demand, into the global space
+local import_into = require(PL_modules.import_into)
+local compat      = require(PL_modules.compat)
+local luabalanced = require(PL_modules.luabalanced)
+local OrderedMap  = require(PL_modules.OrderedMap)
+local MultiMap = require(PL_modules.MultiMap)
+local template = require(PL_modules.template)
+local operator = require(PL_modules.operator)
+local stringio = require(PL_modules.stringio)
+local array2d  = require(PL_modules.array2d)
+local stringx  = require(PL_modules.stringx)
+local permute  = require(PL_modules.permute)
+local tablex   = require(PL_modules.tablex)
+local config   = require(PL_modules.config)
+local strict   = require(PL_modules.strict)
+local pretty   = require(PL_modules.pretty)
+local input    = require(PL_modules.input)
+local class    = require(PL_modules.class)
+local lexer    = require(PL_modules.lexer)
+local types    = require(PL_modules.types)
+local utils    = require(PL_modules.utils)
+local lapp     = require(PL_modules.lapp)
+local func     = require(PL_modules.func)
+local data     = require(PL_modules.data)
+local List     = require(PL_modules.List)
+local test     = require(PL_modules.test)
+local seq      = require(PL_modules.seq)
+local sip      = require(PL_modules.sip)
+local app      = require(PL_modules.app)
+local Map      = require(PL_modules.Map)
+local Set      = require(PL_modules.Set)
+local url      = require(PL_modules.url)
+local xml      = require(PL_modules.xml)
+local comprehension = require(PL_modules.comprehension)
+```
 - [Allen](/lualib/allen.lua) is a Lua library which provides a set of utilities and helpers for strings operations.\
 Allen can be considered as an extension of the built-in Lua string library. ([source](https://github.com/Yonaba/Allen/tree/9abdcd0330d7007d77d67a97b0c4627a46a7f278), [documentation](https://yonaba.github.com/Allen))\
-`local allen = require("__zk-lib__/lualib/allen")`
+```lua
+local allen = require(require("__zk-lib__/defines").modules.allen)
+```
 - [Guard](/lualib/guard.lua) Minimalistic library providing [Elixir](https://elixir-lang.org/crash-course.html)-style guards for Lua. ([source](https://github.com/Yonaba/guard.lua/tree/cc38583241195209f2af7c92cd97eb42a82f6514), [documentation](https://github.com/Yonaba/guard.lua/wiki))\
-`local guard = require("__zk-lib__/lualib/guard")`
+```lua
+local guard = require(require("__zk-lib__/defines").modules.guard)
+```
 - Lua Class System ([LCS](/lualib/LCS.lua)) is a small library which offers a clean, minimalistic but powerful API for (Pseudo) Object Oriented programming style using Lua. ([source](https://github.com/Yonaba/Lua-Class-System/tree/7c8b7c816eee282770bdf206e253d38d348bc732))\
-`local LCS = require("__zk-lib__/lualib/LCS")`
+```lua
+local LCS = require(require("__zk-lib__/defines").modules.LCS)
+```
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 

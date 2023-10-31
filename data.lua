@@ -1,18 +1,18 @@
 IS_DATA_STAGE=true
-lazyAPI = require("experimental/lazyAPI")
-local lazyAPI = lazyAPI
-simpleTiers = require("experimental/simpleTiers")
-easyTemplates = require("experimental/easyTemplates")
-puan_api = require("data-api/puan_api")
-puan2_api = require("data-api/puan2_api")
-fakes = require("data-api/fakes")
-zk_lib = require("data-api/zk_lib")
-zk_SPD = require("experimental/SPD")
+ZKLIB_DEFINES = require("defines")
+lazyAPI = require(ZKLIB_DEFINES.modules.lazyAPI)
+simpleTiers = require(ZKLIB_DEFINES.modules.simpleTiers)
+easyTemplates = require(ZKLIB_DEFINES.modules.easyTemplates)
+puan_api = require(ZKLIB_DEFINES.modules.puan_api)
+puan2_api = require(ZKLIB_DEFINES.modules.puan2_api)
+fakes = require(ZKLIB_DEFINES.modules.fakes)
+zk_lib = require(ZKLIB_DEFINES.modules.zk_lib)
+zk_SPD = require(ZKLIB_DEFINES.modules.SPD)
 zk_SPD.create_container("important-no-cheat-recipes")
 require("sound/sounds_list")
 
 
-compat = require("__zk-lib__/lualib/Penlight/lua/pl/compat")
+compat = require(ZKLIB_DEFINES.modules.penlight.compat)
 warn "@on"
 
 
