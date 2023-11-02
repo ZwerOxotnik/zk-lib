@@ -1,0 +1,11 @@
+{
+  "language-name": "English",
+  "font": {
+    "SymbolsNerdFont": [
+      "__zk-lib__/fonts/NerdFontsSymbolsOnly/SymbolsNerdFont-Regular.ttf"
+    ],
+    "SymbolsNerdFontMono": [
+      "__zk-lib__/fonts/NerdFontsSymbolsOnly/SymbolsNerdFontMono-Regular.ttf"
+    ]
+  }
+}

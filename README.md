@@ -248,7 +248,8 @@ This project contains work from multiple sources + [addons](#overview).
 * [Sounds from other authors](/sound/README.txt)
 
 Also, this project used [Mod generator](https://github.com/ZwerOxotnik/Mod-generator).\
-Some images were copied from the game "Factorio" and changed, please, read terms of service: https://www.factorio.com/terms-of-service.
+Some images were copied from the game "Factorio" and changed, please, read terms of service: https://www.factorio.com/terms-of-service.\
+[./fonts/NerdFontsSymbolsOnly](./fonts/NerdFontsSymbolsOnly) is licensed under the [MIT](./fonts/NerdFontsSymbolsOnly/LICENSE) licence. Original source: https://www.nerdfonts.com/font-downloads
 
 Artwork
 -------

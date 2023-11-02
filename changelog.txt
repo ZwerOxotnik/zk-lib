@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.15.6
+Date: 02. 11. 2023
+  Scripting:
+    - Added new fonts: "SymbolsNerdFont16", "SymbolsNerdFontMono16", "SymbolsNerdFont32", "SymbolsNerdFontMono32" from https://www.nerdfonts.com/font-downloads
+---------------------------------------------------------------------------------------------------
 Version: 0.15.5
 Date: 01. 11. 2023
   Scripting:

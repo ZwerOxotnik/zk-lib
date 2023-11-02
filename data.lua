@@ -18,6 +18,7 @@ warn "@on"
 
 require("prototypes/sprites")
 require("prototypes/styles")
+require("prototypes/fonts")
 
 
 lazyAPI.attach_custom_input_event("move-down")
