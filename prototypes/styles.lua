@@ -41,3 +41,22 @@ styles.zk_dark_transparent_frame = {
 		shadow = default_glow(default_shadow_color, 0.5)
 	}
 }
+
+--- It looks a bit off
+styles.ZO_nerd_action_button24 = {
+	type   = "button_style",
+	parent = "frame_button",
+	size   = 24,
+	bottom_padding = -5,
+	default_font_color = {r=1, g=1, b=1},
+	left_click_sound   = {{ filename = "__core__/sound/gui-tool-button.ogg", volume = 1 }}
+}
+
+styles.ZO_nerd_action_button40 = {
+	type   = "button_style",
+	parent = "frame_button",
+	size   = 40,
+	bottom_padding = -10,
+	default_font_color = {r=1, g=1, b=1},
+	left_click_sound   = {{ filename = "__core__/sound/gui-tool-button.ogg", volume = 1 }}
+}
