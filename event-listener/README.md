@@ -1,3 +1,5 @@
+# Please, use [event_handler_vZO.lua](https://github.com/ZwerOxotnik/zk-factorio-static-lib/blob/master/lualibs/event_handler_vZO.lua) or [event_handler.lua](https://github.com/wube/factorio-data/blob/master/core/lualib/event_handler.lua) instead!
+
 # Event listener
 
 ## Overview
