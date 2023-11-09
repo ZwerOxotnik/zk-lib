@@ -169,6 +169,7 @@ local comprehension = require(PL_modules.comprehension)
 ```
 - [Allen](/lualib/allen.lua) is a Lua library which provides a set of utilities and helpers for strings operations.\
 Allen can be considered as an extension of the built-in Lua string library. ([source](https://github.com/Yonaba/Allen/tree/9abdcd0330d7007d77d67a97b0c4627a46a7f278), [documentation](https://yonaba.github.com/Allen))
+(WARNING: messes around with some data, don't require it with [moonscript](/lualib/moonscript/))
 ```lua
 local allen = require(require("__zk-lib__/defines").modules.allen)
 ```
@@ -183,7 +184,7 @@ local LCS = require(require("__zk-lib__/defines").modules.LCS)
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 
-<a name="static-libs"></a> [Static libs](/static-libs) [![source](https://img.shields.io/badge/%E2%81%A4-source-blue.svg?logo=github&colorB=7289DA)](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
+<a name="static-libs"></a> [Static libs](https://github.com/ZwerOxotnik/zk-factorio-static-lib) [![source](https://img.shields.io/badge/%E2%81%A4-source-blue.svg?logo=github&colorB=7289DA)](https://github.com/ZwerOxotnik/zk-factorio-static-lib)
 -------------------------------------------------------
 
 Screenshots
