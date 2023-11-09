@@ -4,7 +4,6 @@
 ---@class easyTemplates
 ---@module "__zk-lib__/experimental/easyTemplates"
 local easyTemplates = {_VERSION = "0.0.1"}
-local lazyAPI = require("experimental/lazyAPI")
 
 
 local log, debug = log, debug

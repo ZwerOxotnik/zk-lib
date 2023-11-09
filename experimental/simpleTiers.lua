@@ -5,7 +5,6 @@
 ---@class STiers
 ---@module "__zk-lib__/experimental/simpleTiers"
 local STiers = {_VERSION = "0.0.1"}
-local lazyAPI = require("experimental/lazyAPI")
 
 
 local error = error
