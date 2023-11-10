@@ -102,11 +102,11 @@ local luxtre = require(require("__zk-lib__/defines").modules.luxtre)
 ```lua
 local lal = require(require("__zk-lib__/defines").modules.lal)
 ```
-- [tl](/lualib/tl/) is compiler for Teal, a typed dialect of Lua. ([tutorial](https://github.com/teal-language/tl/tree/a10fb2c69827c1b0f8e1b8a5c848a06d6da5d3be/docs/tutorial.md), [source](https://github.com/teal-language/tl/tree/a10fb2c69827c1b0f8e1b8a5c848a06d6da5d3be)) (not fully tested)
+- [tl](/lualib/tl/) is compiler for Teal, a typed dialect of Lua. ([tutorial](https://github.com/teal-language/tl/tree/28f8fd9eb1a756267b8cde25990dfae27f8f5bcc/docs/tutorial.md), [source](https://github.com/teal-language/tl/tree/28f8fd9eb1a756267b8cde25990dfae27f8f5bcc)) (not fully tested)
 ```lua
 local tl = require(require("__zk-lib__/defines").modules.tl)
 ```
-- [moonscript](/lualib/moonscript/) is a programmer friendly language that compiles into Lua. ([source](https://github.com/leafo/moonscript/tree/b7efcd131046ed921ae1075d7c0f6a3b64a570f7)) (not fully tested)
+- [moonscript](/lualib/moonscript/) is a programmer friendly language that compiles into Lua. ([source](https://github.com/leafo/moonscript/tree/d5341c9093c49d3724072b209cde28b5cb0f47c9)) (not fully tested)
 ```lua
 local moonscript = require(require("__zk-lib__/defines").modules.moonscript)
 ```

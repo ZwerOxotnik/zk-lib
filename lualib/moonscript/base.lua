@@ -143,7 +143,7 @@ return {
   _NAME = "moonscript",
 	VERSION = "0.5.0dev",
 	DOCUMENTATION_LINK = "https://moonscript.org/reference/",
-	ORIGINAL_SOURCE_LINK = "https://github.com/leafo/moonscript/tree/a0108328373d5f3f1aefb98341aa895dd75a1b2a",
+	ORIGINAL_SOURCE_LINK = "https://github.com/leafo/moonscript/tree/d5341c9093c49d3724072b209cde28b5cb0f47c9",
   insert_loader = insert_loader,
   remove_loader = remove_loader,
   to_lua = to_lua,

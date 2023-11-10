@@ -4,7 +4,7 @@ local transform = require("__zk-lib__/lualib/moonscript/transform")
 local __data = require("__zk-lib__/lualib/moonscript/data")
 local NameProxy, LocalName
 do
-  local _obj_0 = require("__zk-lib__/lualib/moonscript/transform/names")
+  local _obj_0 = require("__zk-lib__/lualib/moonscript/transform.names")
   NameProxy, LocalName = _obj_0.NameProxy, _obj_0.LocalName
 end
 local Set
@@ -16,7 +16,11 @@ do
 end
 local statement_compilers = require("__zk-lib__/lualib/moonscript/compile/statement")
 local value_compilers = require("__zk-lib__/lualib/moonscript/compile/value")
-local concat, insert = table.concat, table.insert
+local concat, insert
+do
+  local _obj_0 = table
+  concat, insert = _obj_0.concat, _obj_0.insert
+end
 local pos_to_line, get_closest_line, trim, unpack
 pos_to_line, get_closest_line, trim, unpack = __util.pos_to_line, __util.get_closest_line, __util.trim, __util.unpack
 local mtype = __util.moon.type

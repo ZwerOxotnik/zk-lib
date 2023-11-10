@@ -4,7 +4,11 @@ local ntype
 ntype = require("__zk-lib__/lualib/moonscript/types").ntype
 local user_error
 user_error = require("__zk-lib__/lualib/moonscript/errors").user_error
-local concat, insert = table.concat, table.insert
+local concat, insert
+do
+  local _obj_0 = table
+  concat, insert = _obj_0.concat, _obj_0.insert
+end
 local unpack
 unpack = util.unpack
 local table_delim = ","
@@ -292,16 +296,52 @@ return {
     return self:line("not ", self:value(node[2]))
   end,
   self = function(self, node)
-    return "self." .. self:name(node[2])
+    local field_name = self:name(node[2])
+    if data.lua_keywords[field_name] then
+      return self:value({
+        "chain",
+        "self",
+        {
+          "index",
+          {
+            "string",
+            '"',
+            field_name
+          }
+        }
+      })
+    else
+      return "self." .. tostring(field_name)
+    end
   end,
   self_class = function(self, node)
-    return "self.__class." .. self:name(node[2])
+    local field_name = self:name(node[2])
+    if data.lua_keywords[field_name] then
+      return self:value({
+        "chain",
+        "self",
+        {
+          "dot",
+          "__class"
+        },
+        {
+          "index",
+          {
+            "string",
+            '"',
+            field_name
+          }
+        }
+      })
+    else
+      return "self.__class." .. tostring(field_name)
+    end
   end,
   self_colon = function(self, node)
-    return "self:" .. self:name(node[2])
+    return "self:" .. tostring(self:name(node[2]))
   end,
   self_class_colon = function(self, node)
-    return "self.__class:" .. self:name(node[2])
+    return "self.__class:" .. tostring(self:name(node[2]))
   end,
   ref = function(self, value)
     do
