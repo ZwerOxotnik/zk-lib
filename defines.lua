@@ -12,6 +12,7 @@ local defines = {
 		zk_lib     = "__zk-lib__/data-api/zk_lib", -- use easyAPi etc. instead
 		event_listener = "__zk-lib__/event-listener/branch-1/stable-version", -- use https://github.com/ZwerOxotnik/zk-factorio-static-lib/blob/master/lualibs/event_handler_vZO.lua instead
 		moonscript = "__zk-lib__/lualib/moonscript/base",
+		luacheck   = "__zk-lib__/lualib/luacheck/init",
 		candran    = "__zk-lib__/lualib/candran/candran",
 		bitwise    = "__zk-lib__/lualib/bitwise",
 		luxtre     = "__zk-lib__/lualib/luxtre/init",

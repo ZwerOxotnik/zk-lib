@@ -181,6 +181,10 @@ local guard = require(require("__zk-lib__/defines").modules.guard)
 ```lua
 local LCS = require(require("__zk-lib__/defines").modules.LCS)
 ```
+- [luacheck](/lualib/luacheck) is a static analyzer and a linter for Lua. Luacheck detects various issues such as usage of undefined global variables, unused variables and values, accessing uninitialized variables, unreachable code and more. Most aspects of checking are configurable: there are options for defining custom project-related globals, for selecting set of standard globals (version of Lua standard library), for filtering warnings by type and name of related variable, etc. The options can be used on the command line, put into a config or directly into checked files as Lua comments. ([source](https://github.com/mpeterv/luacheck/tree/7360cfb4cf2c7dd8c73adf45e31a04811a745250), [documentation](https://luacheck.readthedocs.io/en/0.23.0/))
+```lua
+local luacheck = require(require("__zk-lib__/defines").modules.luacheck)
+```
 
 If you're interested in switchable commands with filters and in basic examples for Factorio, check out https://github.com/ZwerOxotnik/factorio-example-mod
 
