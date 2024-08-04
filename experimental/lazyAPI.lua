@@ -2969,13 +2969,23 @@ lazyAPI.remove_entity_from_action = function(action, entity_name)
 end
 lazyAPI.add_listener("on_prototype_removed", "all", "lazyAPI_remove_explosions", function(event)
 	local prototype = event.prototype
-	local explosion_name = prototype.name
-	if not lazyAPI.all_explosions[prototype.type] then return end
+	local prototype_name = prototype.name
+	local _type = prototype.type
+	if lazyAPI.all_explosions[_type] then
+		for _, prototypes in pairs(lazyAPI.all_entities) do
+			for _, entity in pairs(prototypes) do
+				if entity.dying_explosion == prototype_name then
+					entity.dying_explosion = nil
+				end
+			end
+		end
+		return
+	end
 
-	for _, prototypes in pairs(lazyAPI.all_entities) do
-		for _, entity in pairs(prototypes) do
-			if entity.dying_explosion == explosion_name then
-				entity.dying_explosion = nil
+	if lazyAPI.all_entities[_type] then
+		for _, item in pairs(data_raw.item) do
+			if item.place_result == prototype_name then
+				item.place_result = nil
 			end
 		end
 	end
@@ -3676,10 +3686,11 @@ end
 ---@param entity string|table #https://wiki.factorio.com/Prototype/Entity or its name
 lazyAPI.remove_items_by_entity = function(entity)
 	local entity_name = (type(entity) == "string" and entity) or entity.name
+	local remove_prototype = lazyAPI.base.remove_prototype
 	for _, prototypes in pairs(lazyAPI.all_items) do
 		for _, item in pairs(prototypes) do
 			if item.place_result == entity_name then
-				lazyAPI.base.remove_prototype(item)
+				remove_prototype(item)
 			end
 		end
 	end
