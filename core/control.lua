@@ -3,7 +3,10 @@ local zk_lib = {}
 zk_lib.add_remote_interface = function()
 	remote.add_interface('zk-lib', {
 		insert_random_item = random_items.insert_random_item,
-		transfer_items = LuaEntity.transfer_items
+		transfer_items = LuaEntity.transfer_items,
+		change_setting = function(type, name, value)
+			settings[type][name] = {value = value}
+		end,
 	})
 end
 

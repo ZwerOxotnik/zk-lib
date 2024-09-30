@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.16.6
+Date: 30. 09. 2024
+  Scripting:
+    - Added "change_setting" to the remote interface
+    - Added zk_dev_zone scenario with /export command in order to get various data as files
+    - Updated /static-libs
+---------------------------------------------------------------------------------------------------
 Version: 0.16.5
 Date: 04. 08. 2024
   Scripting:
