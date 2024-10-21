@@ -15,7 +15,7 @@ local bonus_modifier = settings.global["adrenaline_bonus_modifier"].value or 2
 local module = {}
 
 local function reset_player_data(player)
-	local player_modifiers_data = global.adrenaline.players_modifiers[player.index]
+	local player_modifiers_data = storage.adrenaline.players_modifiers[player.index]
 	if player_modifier == nil then return end
 
 	local value1 = player_modifiers_data.character_mining_speed_modifier
@@ -30,7 +30,7 @@ local function reset_player_data(player)
 end
 
 -- local function reset_force_data(name)
--- 	local force_modifier = global.adrenaline.forces_modifiers[name]
+-- 	local force_modifier = storage.adrenaline.forces_modifiers[name]
 -- 	if not force_modifier then return end
 
 -- 	local force = game.forces[name]
@@ -55,7 +55,7 @@ local function check_health(player)
 	end
 
 	local player_index = player.index
-	local players_modifiers = global.adrenaline.players_modifiers
+	local players_modifiers = storage.adrenaline.players_modifiers
 	if players_modifiers[player_index] == nil then
 		-- if #game.connected_players == 1 then
 		-- 	adrenaline.forces_modifiers[force.name] = {}
@@ -90,7 +90,7 @@ local function check_health(player)
 end
 
 -- local function check_forces_data()
--- 	local adrenaline = global.adrenaline
+-- 	local adrenaline = storage.adrenaline
 -- 	for _, force in pairs( game.forces ) do
 -- 		local connected_players = force.connected_players
 -- 		if #connected_players == 1 and adrenaline.players_modifiers[connected_players[1].index] then
@@ -129,7 +129,7 @@ local function on_player_left_game(event)
 end
 
 -- local function on_forces_merging(event)
--- 	local adrenaline = global.adrenaline
+-- 	local adrenaline = storage.adrenaline
 -- 	adrenaline.forces_modifiers[event.source.name] = nil
 -- 	local connected_players = #event.source.connected_players + #event.destination.connected_players
 -- 	if connected_players ~= 1 then
@@ -156,8 +156,8 @@ local function on_runtime_mod_setting_changed(event)
 end
 
 module.on_init = function()
-	global.adrenaline = global.adrenaline or {}
-	local data = global.adrenaline
+	storage.adrenaline = storage.adrenaline or {}
+	local data = storage.adrenaline
 	data.players_modifiers = data.players_modifiers or {}
 	-- data.forces_modifiers = data.forces_modifiers or {} -- it's not safe for MP
 end

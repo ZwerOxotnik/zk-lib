@@ -15,9 +15,9 @@ zk_lib.remove_remote_interface = function()
 end
 
 local function update_global_data()
-	global.zk_lib = global.zk_lib or {}
-	global.zk_lib.addons = global.zk_lib.addons or {}
-	global.zk_lib.save_tick = global.zk_lib.save_tick or 0
+	storage.zk_lib = storage.zk_lib or {}
+	storage.zk_lib.addons = storage.zk_lib.addons or {}
+	storage.zk_lib.save_tick = storage.zk_lib.save_tick or 0
 end
 
 local function on_init()
@@ -30,17 +30,17 @@ local function on_init()
 	end
 
 	for name, _ in pairs(addons) do
-		if global.zk_lib.addons[name] == nil then
-			global.zk_lib.addons[name] = true
+		if storage.zk_lib.addons[name] == nil then
+			storage.zk_lib.addons[name] = true
 		end
 	end
 end
 
 local function on_configuration_changed(mod_data)
-	if global.zk_lib == nil or global.zk_lib.addons == nil then
+	if storage.zk_lib == nil or storage.zk_lib.addons == nil then
 		update_global_data()
 		for name, addon in pairs(addons) do
-			global.zk_lib.addons[name] = true
+			storage.zk_lib.addons[name] = true
 			if addon.init then -- it's a workaround to init global data because those addons don't init in some cases
 				addon.init()
 			elseif addon.on_init then
@@ -49,8 +49,8 @@ local function on_configuration_changed(mod_data)
 		end
 	else
 		for name, addon in pairs(addons) do
-			if global.zk_lib.addons[name] == nil then
-				global.zk_lib.addons[name] = true
+			if storage.zk_lib.addons[name] == nil then
+				storage.zk_lib.addons[name] = true
 				if addon.init then -- it's a workaround to init global data because those addons don't init in some cases
 					addon.init()
 				elseif addon.on_init then
@@ -61,7 +61,7 @@ local function on_configuration_changed(mod_data)
 	end
 
 	for _, addon_name in pairs(disabled_addons_list) do
-		global.zk_lib.addons[addon_name] = nil
+		storage.zk_lib.addons[addon_name] = nil
 	end
 end
 
@@ -74,9 +74,9 @@ local function on_runtime_mod_setting_changed(event)
 	if settings.startup["zk-lib_" .. addon_name] == nil or settings.startup["zk-lib_" .. addon_name].value == true then
 		-- if safe mode is enabled then save game as an admin change state of an addon
 		if settings.global["zk-lib_safe-mode"].value == false then return end
-		if game.tick < global.zk_lib.save_tick then return end
+		if game.tick < storage.zk_lib.save_tick then return end
 
-		global.zk_lib.save_tick = game.tick + 4800
+		storage.zk_lib.save_tick = game.tick + 4800
 		game.auto_save()
 	elseif settings.startup["zk-lib_" .. addon_name] and settings.startup["zk-lib_" .. addon_name].value == false then
 		if event.player_index then

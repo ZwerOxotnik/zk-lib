@@ -23,11 +23,11 @@ local am_util = require("static-libs/lualibs/control_stage/player-util")
 local module = {}
 
 local function clear_player_data(event)
-	global.auto_mining.players_mining[event.player_index] = nil
+	storage.auto_mining.players_mining[event.player_index] = nil
 end
 
 local function on_tick(event)
-	local players_mining = global.auto_mining.players_mining
+	local players_mining = storage.auto_mining.players_mining
 	for k, data in pairs(players_mining) do -- something is wrong
 		local player = game.get_player(k)
 		if player and player.valid and player.connected then
@@ -47,17 +47,17 @@ local function on_pre_player_mined_item(event)
 	if entity.type ~= "resource" then return end
 
 	if entity.amount > 1 then
-		global.auto_mining.players_mining[event.player_index] = {
+		storage.auto_mining.players_mining[event.player_index] = {
 			position = entity.position
 		}
 	else
-		local player_data = global.auto_mining.players_mining[event.player_index]
+		local player_data = storage.auto_mining.players_mining[event.player_index]
 		if player_data then
 			local new_position = am_util.get_new_resource_position_by_player_resource(player, entity)
 			if new_position == nil then
-				global.auto_mining.players_mining[event.player_index] = nil
+				storage.auto_mining.players_mining[event.player_index] = nil
 			else
-				global.auto_mining.players_mining[event.player_index] = {
+				storage.auto_mining.players_mining[event.player_index] = {
 					position = new_position
 				}
 			end
@@ -66,7 +66,7 @@ local function on_pre_player_mined_item(event)
 end
 
 local function on_player_mined_item(event)
-	if not global.auto_mining.players_mining[event.player_index] then return end
+	if not storage.auto_mining.players_mining[event.player_index] then return end
 	local player = game.get_player(event.player_index)
 	if not (player and player.valid) then return end
 
@@ -88,14 +88,14 @@ local function toggle_auto_mining(event)
 	if event.player_index == 0 then return end
 	local player = game.get_player(event.player_index)
 
-	if global.auto_mining.players_mining[event.player_index] then
+	if storage.auto_mining.players_mining[event.player_index] then
 		clear_player_data(event)
 	else
 		local new_position = am_util.get_resource_position_for_player(player)
 		if new_position == nil then
-			global.auto_mining.players_mining[event.player_index] = nil
+			storage.auto_mining.players_mining[event.player_index] = nil
 		else
-			global.auto_mining.players_mining[event.player_index] = {
+			storage.auto_mining.players_mining[event.player_index] = {
 				position = new_position
 			}
 		end
@@ -103,8 +103,8 @@ local function toggle_auto_mining(event)
 end
 
 local function on_init()
-	global.auto_mining = global.auto_mining or {}
-	local data = global.auto_mining
+	storage.auto_mining = storage.auto_mining or {}
+	local data = storage.auto_mining
 	data.players_mining = data.players_mining or {}
 end
 module.on_init = on_init

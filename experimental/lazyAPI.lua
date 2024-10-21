@@ -679,8 +679,8 @@ lazyAPI.all_utility_sprite_fields = {
 	"technology_black", "technology_white",
 	"inserter_stack_size_bonus_modifier_icon",
 	"inserter_stack_size_bonus_modifier_constant",
-	"stack_inserter_capacity_bonus_modifier_icon",
-	"stack_inserter_capacity_bonus_modifier_constant",
+	"bulk_inserter_capacity_bonus_modifier_icon", --TODO: recheck
+	"bulk_inserter_capacity_bonus_modifier_constant", --TODO: recheck
 	"laboratory_speed_modifier_icon", "laboratory_speed_modifier_constant",
 	"character_logistic_slots_modifier_icon",
 	"character_logistic_slots_modifier_constant",
@@ -3747,7 +3747,7 @@ lazyAPI.remove_items_by_equipment = function(equipment)
 	local equipment_name = (type(equipment) == "string" and equipment) or equipment.name
 	for _, prototypes in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
 		for _, item in pairs(prototypes) do
-			if item.placed_as_equipment_result == equipment_name then
+			if item.place_as_equipment_result == equipment_name then
 				lazyAPI.base.remove_prototype(item)
 			end
 		end
@@ -3777,8 +3777,8 @@ lazyAPI.replace_items_by_equipment = function(equipment, new_equipment)
 	local new_equipment_name = (type(new_equipment) == "string" and new_equipment) or new_equipment.name
 	for _, prototypes in pairs(lazyAPI.all_items) do --TODO: recheck, seems excessive
 		for _, item in pairs(prototypes) do
-			if item.placed_as_equipment_result == equipment_name then
-				item.placed_as_equipment_result = new_equipment_name
+			if item.place_as_equipment_result == equipment_name then
+				item.place_as_equipment_result = new_equipment_name
 			end
 		end
 	end
