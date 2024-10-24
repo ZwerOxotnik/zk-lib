@@ -35,7 +35,7 @@ end
 
 -- 	local force = game.forces[name]
 -- 	if force then
--- 		for ammo_category, _ in pairs( game.ammo_category_prototypes ) do
+-- 		for ammo_category, _ in pairs( prototypes.ammo_category ) do
 -- 			if force_modifier.guns_speed[ammo_category] then
 -- 				force.set_gun_speed_modifier(ammo_category, force_modifier.guns_speed[ammo_category])
 -- 			end
@@ -61,7 +61,7 @@ local function check_health(player)
 		-- 	adrenaline.forces_modifiers[force.name] = {}
 		-- 	adrenaline.forces_modifiers[force.name].guns_speed = {}
 		-- 	local guns_speed = adrenaline.forces_modifiers[force.name].guns_speed
-		-- 	for name, _ in pairs( game.ammo_category_prototypes ) do
+		-- 	for name, _ in pairs( prototypes.ammo_category ) do
 		-- 		guns_speed[name] = force.get_gun_speed_modifier(name)
 		-- 	end
 		-- end
@@ -80,7 +80,7 @@ local function check_health(player)
 	-- local force_modifier = adrenaline.forces_modifiers[force.name]
 	-- if force_modifier then
 	-- 	local init_guns_speed = force_modifier.guns_speed
-	-- 	for name, _ in pairs( game.ammo_category_prototypes ) do
+	-- 	for name, _ in pairs( prototypes.ammo_category ) do
 	-- 		if init_guns_speed[name] then
 	-- 			force.set_gun_speed_modifier(name, init_guns_speed[name] + modifier)
 	-- 		end
