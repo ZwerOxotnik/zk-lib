@@ -1070,6 +1070,11 @@ end
 -- It's weird and looks wrong but it should work
 ---@diagnostic disable-next-line: duplicate-set-field
 data.extend = function(self, new_prototypes, ...)
+	if type(new_prototypes) ~= "table" then
+		add_prototypes(self, new_prototypes, ...) -- original data.extend
+		return
+	end
+
 	-- Let's check if something will be overwritten
 	for k, prototype in pairs(new_prototypes) do
 		if type(k) == "number" and type(prototype) == "table" and prototype.type then
