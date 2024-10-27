@@ -68,11 +68,11 @@ fakes.create_fake_walkable_tile = function(name)
 	local new_tile = util.table.deepcopy(tiles[fake_tile_name])
 	new_tile.name = fake_tile_name
 	new_tile.collision_mask = {
-		"water-tile",
-		"ground-tile",
-		"item-layer",
-		"resource-layer",
-		"object-layer"
+		"water_tile",
+		"ground_tile",
+		"item",
+		"resource",
+		"object"
 	}
 	new_tile.autoplace = nil
 	new_tile.localised_name = {"", {"tile-name." .. name}, " [fake-W]"}

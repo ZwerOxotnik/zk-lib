@@ -481,11 +481,12 @@ for _, sound_name in pairs(lazyAPI.all_common_sound_fields) do
 	lazyAPI.all_sound_fields[#lazyAPI.all_sound_fields+1] = sound_name
 end
 
+-- TODO: update for Factorio 2.0!!!
 -- TODO: add more functions to compare these values etc.
--- https://wiki.factorio.com/Types/RenderLayer
+-- https://lua-api.factorio.com/latest/types/RenderLayer.html
 -- The order from lowest to highest:
 lazyAPI.RenderLayers = {
-	"water-tile", "ground-tile", "tile-transition", "decals",
+	"water_tile", "ground_tile", "tile-transition", "decals",
 	"lower-radius-visualization", "radius-visualization",
 	"transport-belt-integration", "resource", "building-smoke",
 	"decorative", "ground-patch", "ground-patch-higher",
@@ -767,9 +768,9 @@ lazyAPI.all_SpriteVariations_fields = {
 
 -- https://wiki.factorio.com/Types/CollisionMask
 lazyAPI.collision_mask_layers = {
-	"ground-tile", "water-tile", "resource-layer", "doodad-layer",
-	"floor-layer", "rail-layer", "transport-belt-layer", "item-layer",
-	"ghost-layer", "object-layer", "player-layer", "train-layer",
+	"ground_tile", "water_tile", "resource", "doodad",
+	"floor", "rail", "transport_belt", "item",
+	"ghost", "object", "player", "train",
 }
 for i=13, 55 do
 	table.insert(lazyAPI.collision_mask_layers, "layer-" .. i)

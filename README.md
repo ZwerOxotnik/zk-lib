@@ -230,7 +230,7 @@ FAQ
 If you want to download from this source, then use commands below (requires [git](https://git-scm.com/downloads)).
 
 ```bash
-git clone --recurse-submodules -j8 https://github.com/ZwerOxotnik/zk-lib
+git clone --recurse-submodules -j8 https://github.com/ZwerOxotnik/zk-lib zk-lib
 cd zk-lib
 ```
 
