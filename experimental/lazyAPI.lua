@@ -860,8 +860,8 @@ lazyAPI.entities_with_health = {
 	["programmable-speaker"] = data_raw["programmable-speaker"],
 	["pump"] = data_raw["pump"],
 	["radar"] = data_raw["radar"],
-	["curved-rail"] = data_raw["curved-rail"],
-	["straight-rail"] = data_raw["straight-rail"],
+	["legacy-curved-rail"] = data_raw["legacy-curved-rail"],
+	["legacy-straight-rail"] = data_raw["legacy-straight-rail"],
 	["rail-chain-signal"] = data_raw["rail-chain-signal"],
 	["rail-signal"] = data_raw["rail-signal"],
 	["reactor"] = data_raw["reactor"],
@@ -944,14 +944,14 @@ lazyAPI.all_equipments = {
 lazyAPI.all_achievements = {
 	["achievement"] = data_raw["achievement"],
 	["build-entity-achievement"] = data_raw["build-entity-achievement"],
-	["combat-robot-count"] = data_raw["combat-robot-count"],
+	["combat-robot-count-achievement"] = data_raw["combat-robot-count-achievement"],
 	["construct-with-robots-achievement"] = data_raw["construct-with-robots-achievement"],
 	["deconstruct-with-robots-achievement"] = data_raw["deconstruct-with-robots-achievement"],
 	["deliver-by-robots-achievement"] = data_raw["deliver-by-robots-achievement"],
 	["dont-build-entity-achievement"] = data_raw["dont-build-entity-achievement"],
 	["dont-craft-manually-achievement"] = data_raw["dont-craft-manually-achievement"],
 	["dont-use-entity-in-energy-production-achievement"] = data_raw["dont-use-entity-in-energy-production-achievement"],
-	["finish-the-game-achievement"] = data_raw["finish-the-game-achievement"],
+	["complete-objective-achievement"] = data_raw["complete-objective-achievement"],
 	["group-attack-achievement"] = data_raw["group-attack-achievement"],
 	["kill-achievement"] = data_raw["kill-achievement"],
 	["player-damaged-achievement"] = data_raw["player-damaged-achievement"],
@@ -986,7 +986,7 @@ lazyAPI.all_items = {
 	["item-with-tags"] = data_raw["item-with-tags"],
 	["module"] = data_raw["module"],
 	["rail-planner"] = data_raw["rail-planner"],
-	["spidertron-remote"] = data_raw["spidertron-remote"],
+	["rts-tool"] = data_raw["rts-tool"],
 	["tool"] = data_raw["tool"]
 }
 for selection_tool_type, prototypes in pairs(lazyAPI.all_selection_tools) do
@@ -3496,9 +3496,9 @@ lazyAPI.create_trigger_capsule = function(tool_data)
 	local flags = tool_data.flags
 	if flags == nil then
 		if tool_data.stack_size and tool_data.stack_size > 1 then
-			flags = {"hidden", "only-in-cursor"}
+			flags = {"only-in-cursor"}
 		else
-			flags = {"hidden", "not-stackable", "only-in-cursor"}
+			flags = {"not-stackable", "only-in-cursor"}
 		end
 	end
 	data:extend({
@@ -3530,6 +3530,7 @@ lazyAPI.create_trigger_capsule = function(tool_data)
 			icon_mipmaps = tool_data.icon_mipmaps,
 			stack_size = tool_data.stack_size or 1,
 			flags = flags,
+			hidden = true,
 			radius_color = tool_data.radius_color,
 			capsule_action =
 			{
@@ -3574,7 +3575,6 @@ lazyAPI.create_invisible_mine = function(name, trigger_radius)
 			"placeable-enemy",
 			"placeable-off-grid",
 			"not-on-map",
-			"hidden",
 			"not-selectable-in-game",
 			"not-in-kill-statistics",
 			"not-in-made-in",
@@ -3583,6 +3583,7 @@ lazyAPI.create_invisible_mine = function(name, trigger_radius)
 			"hide-alt-info",
 			"not-flammable"
 		},
+		hidden = true,
 		max_health = 15,
 		trigger_radius = trigger_radius,
 		picture_safe = lazyAPI.get_sprite_by_path("__core__/graphics/empty.png"),
