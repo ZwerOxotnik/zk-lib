@@ -5854,7 +5854,7 @@ lazyAPI.recipe.find_main_result = function(prototype, item)
 	if prot.results then
 		local item_name = (type(item) == "string" and item) or item.name
 		local _, result = next(prot.results)
-		return result.name == item_name
+		return (result and result.name == item_name) or false
 	end
 	return false
 end
