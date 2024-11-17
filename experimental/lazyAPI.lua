@@ -588,7 +588,7 @@ lazyAPI.all_utility_sprite_fields = {
 	"downloaded_white", "equipment_grid", "expand_dots", "expand_dots_white",
 	"export", "import", "map", "map_exchange_string", "missing_mod_icon",
 	"not_available", "play", "stop", "preset", "refresh", "reset",
-	"reset_white", "shuffle", "station_name", "search_black", "search_white",
+	"reset_white", "shuffle", "station_name", "search",
 	"sync_mods", "trash", "trash_white", "copy", "reassign", "warning",
 	"warning_white", "list_view", "grid_view", "reference_point", "mouse_cursor",
 	"mod_dependency_arrow", "add", "clone", "go_to_arrow", "pause",
