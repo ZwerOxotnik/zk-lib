@@ -78,7 +78,7 @@ This file should be in root folder of a mod!!!
 
 echo "local data_stage_data = {" >> $SPRITE_LIST_PATH
 
-local format=*.png
+local format=*.[Pp][Nn][Gg]
 local files=($(find $folder_path/ -name "$format" -type f))
 for path in "${files[@]}"; do
 	local name="$(basename -- $path)"

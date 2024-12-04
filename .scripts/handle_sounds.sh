@@ -130,7 +130,7 @@ if [ $sox_exists = true ] ; then
 	done
 fi
 
-local format=*.ogg
+local format=*.[Oo][Gg][Gg]
 local files=($(find $folder_path/ -name "$format" -type f))
 for path in "${files[@]}"; do
 	local name="$(basename -- $path)"
