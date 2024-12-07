@@ -12,8 +12,6 @@ Please, don't change/create/delete prototypes in data.lua file
 in order to improve and simplify mod development and mod compatibility, thanks.
 Please, don't use this module as a new library.
 
-WARNING: some will be changed for Factorio 1.2
-
 The short name for this framework is "LAPI".
 ]]--
 ---@class lazyAPI
@@ -1011,7 +1009,7 @@ local _lauxlib = require("static-libs/lualibs/lauxlib")
 local extensions = {}
 
 --[[
-lazyAPI.add_listener(action_name, name, types, func): boolean
+lazyAPI.add_listener(action_name, types, name, func): boolean
 lazyAPI.remove_listener(action_name, name)
 Each event contains:\
 	on_pre_prototype_removed: {prototype: table}\
