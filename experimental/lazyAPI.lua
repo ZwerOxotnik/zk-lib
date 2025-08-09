@@ -1090,7 +1090,7 @@ data.extend = function(self, new_prototypes, ...)
 				lazyAPI.raise_event("on_pre_prototype_replaced", _type, event_data)
 			else
 				local event_data = {prototype = prototype}
-				lazyAPI.raise_event("on_pre_new_prototype", prototype_type, event_data)
+				lazyAPI.raise_event("on_pre_new_prototype", _type, event_data)
 			end
 		end
 	end
@@ -1111,7 +1111,7 @@ data.extend = function(self, new_prototypes, ...)
 			local is_added = (data_raw[prototype_type][name] == prototype)
 			if is_added then
 				local removed_prot = lazyAPI.deleted_data[prototype_type][name]
-				if removed_prot == prot then
+				if removed_prot == prototype then
 					lazyAPI.deleted_data[prototype_type][name] = nil
 				end
 
