@@ -124,6 +124,7 @@ lazyAPI.find_entities_by_name(name)
 lazyAPI.remove_items_by_name(name)
 lazyAPI.has_items_by_name(name)
 lazyAPI.find_items_by_name(name)
+lazyAPI.get_valid_items(data?): string[]|table[]|table<string, any>
 lazyAPI.remove_recipe_from_modules(recipe)
 lazyAPI.replace_recipe_in_all_modules(old_recipe, new_recipe)
 lazyAPI.replace_prerequisite_in_all_techs(old_tech, new_tech)
@@ -3461,6 +3462,33 @@ lazyAPI.find_items_by_name = function(name)
 		end
 	end
 	return result
+end
+
+
+---@param data string[]|table[]|table<string, any>?
+---@return string[]|table[]|table<string, any>
+function lazyAPI.get_valid_items(data)
+	if not data then return {} end
+
+	local has_items_by_name = lazyAPI.has_items_by_name
+	local valid_data = {nil}
+	for i, v in pairs(data) do
+		if type(i) == 'string' then
+			if has_items_by_name(i) then
+				valid_data[i] = v
+			end
+		elseif type(v) == 'string' then
+			if has_items_by_name(v) then
+				valid_data[#valid_data+1] = v
+			end
+		else --table
+			if has_items_by_name(v.name) then
+				valid_data[#valid_data+1] = v
+			end
+		end
+	end
+
+	return valid_data
 end
 
 
