@@ -239,7 +239,7 @@ lazyAPI.EntityWithHealth.set_loot(prototype, item, count_min?, count_max? percen
 lazyAPI.EntityWithHealth.set_valid_loot(prototype, item, count_min?, count_max? percent?, decrease?): prototype
 lazyAPI.EntityWithHealth.remove_loot(prototype, item): prototype
 lazyAPI.EntityWithHealth.remove_non_existing_loot(prototype): prototype
-lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_product): prototype
+lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_product, multiplier): prototype
 lazyAPI.item.find_main_recipes(item): table[]
 -- There are several issues still
 lazyAPI.recipe.set_subgroup(prototype, subgroup, order?): prototype
@@ -5787,9 +5787,11 @@ lazyAPI.EntityWithHealth.remove_non_existing_loot = lazyAPI.loot.remove_non_exis
 ---@param prototype table|LAPIWrappedPrototype #https://lua-api.factorio.com/latest/prototypes/EntityPrototype.html
 ---@param item string|table
 ---@param item_product table #https://wiki.factorio.com/Types/ItemProductPrototype
+---@param multiplier number
 ---@return table|LAPIWrappedPrototype
-function lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_product)
+function lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_product, multiplier)
 	if item == nil then error("item is nil") end
+	if multiplier and multiplier <= 0 then multiplier = 0 end
 	local prot = prototype.prototype or prototype
 
 	if (item_product.amount_min == nil or item_product.amount_max == nil)
@@ -5800,14 +5802,29 @@ function lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_pro
 		if item_product.amount <= 0 then return prototype end
 	end
 
+	local amount = item_product.amount or (item_product.amount and multiplier)
+	if amount <= 0 then return prototype end
+
 	prot.minable = prot.minable or {}
+	local amount_min = item_product.amount_min or (item_product.amount_min and multiplier)
+	local amount_max = item_product.amount_max or (item_product.amount_max and multiplier)
+	if not amount_min and amount_max then
+		amount_min = amount
+	end
+	if amount_max and amount_max < amount_min then
+		amount_max = amount_min
+	elseif amount_max == amount_min and amount_min == amount then
+		amount_min = nil
+		amount_max = nil
+	end
+
 	local results = prot.minable.results
 	if results == nil then
 		prot.minable.results = {
 			{
 				type = "item", name = item,
-				amount = item_product.amount,
-				amount_min = item_product.amount_min, amount_max = item_product.amount_max,
+				amount = amount,
+				amount_min = amount_min, amount_max = amount_max,
 				probability = item_product.probability, ignored_by_stats = item_product.ignored_by_stats,
 				ignored_by_productivity = item_product.ignored_by_productivity,
 				show_details_in_recipe_tooltip = item_product.show_details_in_recipe_tooltip,
@@ -5823,8 +5840,8 @@ function lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_pro
 
 	results[#results+1] = {
 		type = "item", name = item,
-		amount = item_product.amount,
-		amount_min = item_product.amount_min, amount_max = item_product.amount_max,
+		amount = amount,
+		amount_min = amount_min, amount_max = amount_max,
 		probability = item_product.probability, ignored_by_stats = item_product.ignored_by_stats,
 		ignored_by_productivity = item_product.ignored_by_productivity,
 		show_details_in_recipe_tooltip = item_product.show_details_in_recipe_tooltip,
