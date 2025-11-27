@@ -144,6 +144,7 @@ lazyAPI.scale_pipes(prototype, fluid_box, size, string|string[]?): prototype
 lazyAPI.scale_vector(table?, size)
 lazyAPI.scale_pipe_sprite(table?, size)
 lazyAPI.adapt_LootItem_for_ItemProduct(table?): table?
+lazyAPI.adapt_ItemProduct_for_LootItem(table?): table?
 
 
 lazyAPI.base.override_data(table): prototype
@@ -4759,6 +4760,22 @@ function lazyAPI.adapt_LootItem_for_ItemProduct(loot)
 		loot.amount_min = loot.count_min
 		loot.amount_max = loot.count_max
 	end
+
+	---@cast loot +ItemProduct
+	return loot
+end
+
+
+---@param product ItemProduct
+function lazyAPI.adapt_ItemProduct_for_LootItem(product)
+	if product == nil then return end
+
+	product.item = product.name
+	product.count_min = product.amount or product.amount_min
+	product.count_max = product.amount_max
+
+	---@cast product +LootItem
+	return product
 end
 
 
