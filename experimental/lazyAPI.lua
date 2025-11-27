@@ -5463,7 +5463,7 @@ end
 ---@param prototype table|LAPIWrappedPrototype
 ---@param item string|table
 ---@return table? #https://wiki.factorio.com/Types/Loot
-lazyAPI.loot.find = function(prototype, item)
+function lazyAPI.loot.find(prototype, item)
 	local prot = prototype.prototype or prototype
 	local loot = prot.loot
 	if loot == nil then
@@ -5484,10 +5484,10 @@ end
 -- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
 -- https://wiki.factorio.com/Types/Loot
 ---@param prototype table|LAPIWrappedPrototype
----@param item string|table
----@param new_item string|table
+---@param item string|table # Previous item to spawn.
+---@param new_item string|table # The item to spawn.
 ---@return table|LAPIWrappedPrototype
-lazyAPI.loot.replace = function(prototype, item, new_item)
+function lazyAPI.loot.replace(prototype, item, new_item)
 	local prot = prototype.prototype or prototype
 	local loot = prot.loot
 	if loot == nil then
@@ -5510,12 +5510,12 @@ end
 -- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
 -- https://wiki.factorio.com/Types/Loot
 ---@param prototype table|LAPIWrappedPrototype
----@param item string|table
----@param count_min? integer
----@param count_max? integer
----@param probability? float
+---@param item string|table # The item to spawn.
+---@param count_min? double
+---@param count_max? double # Must be > 0.
+---@param probability? double # 0 is 0% and 1 is 100%. Must be > 0.
 ---@return table|LAPIWrappedPrototype
-lazyAPI.loot.set = function(prototype, item, count_min, count_max, probability)
+function lazyAPI.loot.set(prototype, item, count_min, count_max, probability)
 	local prot = prototype.prototype or prototype
 	local item_name = (type(item) == "string" and item) or item.name
 	local loot = prot.loot
@@ -5525,12 +5525,11 @@ lazyAPI.loot.set = function(prototype, item, count_min, count_max, probability)
 	end
 
 	fix_array(loot)
-	for i=1, #loot do
-		local iLoot = loot[i]
-		if iLoot.item == item_name then
-			iLoot.count_min = count_min
-			iLoot.count_max = count_max
-			iLoot.probability = probability
+	for _, v in pairs(loot) do
+		if v.item == item_name then
+			v.probability = probability
+			v.count_min   = count_min
+			v.count_max   = count_max
 			return prototype
 		end
 	end
@@ -5543,12 +5542,12 @@ end
 -- https://wiki.factorio.com/Prototype/EntityWithHealth#loot
 -- https://wiki.factorio.com/Types/Loot
 ---@param prototype table|LAPIWrappedPrototype
----@param item table
----@param count_min? integer
----@param count_max? integer
----@param probability? float
+---@param item string|table # The item to spawn.
+---@param count_min? double
+---@param count_max? double # Must be > 0.
+---@param probability? double # 0 is 0% and 1 is 100%. Must be > 0.
 ---@return table|LAPIWrappedPrototype
-lazyAPI.loot.set_if_exist = function(prototype, item, count_min, count_max, probability)
+function lazyAPI.loot.set_if_exist(prototype, item, count_min, count_max, probability)
 	if data_raw[target.type][target.name] == nil then return prototype end
 	lazyAPI.loot.set(prototype, item, count_min, count_max, probability)
 	return prototype
@@ -5559,7 +5558,7 @@ end
 ---@param prototype table|LAPIWrappedPrototype
 ---@param item string|table
 ---@return table|LAPIWrappedPrototype
-lazyAPI.loot.remove = function(prototype, item)
+function lazyAPI.loot.remove(prototype, item)
 	local prot = prototype.prototype or prototype
 	local loot = prot.loot
 	if loot == nil then
@@ -5580,7 +5579,7 @@ end
 
 ---@param prototype table|LAPIWrappedPrototype
 ---@return table|LAPIWrappedPrototype
-lazyAPI.loot.remove_non_existing_loot = function(prototype)
+function lazyAPI.loot.remove_non_existing_loot(prototype)
 	local loot = prot.loot
 	if loot == nil then
 		return prototype
