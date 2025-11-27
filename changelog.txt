@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.17.12
-Date: 27. 11. 2025
+Date: 28. 11. 2025
   Scripting:
+    - Added lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_product): prototype
     - Added lazyAPI.get_valid_items(data?): string[]|table[]|table<string, any>
 ---------------------------------------------------------------------------------------------------
 Version: 0.17.11

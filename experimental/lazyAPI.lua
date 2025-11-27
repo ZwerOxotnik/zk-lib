@@ -237,6 +237,7 @@ lazyAPI.EntityWithHealth.set_loot(prototype, item, count_min?, count_max? percen
 lazyAPI.EntityWithHealth.set_valid_loot(prototype, item, count_min?, count_max? percent?, decrease?): prototype
 lazyAPI.EntityWithHealth.remove_loot(prototype, item): prototype
 lazyAPI.EntityWithHealth.remove_non_existing_loot(prototype): prototype
+lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_product): prototype
 lazyAPI.item.find_main_recipes(item): table[]
 -- There are several issues still
 lazyAPI.recipe.set_subgroup(prototype, subgroup, order?): prototype
@@ -5746,6 +5747,59 @@ lazyAPI.EntityWithHealth.set_loot = lazyAPI.loot.set
 lazyAPI.EntityWithHealth.set_valid_loot = lazyAPI.loot.set_if_exist
 lazyAPI.EntityWithHealth.remove_loot = lazyAPI.loot.remove
 lazyAPI.EntityWithHealth.remove_non_existing_loot = lazyAPI.loot.remove_non_existing_loot
+
+
+---TODO: check and consider prototype.result
+---https://lua-api.factorio.com/latest/prototypes/EntityPrototype.html#minable
+---@param prototype table|LAPIWrappedPrototype #https://lua-api.factorio.com/latest/prototypes/EntityPrototype.html
+---@param item string|table
+---@param item_product table #https://wiki.factorio.com/Types/ItemProductPrototype
+---@return table|LAPIWrappedPrototype
+function lazyAPI.EntityWithHealth.add_item_from_mining(prototype, item, item_product)
+	if item == nil then error("item is nil") end
+	local prot = prototype.prototype or prototype
+
+	if (item_product.amount_min == nil or item_product.amount_max == nil)
+		and item_product.amount and item_product.amount > 65535
+	then
+		item_product.amount = item_product.amount - 65535
+		lazyAPI.EntityWithHealth.add_item_from_mining(prot, item, item_product)
+		if item_product.amount <= 0 then return prototype end
+	end
+
+	prot.minable = prot.minable or {}
+	local results = prot.minable.results
+	if results == nil then
+		prot.minable.results = {
+			{
+				type = "item", name = item,
+				amount = item_product.amount,
+				amount_min = item_product.amount_min, amount_max = item_product.amount_max,
+				probability = item_product.probability, ignored_by_stats = item_product.ignored_by_stats,
+				ignored_by_productivity = item_product.ignored_by_productivity,
+				show_details_in_recipe_tooltip = item_product.show_details_in_recipe_tooltip,
+				extra_count_fraction = item_product.extra_count_fraction,
+				percent_spoiled = item_product.percent_spoiled
+			}
+		}
+		results = prot.results
+		return prototype
+	end
+
+	fix_array(results)
+
+	results[#results+1] = {
+		type = "item", name = item,
+		amount = item_product.amount,
+		amount_min = item_product.amount_min, amount_max = item_product.amount_max,
+		probability = item_product.probability, ignored_by_stats = item_product.ignored_by_stats,
+		ignored_by_productivity = item_product.ignored_by_productivity,
+		show_details_in_recipe_tooltip = item_product.show_details_in_recipe_tooltip,
+		extra_count_fraction = item_product.extra_count_fraction,
+		percent_spoiled = item_product.percent_spoiled
+	}
+	return prototype
+end
 
 
 ---@param item table|string
