@@ -366,7 +366,7 @@ setmetatable(lazyAPI._warning_for_fixed_tables, {
 	__newindex = function(self, k, v)
 		if rawget(self, k) then return end -- No multiple errors etc in the table
 		log("lazyAPI detected an inconsistency: " .. (lazyAPI._warnings[v] or 'unknown case'))
-		log(debug.traceback())
+		log(traceback())
 		rawset(self, k, v)
 	end
 })
@@ -5860,10 +5860,6 @@ local make_fluid_product_prototype = lazyAPI.product.make_fluid_product_prototyp
 lazyAPI.recipe.has_result = function(prototype)
 	local prot = prototype.prototype or prototype
 	if (prot.results and next(prot.results)) then
-		return true
-	elseif prot.normal and ((prot.normal.results and next(prot.normal.results)) or prot.normal.result) then
-		return true
-	elseif prot.expensive and ((prot.expensive.results and next(prot.expensive.results)) or prot.expensive.result) then
 		return true
 	end
 	return false
