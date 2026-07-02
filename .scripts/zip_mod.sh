@@ -72,6 +72,14 @@ local name="${MOD_NAME}_${MOD_VERSION}"
 if command -v git &> /dev/null; then
 	git clean -xdf
 fi
+
+### "It is not permitted to distribute executable files with mod. Removes all files ending in exe, bat, ps1, sh, py."
+find . -name "*.exe" -type f -delete
+find . -name "*.bat" -type f -delete
+find . -name "*.ps1" -type f -delete
+find . -name "*.sh"  -type f -delete
+find . -name "*.py"  -type f -delete
+
 7z a -xr'!.*' "${mod_folder}/${name}.zip" "${mod_folder}"
 }
 main
