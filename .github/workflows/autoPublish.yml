@@ -37,9 +37,9 @@ jobs:
       run: bash ./.scripts/zip_mod.sh
   upload:
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
     - name: Upload the mod on mods.factorio.com
-      needs: [build]
       env:
         FACTORIO_MOD_API_KEY: ${{ secrets.FACTORIO_MOD_API_KEY }}
       run: bash ./.scripts/upload.sh
