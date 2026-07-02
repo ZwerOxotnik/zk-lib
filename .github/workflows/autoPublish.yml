@@ -36,6 +36,8 @@ jobs:
     - name: Zip mod
       run: bash ./.scripts/zip_mod.sh
   upload:
+    runs-on: ubuntu-latest
+    steps:
     - name: Upload the mod on mods.factorio.com
       needs: [build]
       env:
