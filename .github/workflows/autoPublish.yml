@@ -33,7 +33,8 @@ jobs:
       with:
         path: 'info.json'
         prop_path: 'name'
-    - name: zip-mod
+    - name: Zip mod
+      id: zip-mod
       run: bash ./.scripts/zip_mod.sh
     - name: Wait
       wait: [zip-mod]
