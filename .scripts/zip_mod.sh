@@ -73,9 +73,11 @@ if command -v git &> /dev/null; then
 	git clean -xdf
 fi
 
-### It is not permitted to distribute executable files with mod
+### "It is not permitted to distribute executable files with mod"
 ### Removes all files ending in exe, bat, ps1, sh, py.
-for i in .scripts/*.sh; do mv "$i" "${i/.txt/}"; done
+local format=*.[sh]
+local files=($(find $mod_folder/ -name ".scripts/$format" -type f))
+for path in "${files[@]}"; do mv "path" "${path/.txt/}"; done
 find . -name "*.exe" -type f -delete
 find . -name "*.bat" -type f -delete
 find . -name "*.ps1" -type f -delete
@@ -84,8 +86,10 @@ find . -name "*.py"  -type f -delete
 
 7z a -xr'!.*' "${mod_folder}/${name}.zip" "${mod_folder}"
 
-### Reverse txt to sh back.
-for i in .scripts/*.txt; do mv "$i" "${i/.sh/}"; done
+### Reverses txt to sh back.
+local format=*.[txt]
+local files=($(find $mod_folder/ -name ".scripts/$format" -type f))
+for path in "${files[@]}"; do mv "path" "${path/.sh/}"; done
 
 }
 main
