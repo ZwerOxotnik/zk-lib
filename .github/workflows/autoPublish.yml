@@ -35,8 +35,9 @@ jobs:
         prop_path: 'name'
     - name: zip-mod
       run: bash ./.scripts/zip_mod.sh
-    - name: Upload the mod on mods.factorio.com
+    - name: Wait
       wait: [zip-mod]
+    - name: Upload the mod on mods.factorio.com
       env:
         FACTORIO_MOD_API_KEY: ${{ secrets.FACTORIO_MOD_API_KEY }}
       run: bash ./.scripts/upload.sh
