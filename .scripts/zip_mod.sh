@@ -85,7 +85,7 @@ find . -name "*.py"  -type f -delete
 7z a -xr'!.*' "${mod_folder}/${name}.zip" "${mod_folder}"
 
 ### Reverse txt to sh back.
-for i in .scripts/*.text; do mv "$i" "${i/.sh/}"; done
+for i in .scripts/*.txt; do mv "$i" "${i/.sh/}"; done
 
 }
 main
